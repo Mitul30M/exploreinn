@@ -19,7 +19,7 @@ const FilterSortSearchGroup = () => {
         <p className="text-sm text-black/80 dark:text-white/60">1200 Hotels Found</p>
         <Input placeholder="Search Hotels" className="w-[400px]" />
         <Button size="icon" className="rounded-full">
-          <Search />
+          <Search strokeWidth={3} />
         </Button>
       </div>
 

@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { Button } from "../../ui/button";
-import ThemeSwitcher from "../../theme-switcher";
+import ThemeSwitcher from "../../ui/theme-switcher";
 import { UserProfileDropdown } from "./user-profile-dropdown";
 
 const links: {

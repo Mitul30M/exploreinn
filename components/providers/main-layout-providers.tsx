@@ -1,6 +1,6 @@
-'use client'
+"use client";
 import React, { ReactNode } from "react";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import ReactQueryProvider from "./react-query-client-provider";
 
 const MainLayoutProviders = ({ children }: { children: ReactNode }) => {
