@@ -83,7 +83,7 @@ const LocationInput = () => {
     // add the selected city to the redux store's value to maintain and make it available globally
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="rounded-xl rounded-r-none">
+        <Button variant="outline" className="rounded-xl rounded-r-none hover:text-primary">
           <MapPinHouse />
           {cityInput ? cityInput : 'Find The Perfect Destination'}
         </Button>
