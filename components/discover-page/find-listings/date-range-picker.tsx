@@ -39,7 +39,7 @@ export function DatePickerWithRange({
               !date && "text-foreground"
             )}
           >
-            <CalendarRange className="mr-2" />
+            <CalendarRange className="" />
             {date?.from ? (
               date.to ? (
                 <>
