@@ -1,15 +1,18 @@
-import FilterSortSearchGroup from "@/components/discover-page/filter-sort-search/filter-sort-search";
-import FindListingsInput from "@/components/discover-page/find-listings/find-listing";
-import ListingGrid from "@/components/discover-page/listing-grid/listing-grid";
+import { AppSidebar } from "@/components/app-sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
+import Link from "next/link";
 
-export default function DiscoverPage() {
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-background border-border/90 border-x-[1px] max-w-7xl m-auto">
       <Navbar />
-      <FindListingsInput />
-      <FilterSortSearchGroup />
-      <ListingGrid />
+      
+      <h1 className="text-center mt-4">Home Page 'https://exploreinn.mitul30m.in/'</h1>
+
+      <div className="p-4 text-center">
+       <Link href="/discover" className="text-primary hover:text-foreground">/discover</Link>
+      </div>
+
     </main>
   );
 }

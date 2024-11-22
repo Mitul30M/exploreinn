@@ -9,6 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Star, ThumbsUp } from "lucide-react";
 import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import Image from "next/image";
+import { HotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
+import { Separator } from "@/components/ui/separator";
+import ListingAmenities from "./listing-amenities";
 
 type TListingCardProps = {
   id: number;
@@ -20,18 +23,23 @@ type TListingCardProps = {
   exploreinnGrade: string;
   reviews: number;
   location: string;
+  amenities: HotelAmenities[];
 };
 
 const ListingCard = async ({ listing }: { listing: TListingCardProps }) => {
   // ***currency conversion from $ -> default-user-currency
   const amount = listing.startingRoomPrice; // $baseRoomPrice
   const toCurrency = "INR"; // Convert to Indian Rupees
-  const formattedCurrency = await convertCurrency({ amount, toCurrency });
+  const formattedCurrency = await convertCurrency({
+    amount,
+    toCurrency,
+    fromCurrency: "USD",
+  });
 
   return (
     <Card
       key={listing.id}
-      className="flex flex-col overflow-hidden rounded-md border-border/90 shadow-none hover:shadow-sm "
+      className="flex flex-col overflow-hidden rounded-md border-border/90 shadow-none hover:shadow-sm"
     >
       <CardHeader className="p-4">
         <Image
@@ -39,7 +47,7 @@ const ListingCard = async ({ listing }: { listing: TListingCardProps }) => {
           alt={listing.title}
           width={290}
           height={200}
-          className="w-full h-[200px] rounded-sm "
+          className="w-full h-[200px] object-cover rounded-sm "
         />
       </CardHeader>
       <CardContent className="flex-grow px-4 py-0">
@@ -73,11 +81,18 @@ const ListingCard = async ({ listing }: { listing: TListingCardProps }) => {
             </Badge>
           </div>
         </div>
+
+        <Separator className="my-4" />
+
+        {/* Ammenities */}
+        <ListingAmenities listing={listing.amenities} />
+
+        <Separator className="mt-4 px-4" />
       </CardContent>
 
-      <CardFooter className="p-4 pt-2">
+      <CardFooter className="p-4 pt-4">
         <div className="text-lg font-semibold">
-          <p className="text-sm text-muted-foreground font-normal mb-1">
+          <p className="text-xs text-muted-foreground font-normal mb-1">
             Rooms starting from
           </p>
           {formattedCurrency}{" "}
