@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  BookHeart,
   Cog,
   Gift,
   HeartHandshake,
@@ -26,6 +27,7 @@ import {
   ShieldCheck,
   TicketsPlane,
 } from "lucide-react";
+import Link from "next/link";
 
 export function UserProfileDropdown() {
   return (
@@ -68,9 +70,15 @@ export function UserProfileDropdown() {
 
         {/* dropdown group1 */}
         <DropdownMenuGroup>
+          <Link href={"/users/:userId"} >
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <IdCard />
+              Profile
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem>
-            <IdCard />
-            Profile
+            <BookHeart />
+            Wishlist
           </DropdownMenuItem>
           <DropdownMenuItem>
             <TicketsPlane />

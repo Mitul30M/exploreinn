@@ -19,17 +19,9 @@ const listings = [
 
 export default function ListingGrid() {
   return (
-    <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-4 border-border/90 border-y-[1px] ">
+    <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-4 mt-4 border-border/90 border-y-[1px] ">
       {listings.map((listing) => (
-        <>
-          <ListingCard key={listing.id} listing={listing} />
-          <ListingCard key={listing.id} listing={listing} />
-          <ListingCard key={listing.id} listing={listing} />
-          <ListingCard key={listing.id} listing={listing} />
-          <ListingCard key={listing.id} listing={listing} />
-          <ListingCard key={listing.id} listing={listing} />
-          <ListingCard key={listing.id} listing={listing} />
-        </>
+        <ListingCard key={listing.id} listing={listing} />
       ))}
     </div>
   );

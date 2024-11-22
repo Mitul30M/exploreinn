@@ -48,12 +48,12 @@ const Navbar = () => {
     <header className="flex items-center justify-between max-h-14 w-full px-4 border-y-[1px] border-border/90 mt-1">
       {/* nav links */}
       <NavigationMenu className="flex flex-row justify-center items-center gap-4">
-        <Link href={"/"} className="mr-4 flex items-center gap-0 font-semibold">
+        <Link href={"/"} className="mr-4 flex items-center gap-1 font-semibold">
           <Image
             src={"/logos/logo-rose.svg"}
             alt="Exploreinn"
-            height={36}
-            width={36}
+            height={34}
+            width={34}
           />
           exploreinn
         </Link>
