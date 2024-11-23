@@ -12,7 +12,7 @@ export type Bookings = {
   bookingAmount: number;
   transactionId: string;
   paymentStatus: "pending" | "completed" | "cancelled" | "refunded";
-  bookingStatus: "active" | "upcoming" | "completed" | "cancelled";
+  bookingStatus: "ongoing" | "upcoming" | "completed" | "cancelled";
   hotelName: string;
   hotelCity: string;
   hotelCoverImg: string;
@@ -34,9 +34,9 @@ export const bookings: Bookings[] = Array.from({ length: 20 }, () => ({
   paymentStatus: ["pending", "completed", "cancelled", "refunded"][
     Math.floor(Math.random() * 4)
   ] as "pending" | "completed" | "cancelled" | "refunded",
-  bookingStatus: ["active", "upcoming", "completed", "cancelled"][
+  bookingStatus: ["ongoing", "upcoming", "completed", "cancelled"][
     Math.floor(Math.random() * 4)
-  ] as "active" | "upcoming" | "completed" | "cancelled",
+  ] as "ongoing" | "upcoming" | "completed" | "cancelled",
   hotelName: [
     "Hotel Aloha",
     "Hotel New Genesis",

@@ -6,6 +6,7 @@ import {
   BedDouble,
   Calendar1,
   CalendarCheck,
+  CalendarCheck2,
   CalendarClock,
   CalendarMinus2,
   CalendarOff,
@@ -204,7 +205,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         return (
           <Badge
             variant="outline"
-            className="bg-emerald-100/80 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 flex items-center justify-center gap-2 p-1 "
+            className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-full flex items-center justify-center gap-2 p-2 px-4 w-max "
           >
             <ThumbsUp size={16} /> Paid
           </Badge>
@@ -214,7 +215,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         return (
           <Badge
             variant="outline"
-            className="bg-amber-100/80 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center gap-2 justify-center p-1"
+            className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-full gap-2 justify-center p-2 px-4 w-max "
           >
             <CalendarClock size={16} /> Pending
           </Badge>
@@ -224,7 +225,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         return (
           <Badge
             variant="outline"
-            className="bg-zinc-100/80 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 p-1 items-center"
+            className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
           >
             <HandCoins size={16} /> Refunded
           </Badge>
@@ -234,7 +235,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         return (
           <Badge
             variant="outline"
-            className="bg-red-100/80 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 p-1 items-center"
+            className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
           >
             <CalendarOff size={16} /> Cancelled
           </Badge>
@@ -250,6 +251,53 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         Booking Status
       </div>
     ),
+    cell: ({ row }) => {
+      const bookingStatus = row.getValue("bookingStatus");
+      const isActive = bookingStatus === "ongoing";
+      const isUpcoming = bookingStatus === "upcoming";
+      const isCompleted = bookingStatus === "completed";
+      const isCancelled = bookingStatus === "cancelled";
+      if (isActive) {
+        return (
+          <Badge
+            variant="outline"
+            className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-full flex items-center justify-center gap-2 p-2 px-4 w-max "
+          >
+            <BedDouble size={16} /> Ongoing
+          </Badge>
+        );
+      }
+      if (isUpcoming) {
+        return (
+          <Badge
+            variant="outline"
+            className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-full gap-2 justify-center p-2 px-4 w-max "
+          >
+            <CalendarClock size={16} /> Upcoming
+          </Badge>
+        );
+      }
+      if (isCompleted) {
+        return (
+          <Badge
+            variant="outline"
+            className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
+          >
+            <CalendarCheck2 size={16} /> Completed
+          </Badge>
+        );
+      }
+      if (isCancelled) {
+        return (
+          <Badge
+            variant="outline"
+            className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
+          >
+            <CalendarOff size={16} /> Cancelled
+          </Badge>
+        );
+      }
+    },
   },
   {
     accessorKey: "Actions",
@@ -263,7 +311,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="min-w-56">
             <DropdownMenuLabel className="font-medium ">
               {booking.hotelName}, {booking.hotelCity}
             </DropdownMenuLabel>
