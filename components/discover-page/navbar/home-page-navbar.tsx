@@ -10,42 +10,12 @@ import { ReactNode } from "react";
 import { Button } from "../../ui/button";
 import ThemeSwitcher from "../../ui/theme-switcher";
 import { UserProfileDropdown } from "./user-profile-dropdown";
+import { links } from "@/lib/navigation/main-nav";
 
-const links: {
-  title: string;
-  href: string;
-  description: string;
-  icon: ReactNode;
-}[] = [
-  {
-    title: "Home",
-    href: "#",
-    icon: <House size={18} />,
-    description: "Exploreinn Home Page",
-  },
-  {
-    title: "Discover",
-    href: "#",
-    icon: <Telescope size={18} />,
-    description: "Exploreinn Discover Page",
-  },
-  {
-    title: "Community",
-    href: "#",
-    icon: <BookHeart size={18} />,
-    description: "Exploreinn Community Page",
-  },
-  {
-    title: "About",
-    href: "#",
-    icon: <LibraryBig size={18} />,
-    description: "Exploreinn About Page",
-  },
-];
 
 const Navbar = () => {
   return (
-    <header className="flex items-center justify-between max-h-14 w-full px-4 border-y-[1px] border-border/90 mt-1">
+    <header className="flex items-center justify-between max-h-14 w-full px-4 border-y-[1px] border-border/90 mt-1 sticky top-1 bg-background shadow-sm">
       {/* nav links */}
       <NavigationMenu className="flex flex-row justify-center items-center gap-4">
         <Link href={"/"} className="mr-4 flex items-center gap-1 font-semibold">

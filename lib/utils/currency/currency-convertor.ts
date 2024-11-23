@@ -14,6 +14,15 @@ export const convertCurrency = async (
   options: CurrencyConverterOptions,
 ): Promise<string> => {
   // Fetch latest exchange rate from API
+
+  // ***remove this before deploying, this block is just for testing & preserving the API tokens***
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(options.amount);
+  // ***remove the above block before deploying***
+
+
   const API_KEY = process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY as string;
   const url = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/${options.fromCurrency}`;
 
@@ -30,7 +39,7 @@ export const convertCurrency = async (
       }).format(options.amount);
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       conversion_rates: Record<string, number>;
     };
 

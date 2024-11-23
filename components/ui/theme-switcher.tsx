@@ -17,7 +17,7 @@ export default function ThemeSwitcher() {
   if (!mounted) return null;
 
   return (
-    <div className="flex items-center justify-center gap-4">
+    <div className="flex items-center justify-center gap-4 scale-90">
       <div className="bg-card rounded-full p-[2px] border-[1px] border-border/75">
         <div className="flex items-center">
           <ThemeButton
