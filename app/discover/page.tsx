@@ -9,7 +9,7 @@ export default function DiscoverPage() {
       <Navbar />
       <FindListingsInput />
       <FilterSortSearchGroup />
-      <ListingGrid />
+      <ListingGrid className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-4 mt-4 border-border/90 border-y-[1px]" />
     </main>
   );
 }
