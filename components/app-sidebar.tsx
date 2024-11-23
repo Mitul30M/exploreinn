@@ -10,6 +10,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { userAccountNavData } from "@/lib/navigation/user-account-nav";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -17,14 +18,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <NavUser user={userAccountNavData.user} />
       </SidebarHeader>
-      <SidebarContent className="border-t-[1px] border-border/90">
-        <NavMain items={userAccountNavData.account} label="Account" />
-        <NavMain
-          items={userAccountNavData.security}
-          label="Security & Support"
-          className="border-t-[1px] border-border/90"
-        />
-      </SidebarContent>
+      <ScrollArea className="h-[100vh] overflow-hidden whitespace-nowrap">
+        <SidebarContent className="border-t-[1px] border-border/90">
+          <NavMain items={userAccountNavData.account} label="Account" />
+          <NavMain
+            items={userAccountNavData.security}
+            label="Security & Support"
+            className="border-t-[1px] border-border/90"
+          />
+        </SidebarContent>
+      </ScrollArea>
       <SidebarFooter></SidebarFooter>
       <SidebarRail />
     </Sidebar>
