@@ -39,6 +39,7 @@ import {
   Columns3,
 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "./scroll-area";
+import { DataTablePagination } from "./data-table/data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
   const [searchQuery, setSearchQuery] = React.useState("");
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -67,14 +69,16 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+      rowSelection,
     },
   });
   return (
-    <div className="relative z-0 rounded-md border">
+    <div className="relative z-0 rounded-md border p-4">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter Bookings..."
@@ -84,11 +88,11 @@ export function DataTable<TData, TValue>({
             setSearchQuery(newFilterValue);
             table.setGlobalFilter(newFilterValue);
           }}
-          className="max-w-sm ms-4"
+          className="max-w-sm "
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto me-4">
+            <Button variant="outline" className="ml-auto ">
               <Columns3 />
               Columns
             </Button>
@@ -114,8 +118,8 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <ScrollArea className="w-full">
-        <Table>
+      <ScrollArea className="w-full rounded-md border-[1px] border-border/90 ">
+        <Table className="rounded-md">
           <TableHeader className="bg-accent/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -177,25 +181,8 @@ export function DataTable<TData, TValue>({
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <div className="flex items-center justify-end space-x-2 py-4 me-4">
-        <Button
-          variant="outline"
-          className="rounded-full flex items-center justify-center gap-1"
-          size="icon"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ChevronLeft />
-        </Button>
-        <Button
-          variant="outline"
-          className="rounded-full flex items-center justify-center gap-1"
-          size="icon"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          <ChevronRight />
-        </Button>
+      <div className="flex items-center justify-between space-x-2 py-2 mx-4">
+        <DataTablePagination table={table} />
       </div>
     </div>
   );

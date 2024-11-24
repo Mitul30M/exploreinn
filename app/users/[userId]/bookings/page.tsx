@@ -16,9 +16,7 @@ const UserBookingsPage = () => {
         </h1>
 
         {/* User's Booking History */}
-        <div className="w-full p-4 rounded border-[1px] border-border/90">
           <DataTable columns={bookingTableColumns} data={bookings} />
-        </div>
       </div>
     </section>
   );

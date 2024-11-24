@@ -36,14 +36,37 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export const bookingTableColumns: ColumnDef<Bookings>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "hotelName",
     header: () => (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ms-4">
         <Hotel size={16} />
         Hotel
       </div>
@@ -54,7 +77,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       const hotelCoverImg = row.original.hotelCoverImg;
       const hotelCity = row.original.hotelCity; // Access the hotelCity field from the original row data
       return (
-        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+        <div className="flex ms-2 items-center gap-2 px-1 py-1.5 text-left text-sm">
           <Avatar className="h-8 w-8 rounded-lg">
             {/* <AvatarImage src={hotelCoverImg} alt={hotelName} /> */}
             <AvatarFallback className="rounded-lg">
@@ -208,7 +231,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         currency: "USD",
       }).format(amount);
 
-      return <p className="font-semibold text-primary">{formatted}</p>;
+      return <p className="">{formatted}</p>;
     },
   },
   {
@@ -366,7 +389,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" className="h-6 w-6">
+            <Button variant="ghost" size="icon" className="h-6 w-6">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
