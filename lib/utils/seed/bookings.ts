@@ -20,9 +20,14 @@ export type Bookings = {
 
 export const bookings: Bookings[] = Array.from({ length: 20 }, () => ({
   bookingId: Math.random().toString(16).substring(2, 15),
-  bookingDate: new Date().toISOString(),
-  checkInDate: new Date().toISOString(),
-  checkOutDate: new Date().toISOString(),
+  // bookingDate: new Date().toISOString(),
+  // checkInDate: new Date().toISOString(),
+  // checkOutDate: new Date().toISOString(),
+  // update the above dates such tht all dates are random and with different days,month
+  // and years
+  bookingDate: getRandomDateInRange().toISOString(),
+  checkInDate: getRandomDateInRange().toISOString(),
+  checkOutDate: getRandomDateInRange().toISOString(),
   nights: Math.floor(Math.random() * 10) + 1,
   guests: Math.floor(Math.random() * 5) + 1,
   hotelId: Math.random().toString(16).substring(2, 15),
@@ -58,3 +63,12 @@ export const bookings: Bookings[] = Array.from({ length: 20 }, () => ({
     "https://images.unsplash.com/photo-1721330536639-8c4b7a4641b6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   ][Math.floor(Math.random() * 7)],
 }));
+
+
+// A function to generate random date from 1 Jan 2022 to 31 Dec 2024 and return it
+function getRandomDateInRange(): Date {
+  const start = new Date(2022, 0, 1).getTime();
+  const end = new Date(2024, 11, 31).getTime();
+  const randomTime = Math.random() * (end - start) + start;
+  return new Date(randomTime);
+}

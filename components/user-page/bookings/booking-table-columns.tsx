@@ -22,6 +22,7 @@ import {
   Tag,
   ThumbsUp,
   Users,
+  ArrowUpDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,12 +81,19 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "bookingDate",
-    header: () => (
-      <div className="flex items-center gap-2">
-        <Calendar1 size={16} />
-        Booking Date
-      </div>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="flex items-center hover:text-primary rounded"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <Calendar1 size={16} />
+          Booking Date
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const date = new Date(row.getValue("bookingDate"));
       const formatted = format(date, "dd MMM yyyy");
@@ -94,11 +102,16 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "checkInDate",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <CalendarCheck size={16} />
         CheckIn Date
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("checkInDate"));
@@ -108,11 +121,16 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "checkOutDate",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <CalendarMinus2 size={16} />
         CheckOut Date
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("checkOutDate"));
@@ -122,11 +140,16 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "nights",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <CalendarRange size={16} />
         Nights
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
   },
   {
@@ -153,20 +176,30 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "roomsBooked",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <BedDouble size={16} />
         Rooms
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
   },
   {
     accessorKey: "bookingAmount",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <Tag size={16} />
         Booking Amount
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("bookingAmount"));
@@ -175,7 +208,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         currency: "USD",
       }).format(amount);
 
-      return formatted;
+      return <p className="font-semibold text-primary">{formatted}</p>;
     },
   },
   {
@@ -189,11 +222,16 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "paymentStatus",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <Hourglass size={16} />
         Payment Status
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
     cell: ({ row }) => {
       const paymentStatus = row.getValue("paymentStatus");
@@ -203,53 +241,66 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       const isCancelled = paymentStatus === "cancelled";
       if (isPaid) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-full flex items-center justify-center gap-2 p-2 px-4 w-max "
-          >
-            <ThumbsUp size={16} /> Paid
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max "
+            >
+              <ThumbsUp size={16} /> Completed
+            </Badge>
+          </div>
         );
       }
       if (isPending) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-full gap-2 justify-center p-2 px-4 w-max "
-          >
-            <CalendarClock size={16} /> Pending
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-md gap-2 justify-center p-1 px-3 w-max "
+            >
+              <CalendarClock size={16} /> Pending
+            </Badge>
+          </div>
         );
       }
       if (isRefunded) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
-          >
-            <HandCoins size={16} /> Refunded
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
+            >
+              <HandCoins size={16} /> Refunded
+            </Badge>
+          </div>
         );
       }
       if (isCancelled) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
-          >
-            <CalendarOff size={16} /> Cancelled
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
+            >
+              <CalendarOff size={16} /> Cancelled
+            </Badge>
+          </div>
         );
       }
     },
   },
   {
     accessorKey: "bookingStatus",
-    header: () => (
-      <div className="flex items-center gap-2">
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="flex items-center hover:text-primary rounded"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         <Hourglass size={16} />
         Booking Status
-      </div>
+        <ArrowUpDown className="h-4 w-4" />
+      </Button>
     ),
     cell: ({ row }) => {
       const bookingStatus = row.getValue("bookingStatus");
@@ -259,48 +310,57 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       const isCancelled = bookingStatus === "cancelled";
       if (isActive) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-full flex items-center justify-center gap-2 p-2 px-4 w-max "
-          >
-            <BedDouble size={16} /> Ongoing
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max "
+            >
+              <BedDouble size={16} /> Ongoing
+            </Badge>
+          </div>
         );
       }
       if (isUpcoming) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-full gap-2 justify-center p-2 px-4 w-max "
-          >
-            <CalendarClock size={16} /> Upcoming
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-md gap-2 justify-center p-1 px-3 w-max "
+            >
+              <CalendarClock size={16} /> Upcoming
+            </Badge>
+          </div>
         );
       }
       if (isCompleted) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
-          >
-            <CalendarCheck2 size={16} /> Completed
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
+            >
+              <CalendarCheck2 size={16} /> Completed
+            </Badge>
+          </div>
         );
       }
       if (isCancelled) {
         return (
-          <Badge
-            variant="outline"
-            className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-full  items-center p-2 px-4 w-max "
-          >
-            <CalendarOff size={16} /> Cancelled
-          </Badge>
+          <div className="w-full flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
+            >
+              <CalendarOff size={16} /> Cancelled
+            </Badge>
+          </div>
         );
       }
     },
   },
   {
-    accessorKey: "Actions",
+    id: "Actions",
+    enableHiding: false,
     cell: ({ row }) => {
       const booking = row.original;
       return (

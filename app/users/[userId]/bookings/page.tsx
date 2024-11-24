@@ -7,7 +7,7 @@ import React from "react";
 
 const UserBookingsPage = () => {
   return (
-    <section className="w-full space-y-4 p-4 pb-8 border-border/90 border-y-[1px]">
+    <section className="w-full space-y-4 p-4 pb-8 border-border/90 border-t-[1px]">
       {/* Personal Info */}
       <div id="personal-info" className="space-y-4">
         <h1 className="text-lg rounded flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-[1px] border-border/90 text-foreground/90">

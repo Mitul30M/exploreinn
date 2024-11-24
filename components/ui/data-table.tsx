@@ -1,10 +1,16 @@
 "use client";
 
+import * as React from "react";
 import {
   ColumnDef,
+  ColumnFiltersState,
+  SortingState,
   flexRender,
   getCoreRowModel,
+  VisibilityState,
+  getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -16,8 +22,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "./button";
-import { CircleArrowLeft, CircleArrowRight,ChevronLeft,ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  CircleArrowLeft,
+  CircleArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Hotel,
+  Columns3,
+} from "lucide-react";
 import { ScrollArea, ScrollBar } from "./scroll-area";
 
 interface DataTableProps<TData, TValue> {
@@ -29,14 +49,71 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+    },
   });
   return (
     <div className="relative z-0 rounded-md border">
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter Bookings..."
+          value={searchQuery}
+          onChange={(event) => {
+            const newFilterValue = event.target.value;
+            setSearchQuery(newFilterValue);
+            table.setGlobalFilter(newFilterValue);
+          }}
+          className="max-w-sm ms-4"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto me-4">
+              <Columns3 />
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <ScrollArea className="w-full">
         <Table>
           <TableHeader className="bg-accent/50">
@@ -46,7 +123,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-nowrap text-accent-foreground pr-14 first:ps-4 last:pe-4 "
+                      className="text-nowrap text-accent-foreground text-center first:text-left last:text-right first:ps-4 last:pe-4 pr-6"
                     >
                       {header.isPlaceholder
                         ? null
@@ -70,7 +147,7 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="text-nowrap font-medium pr-10 py-1 first:ps-4 last:pe-4 last:text-center"
+                      className="text-nowrap font-medium  py-[1px] text-center first:text-left last:text-right first:ps-4 last:pe-4 pr-6"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -82,8 +159,16 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length}>
-                  No data available
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center text-nowrap font-semibold text-foreground/80 flex gap-1 justify-center items-center pt-5"
+                >
+                  {/* <Hotel
+                    size={44}
+                    className="text-primary"
+                    strokeWidth={1.24}
+                  />
+                  <p>No results.</p> */}
                 </TableCell>
               </TableRow>
             )}
@@ -95,22 +180,20 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-end space-x-2 py-4 me-4">
         <Button
           variant="outline"
-          className="rounded-md flex items-center justify-center gap-1"
-          size="sm"
+          className="rounded-full flex items-center justify-center gap-1"
+          size="icon"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
           <ChevronLeft />
-          Prev
         </Button>
         <Button
           variant="outline"
-          className="rounded-md flex items-center justify-center gap-1"
-          size="sm"
+          className="rounded-full flex items-center justify-center gap-1"
+          size="icon"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
           <ChevronRight />
         </Button>
       </div>
