@@ -1,4 +1,4 @@
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/ui/data-table/data-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { bookingTableColumns } from "@/components/user-page/bookings/booking-table-columns";
 import { bookings } from "@/lib/utils/seed/bookings";

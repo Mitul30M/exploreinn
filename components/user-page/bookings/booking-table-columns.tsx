@@ -37,7 +37,17 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-
+import {
+  paymentStatus,
+  PaymentStatus,
+  PaymentStatusConfig,
+} from "@/lib/utils/types/status/payement-status";
+import {
+  bookingStatus,
+  BookingStatusConfig,
+} from "@/lib/utils/types/status/booking-status";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
+import { cn } from "@/lib/utils";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export const bookingTableColumns: ColumnDef<Bookings>[] = [
@@ -65,11 +75,13 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "hotelName",
-    header: () => (
-      <div className="flex items-center gap-2 ms-4">
-        <Hotel size={16} />
-        Hotel
-      </div>
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Hotel"
+        icon={Hotel}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
     // the cell data format should be Hotel Name, Hotel City
     cell: ({ row }) => {
@@ -95,46 +107,41 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "bookingId",
-    header: () => (
-      <div className="flex items-center gap-2">
-        <ClipboardList size={16} />
-        Booking ID
-      </div>
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="BookingID"
+        icon={ClipboardList}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
   },
   {
     accessorKey: "bookingDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="flex items-center hover:text-primary rounded"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <Calendar1 size={16} />
-          Booking Date
-          <ArrowUpDown className="h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Booking Date"
+        icon={Calendar1}
+        className="flex items-center gap-2 ms-4"
+      />
+    ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("bookingDate"));
       const formatted = format(date, "dd MMM yyyy");
       return formatted;
     },
+    enableHiding: false,
   },
   {
     accessorKey: "checkInDate",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <CalendarCheck size={16} />
-        CheckIn Date
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="CheckIn Date"
+        icon={CalendarCheck}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("checkInDate"));
@@ -145,15 +152,12 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   {
     accessorKey: "checkOutDate",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <CalendarMinus2 size={16} />
-        CheckOut Date
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="CheckOut Date"
+        icon={CalendarMinus2}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("checkOutDate"));
@@ -164,24 +168,23 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   {
     accessorKey: "nights",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <CalendarRange size={16} />
-        Nights
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="Nights Stay"
+        icon={CalendarRange}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
   },
   {
     accessorKey: "guests",
-    header: () => (
-      <div className="flex items-center gap-2">
-        <Users size={16} />
-        Guests
-      </div>
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Guests"
+        icon={Users}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
   },
   // {
@@ -190,39 +193,36 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   // },
   {
     accessorKey: "roomName",
-    header: () => (
-      <div className="flex items-center gap-2">
-        <DoorOpen size={16} />
-        Room No.
-      </div>
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Room"
+        icon={DoorOpen}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
   },
   {
     accessorKey: "roomsBooked",
+
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <BedDouble size={16} />
-        Rooms
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="Rooms Booked"
+        icon={BedDouble}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
   },
   {
     accessorKey: "bookingAmount",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <Tag size={16} />
-        Booking Amount
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="Booking Amount"
+        icon={Tag}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("bookingAmount"));
@@ -236,149 +236,79 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "transactionId",
-    header: () => (
-      <div className="flex items-center gap-2">
-        <HandCoins size={16} />
-        Transaction ID
-      </div>
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="BookingID"
+        icon={ClipboardList}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
   },
   {
     accessorKey: "paymentStatus",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <Hourglass size={16} />
-        Payment Status
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="Payment Status"
+        icon={Hourglass}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
     cell: ({ row }) => {
-      const paymentStatus = row.getValue("paymentStatus");
-      const isPaid = paymentStatus === "completed";
-      const isPending = paymentStatus === "pending";
-      const isRefunded = paymentStatus === "refunded";
-      const isCancelled = paymentStatus === "cancelled";
-      if (isPaid) {
+      const status: PaymentStatusConfig =
+        paymentStatus[
+          row.getValue("paymentStatus") as keyof typeof paymentStatus
+        ];
+      if (status) {
         return (
           <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max "
-            >
-              <ThumbsUp size={16} /> Completed
-            </Badge>
-          </div>
-        );
-      }
-      if (isPending) {
-        return (
-          <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-md gap-2 justify-center p-1 px-3 w-max "
-            >
-              <CalendarClock size={16} /> Pending
-            </Badge>
-          </div>
-        );
-      }
-      if (isRefunded) {
-        return (
-          <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
-            >
-              <HandCoins size={16} /> Refunded
-            </Badge>
-          </div>
-        );
-      }
-      if (isCancelled) {
-        return (
-          <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
-            >
-              <CalendarOff size={16} /> Cancelled
+            <Badge variant="outline" className={status.className}>
+              {status.icon && <status.icon size={16} />} {status.label}
             </Badge>
           </div>
         );
       }
     },
+    filterFn: (row, columnId, filterValue) => {
+      // If no filter value is set, show all rows
+      if (!filterValue || filterValue.length === 0) return true;
+
+      // Check if the row's bookingStatus matches any of the selected filters
+      return filterValue.includes(row.getValue(columnId));
+    },
   },
   {
     accessorKey: "bookingStatus",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center hover:text-primary rounded"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <Hourglass size={16} />
-        Booking Status
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader
+        column={column}
+        title="Booking Status"
+        icon={Hourglass}
+        className="flex items-center gap-2 ms-4"
+      />
     ),
     cell: ({ row }) => {
-      const bookingStatus = row.getValue("bookingStatus");
-      const isActive = bookingStatus === "ongoing";
-      const isUpcoming = bookingStatus === "upcoming";
-      const isCompleted = bookingStatus === "completed";
-      const isCancelled = bookingStatus === "cancelled";
-      if (isActive) {
+      const status: BookingStatusConfig =
+        bookingStatus[
+          row.getValue("bookingStatus") as keyof typeof bookingStatus
+        ];
+      if (status) {
         return (
           <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-emerald-100/50 border-none text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max "
-            >
-              <BedDouble size={16} /> Ongoing
+            <Badge variant="outline" className={status.className}>
+              {status.icon && <status.icon size={16} />} {status.label}
             </Badge>
           </div>
         );
       }
-      if (isUpcoming) {
-        return (
-          <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-amber-100/50 border-none text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 flex items-center rounded-md gap-2 justify-center p-1 px-3 w-max "
-            >
-              <CalendarClock size={16} /> Upcoming
-            </Badge>
-          </div>
-        );
-      }
-      if (isCompleted) {
-        return (
-          <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-zinc-100/50 border-none text-zinc-950 dark:bg-zinc-900/50 dark:text-zinc-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
-            >
-              <CalendarCheck2 size={16} /> Completed
-            </Badge>
-          </div>
-        );
-      }
-      if (isCancelled) {
-        return (
-          <div className="w-full flex items-center justify-center">
-            <Badge
-              variant="outline"
-              className="bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100 flex  justify-center gap-2 rounded-md  items-center p-1 px-3 w-max "
-            >
-              <CalendarOff size={16} /> Cancelled
-            </Badge>
-          </div>
-        );
-      }
+    },
+    filterFn: (row, columnId, filterValue) => {
+      // If no filter value is set, show all rows
+      if (!filterValue || filterValue.length === 0) return true;
+
+      // Check if the row's bookingStatus matches any of the selected filters
+      return filterValue.includes(row.getValue(columnId));
     },
   },
   {
