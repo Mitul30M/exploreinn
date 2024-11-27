@@ -31,6 +31,13 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     icon: LucideIcon;
     className: string;
   }[];
+  defaultSelectedOption?: {
+    label: string;
+    value: string;
+    icon: LucideIcon;
+    className: string;
+  }[];
+  applyFilterOnlyOnce?: boolean;
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -38,9 +45,45 @@ export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  defaultSelectedOption,
+  applyFilterOnlyOnce,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column!.getFacetedUniqueValues();
   const selectedValues = new Set(column.getFilterValue() as string[]);
+
+  const [appliedDefaults, setAppliedDefaults] = React.useState(false);
+
+  React.useEffect(() => {
+    // Reapply defaults whenever defaultSelectedOption changes
+    if (
+      defaultSelectedOption &&
+      defaultSelectedOption.length > 0 &&
+      (!applyFilterOnlyOnce || !appliedDefaults)
+    ) {
+      const updatedValues = new Set(selectedValues);
+
+      defaultSelectedOption.forEach((option) => {
+        if (!updatedValues.has(option.value)) {
+          updatedValues.add(option.value);
+        }
+      });
+
+      column.setFilterValue(
+        updatedValues.size > 0 ? Array.from(updatedValues) : undefined
+      );
+
+      if (applyFilterOnlyOnce) {
+        setAppliedDefaults(true);
+      }
+    }
+  }, [
+    defaultSelectedOption,
+    applyFilterOnlyOnce,
+    appliedDefaults,
+    selectedValues,
+    column,
+  ]);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -102,7 +145,11 @@ export function DataTableFacetedFilter<TData, TValue>({
                       } else {
                         selectedValues.add(option.value);
                       }
-                      column!.setFilterValue(selectedValues.size > 0 ? Array.from(selectedValues) : undefined);
+                      column!.setFilterValue(
+                        selectedValues.size > 0
+                          ? Array.from(selectedValues)
+                          : undefined
+                      );
                     }}
                   >
                     <div
@@ -115,16 +162,14 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <Check />
                     </div>
-                     <Badge
-                        variant="outline"
-                        key={option.value}
-                        className={option.className}
-                      >
-                        {option.icon && (
-                          <option.icon className={cn("h-4 w-4")} />
-                        )}
-                        {option.label}
-                      </Badge>
+                    <Badge
+                      variant="outline"
+                      key={option.value}
+                      className={option.className}
+                    >
+                      {option.icon && <option.icon className={cn("h-4 w-4")} />}
+                      {option.label}
+                    </Badge>
                     {facets?.get(option.value) && (
                       <span className="ml-auto flex h-4 bg-muted text-foreground w-4 items-center font-medium justify-center text-xs rounded-full">
                         {facets.get(option.value)}
@@ -139,7 +184,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                    onSelect={() => {
+                      column?.setFilterValue(undefined);
+                    }}
                     className="justify-center text-center"
                   >
                     Clear filters

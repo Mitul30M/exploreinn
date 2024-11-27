@@ -82,7 +82,7 @@ export const userAccountNavData = {
       items: [
         {
           title: "Hotels",
-          url: "/users/:userId/wishlist/#hotels",
+          url: "/users/:userId/wishlist",
           icon: Hotel,
         },
       ],
@@ -95,21 +95,21 @@ export const userAccountNavData = {
         {
           title: "Ongoing",
           icon: CalendarRange,
-          url: "/users/:userId/bookings/#ongoing",
+          url: "/users/:userId/bookings?bookingStatus=ongoing",
         },
         {
           title: "Upcoming",
-          url: "/users/:userId/bookings/#upcoming",
+          url: "/users/:userId/bookings?bookingStatus=upcoming",
           icon: CalendarClock,
         },
         {
           title: "Completed",
-          url: "/users/:userId/bookings/#completed",
+          url: "/users/:userId/bookings?bookingStatus=completed",
           icon: CalendarCheck,
         },
         {
           title: "Cancelled",
-          url: "/users/:userId/bookings/#cancelled",
+          url: "/users/:userId/bookings?bookingStatus=cancelled",
           icon: CalendarX2,
         },
       ],

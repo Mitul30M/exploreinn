@@ -70,25 +70,29 @@ export function UserProfileDropdown() {
 
         {/* dropdown group1 */}
         <DropdownMenuGroup>
-          <Link href={"/users/:userId"} >
+          <Link href={"/users/:userId"}>
             <DropdownMenuItem className="hover:cursor-pointer">
               <IdCard />
               Profile
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem>
-            <BookHeart />
-            Wishlist
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <TicketsPlane />
-            Bookings
-          </DropdownMenuItem>
-          <DropdownMenuItem>
+          <Link href={"/users/:userId/wishlist"}>
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <BookHeart />
+              Wishlist
+            </DropdownMenuItem>
+          </Link>
+          <Link href={"/users/:userId/bookings"}>
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <TicketsPlane />
+              Bookings
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem className="hover:cursor-pointer">
             <Inbox />
             Inbox
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="hover:cursor-pointer">
             <Gift />
             Rewards
           </DropdownMenuItem>
@@ -98,19 +102,19 @@ export function UserProfileDropdown() {
 
         {/* dropdown group2 */}
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="hover:cursor-pointer">
             <Hotel />
             Listings
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="hover:cursor-pointer">
             <Cog />
             Preferences
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="hover:cursor-pointer">
             <ShieldCheck />
             Account Security
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="hover:cursor-pointer">
             <HeartHandshake />
             Help & Support{" "}
           </DropdownMenuItem>

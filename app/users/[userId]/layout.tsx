@@ -1,5 +1,5 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/user-dashboard-app-sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       />
       <main className="min-h-screen bg-background border-border/90 border-x-[1px] absolute top-0 left-0 w-full shrink-0">
         <Navbar />
-        <SidebarTrigger className="mx-4 my-1 " />
+        <SidebarTrigger className="mx-4 my-2" />
         {children}
       </main>
     </SidebarProvider>

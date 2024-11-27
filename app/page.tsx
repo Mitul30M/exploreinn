@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/user-dashboard-app-sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 import Link from "next/link";
 

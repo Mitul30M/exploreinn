@@ -43,19 +43,32 @@ import { DataTablePagination } from "./data-table-pagination";
 import { Input } from "../input";
 import { Button } from "../button";
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
+import { UserBookingsTableFloatingActionBar } from "@/components/user-page/bookings/bookings-table-floating-action-bar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  /**
+   * The floating bar to render at the bottom of the table on row selection.
+   * @default null
+   * @type React.ReactNode | null
+   * @example floatingBar={<TasksTableFloatingBar table={table} />}
+   */
+  floatingActionBar?: React.ReactNode | null;
+  className?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  className,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -81,7 +94,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="relative z-0 rounded-md border p-4">
+    <div className={"relative z-0 rounded-md border p-4 " + className }>
       {/* check if the table has a column named bookingStatus or paymentStatus */}
       {table.getColumn("bookingStatus") ? (
         <div className="flex items-center py-4">
@@ -134,8 +147,7 @@ export function DataTable<TData, TValue>({
                 <TableCell
                   colSpan={columns.length}
                   className="text-center text-nowrap font-semibold text-foreground/80 flex gap-1 justify-center items-center pt-5"
-                >
-                </TableCell>
+                ></TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -143,7 +155,13 @@ export function DataTable<TData, TValue>({
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-        <DataTablePagination table={table}  />
+      <DataTablePagination table={table} />
+      {/* for user hotel bookings data table */}
+      {table.getColumn("hotelName") &&
+        table.getFilteredSelectedRowModel().rows.length > 0 &&
+        <UserBookingsTableFloatingActionBar table={table} />}
+
+      {/* for hotel management dashboard bookings data table  make it similar like above but instead of hotelName use guestName*/}
     </div>
   );
 }

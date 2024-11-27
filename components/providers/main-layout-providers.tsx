@@ -2,6 +2,7 @@
 import React, { ReactNode } from "react";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import ReactQueryProvider from "./react-query-client-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const MainLayoutProviders = ({ children }: { children: ReactNode }) => {
   return (
@@ -11,7 +12,10 @@ const MainLayoutProviders = ({ children }: { children: ReactNode }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <ReactQueryProvider>{children}</ReactQueryProvider>
+      <ReactQueryProvider>
+        {children}
+        <Toaster />
+      </ReactQueryProvider>
     </ThemeProvider>
   );
 };

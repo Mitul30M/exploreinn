@@ -10,6 +10,8 @@ import { bookingStatusArray } from "@/lib/utils/types/status/booking-status";
 import { paymentStatusArray } from "@/lib/utils/types/status/payement-status";
 import { DataTableFacetedFilter } from "../../ui/data-table/data-table-faceted-filter";
 import React from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -18,6 +20,16 @@ interface DataTableToolbarProps<TData> {
 export function BookingsDataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
+  const defaultSelectedOption = useSearchParams().get("bookingStatus");
+  const defaultBookingStatus = bookingStatusArray.find(
+    (status) =>
+      status.label.toLowerCase() === defaultSelectedOption?.toLowerCase()
+  );
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { replace } = useRouter();
+  const params = new URLSearchParams(searchParams);
   const isFiltered = table.getState().columnFilters.length > 0;
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -26,12 +38,18 @@ export function BookingsDataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Filter Bookings..."
-          value={searchQuery}
-          onChange={(event) => {
+          defaultValue={searchParams.get("query")?.toString()}
+          onChange={useDebouncedCallback((event) => {
             const newFilterValue = event.target.value;
+            if (newFilterValue === "") {
+              params.delete("query");
+            } else {
+              params.set("query", newFilterValue);
+            }
+            replace(`${pathname}?${params.toString()}`);
             setSearchQuery(newFilterValue);
             table.setGlobalFilter(newFilterValue);
-          }}
+          }, 500)}
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {table.getColumn("bookingStatus") && (
@@ -40,6 +58,10 @@ export function BookingsDataTableToolbar<TData>({
             column={table.getColumn("bookingStatus")!}
             title="Booking Status"
             options={bookingStatusArray}
+            defaultSelectedOption={
+              defaultBookingStatus ? [defaultBookingStatus] : []
+            }
+            applyFilterOnlyOnce={true}
           />
         )}
         {table.getColumn("paymentStatus") && (
@@ -53,7 +75,11 @@ export function BookingsDataTableToolbar<TData>({
         {isFiltered && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              params.delete("bookingStatus");
+              replace(`${pathname}?${params.toString()}`);
+              table.resetColumnFilters();
+            }}
             className="h-8 px-2 lg:px-3"
           >
             Reset
