@@ -18,6 +18,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain({
   items,
@@ -39,7 +40,10 @@ export function NavMain({
   label: string;
   className?: string;
   props?: React.ComponentProps<typeof SidebarGroup>;
-}) {
+  }) {
+  
+  const pathname = usePathname();
+  
   return (
     <SidebarGroup {...props} className={className}>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -58,7 +62,9 @@ export function NavMain({
                   className={item.isActive ? "bg-muted/70 " : ""}
                 >
                   {item.icon && (
-                    <item.icon className={item.isActive ? "text-primary" : ""} />
+                    <item.icon
+                      className={pathname === item.url ? "text-primary" : ""}
+                    />
                   )}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />

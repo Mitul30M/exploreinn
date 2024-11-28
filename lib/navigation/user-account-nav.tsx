@@ -51,7 +51,6 @@ export const userAccountNavData = {
       title: "Account",
       url: "/users/:userId",
       icon: SquareUser,
-      isActive: true,
       items: [
         {
           title: "Personal Info",

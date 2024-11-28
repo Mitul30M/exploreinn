@@ -1,3 +1,5 @@
+import { getRandomDateInRange } from "@/lib/utils";
+
 export type Bookings = {
   bookingId: string;
   bookingDate: string;
@@ -66,9 +68,4 @@ export const bookings: Bookings[] = Array.from({ length: 20 }, () => ({
 
 
 // A function to generate random date from 1 Jan 2022 to 31 Dec 2024 and return it
-function getRandomDateInRange(): Date {
-  const start = new Date(2022, 0, 1).getTime();
-  const end = new Date(2024, 11, 31).getTime();
-  const randomTime = Math.random() * (end - start) + start;
-  return new Date(randomTime);
-}
+

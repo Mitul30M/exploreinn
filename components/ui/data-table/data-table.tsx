@@ -97,7 +97,7 @@ export function DataTable<TData, TValue>({
     <div className={"relative z-0 rounded-md border p-4 " + className }>
       {/* check if the table has a column named bookingStatus or paymentStatus */}
       {table.getColumn("bookingStatus") ? (
-        <div className="flex items-center py-4">
+        <div className="flex items-center pb-4">
           <BookingsDataTableToolbar table={table} />
         </div>
       ) : null}

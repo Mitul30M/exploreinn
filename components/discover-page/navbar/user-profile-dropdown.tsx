@@ -92,10 +92,12 @@ export function UserProfileDropdown() {
             <Inbox />
             Inbox
           </DropdownMenuItem>
+          <Link href={"/users/:userId/rewards"}>
           <DropdownMenuItem className="hover:cursor-pointer">
             <Gift />
             Rewards
           </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
