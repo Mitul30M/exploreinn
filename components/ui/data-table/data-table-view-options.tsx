@@ -29,7 +29,7 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className={"ml-2 hidden h-8 lg:flex"}
+          className={"ml-2 hidden h-8 lg:flex rounded-3xl"}
           {...props}
         >
           <Settings2 />
@@ -55,9 +55,9 @@ export function DataTableViewOptions<TData>({
               >
                 {column.id}
               </DropdownMenuCheckboxItem>
-            )
+            );
           })}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

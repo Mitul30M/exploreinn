@@ -3,6 +3,7 @@ import {
   GalleryVerticalEnd,
   Gift,
   HandCoins,
+  Tag,
   TicketCheck,
 } from "lucide-react";
 import {
@@ -18,11 +19,13 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { userRewardPointsHistory } from "@/lib/utils/seed/user-rewards/user-reward-points-history";
 import { format } from "date-fns";
+import RewardsGrid from "@/components/user-page/rewards/rewards-grid";
+import RedeemedOffers from "@/components/user-page/rewards/redeemed-offers";
 
 export default function RewardsPage() {
   return (
     <section className="w-full pb-4 overscroll-y-none space-y-4 mb-8 border-border/90 border-y-[1px]">
-      {/* User's Wishlist */}
+      {/* User's Reward Points and Offers */}
       <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
         <Gift size={22} className="text-primary" />
         Mitul's Rewards
@@ -65,7 +68,10 @@ export default function RewardsPage() {
             </CardContent>
             <Separator className="" />
 
-            <CardFooter className="p-4 mt-0">
+            <CardFooter className="p-4 mt-0 flex flex-col gap-4">
+              {/* All the offers the user has redeemed */}
+              <RedeemedOffers className="h-[250px] w-full rounded-md border p-4" />
+
               {/* show only if user has reward points and the history of how they were earned */}
               <ScrollArea className="h-[250px] w-full rounded-md border p-4">
                 <h2 className="text-[14px] font-medium flex justify-start items-center gap-1">
@@ -118,10 +124,7 @@ export default function RewardsPage() {
           </Alert>
 
           {/* create a div of grid cols-2 and gap-4, make this a separate component */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4 h-full w-full">
-            <div className="w-full h-[200px] bg-accent/50 rounded-md"></div>
-            <div className="w-full h-[200px] bg-accent/50 rounded-md"></div>
-          </div>
+          <RewardsGrid className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4 h-full w-full" />
         </ScrollArea>
       </div>
     </section>
