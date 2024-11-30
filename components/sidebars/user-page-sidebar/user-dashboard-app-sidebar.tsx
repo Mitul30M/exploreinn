@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavUser } from "@/components/sidebars/user-page-sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -10,7 +9,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { userAccountNavData } from "@/lib/navigation/user-account-nav";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "../../ui/scroll-area";
+import { NavMain } from "./nav-main";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
