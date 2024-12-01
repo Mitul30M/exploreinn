@@ -1,4 +1,5 @@
-import { AppSidebar } from "@/components/sidebars/user-inbox-sidebar/app-sidebar";
+'use client'
+import { InboxSidebar } from "@/components/sidebars/user-inbox-sidebar/inbox-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
@@ -6,18 +7,22 @@ import {
 } from "@/components/ui/sidebar";
 import { Inbox } from "lucide-react";
 import React from "react";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import CurrentMail from "@/components/user-page/inbox/current-mail";
+import { Mail, mails } from "@/lib/utils/seed/user-inbox/mails";
 
 const UserInboxPage = () => {
+
+  // fetch the user's inbox data from the server, sort them and then pass it to the InboxSidebar component
+  // sort the mails by date in descending order
+  const sortedMails = mails.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  // no need of this state, just use the redux for selected mail directly in the CurrentMail component
+  const [selectedMail, setSelectedMail] = React.useState<Mail | null>(
+    null
+  );
+
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
@@ -33,12 +38,11 @@ const UserInboxPage = () => {
         }
         className="max-h-[70vh] "
       >
-        <AppSidebar className="flex items-start justify-start rounded-md" />
+        <InboxSidebar data={sortedMails} onMailClick={setSelectedMail} className="flex items-start justify-start rounded-md" />
+        {/* selected mail should not be passed down like this, instead make use of redux store to select the current mail directly in the component*/}
+        {/* also update the logic to change an unread text to read when the user clicks on the mail */}
+        <CurrentMail mail={selectedMail} className="max-h-[80%] w-full p-4 border border-border/90" />
 
-        {/* selected mail is displayed here; create a separate component for it */}
-        <ScrollArea className="max-h-[80%] w-full p-4 border border-border/90">
-          <SidebarTrigger className="" />
-        </ScrollArea>
       </SidebarProvider>
     </section>
   );
