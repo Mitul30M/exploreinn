@@ -66,3 +66,7 @@ export const formatDate = (date: string | Date): string => {
     return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
   }
 };
+
+export const lowerCase = (str: string): string => {
+  return str.charAt(0).toLowerCase() + str.slice(1).toLowerCase();
+};

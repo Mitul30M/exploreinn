@@ -13,6 +13,8 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area"; // Import the ScrollArea component
 import { Label } from "@/components/ui/label";
+import { useDebouncedCallback } from "use-debounce";
+
 // Zod Schema for city input validation
 const cityInputSchema = z.string();
 
@@ -95,8 +97,8 @@ const LocationInput = () => {
             id="location-search"
             type="text"
             placeholder="Search for a city"
-            value={cityInput}
-            onChange={handleInputChange}
+            defaultValue={cityInput}
+            onChange={useDebouncedCallback((event) => handleInputChange(event), 150)}
             className="w-full px-3 py-2"
           />
           {queryLoading ? (

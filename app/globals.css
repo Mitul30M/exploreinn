@@ -87,3 +87,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* for calendar with year and month dropdown */
+.rdp-vhidden {
+  @apply hidden;
+}

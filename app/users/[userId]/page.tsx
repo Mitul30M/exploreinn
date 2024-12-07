@@ -1,46 +1,92 @@
-import { Cog, Contact, IdCard, MapPinHouse } from "lucide-react";
+import {
+  Cog,
+  Contact,
+  SquareUser,
+  MapPinHouse,
+  Mail,
+  Phone,
+  IdCard,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import PersonalInfo from "@/components/user-page/info/personal-info";
+import { Button } from "@/components/ui/button";
+import ResidentialInfo from "@/components/user-page/info/residential-info";
+import { EditPersonalInfoModal } from "@/components/user-page/info/edit-modals/edit-personal-info";
+import { EditResidentialInfoModal } from "@/components/user-page/info/edit-modals/edit-residential-info";
 
 export default function ProfilePage() {
   return (
-    <section className="w-full space-y-4 mb-8 border-border/90 border-y-[1px]">
-      {/* Personal Info */}
-      <div id="personal-info" className="space-y-4">
-        <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
-          <IdCard size={22} className="text-primary" />
-          Personal Info
-        </h1>
+    <section className="w-full space-y-4 pb-4 border-border/90 border-y-[1px]">
+      <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
+        <SquareUser size={22} className="text-primary" />
+        Mitul's Account
+      </h1>
 
-        <div className="min-h-[40vh] bg-accent/30 mx-4 p-4 rounded border-[1px] border-border/90"></div>
-      </div>
+      <div className="p-4 flex gap-6 h-max border-border/90 border m-4 rounded-md">
+        {/* profile card */}
+        <div className="flex flex-col gap-4 max-w-[300px]">
+          <Avatar className="w-24 h-24 border-2 border-accent">
+            <AvatarImage src="https://avatars.githubusercontent.com/u/120619177?s=400&u=d943ef3e7faacbfad1bdcb92d31e6946fee0a3af&v=4" />
+            <AvatarFallback>MM</AvatarFallback>
+          </Avatar>
 
-      {/* Contact Info */}
-      <div id="contact-info" className="space-y-4">
-        <h1 className="text-md mt-8 rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
-          <Contact size={22} className="text-primary" />
-          Contact Info
-        </h1>
+          <div className="">
+            {/* name */}
+            <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
+              Mitul Mungase, 20
+            </h4>
+            <Separator className="my-4" />
+            {/* email */}
+            <p className="text-sm flex items-center gap-1">
+              <Mail size={14} />
+              mitul30m@icloud.com
+            </p>
+            {/* phone */}
+            <p className="text-sm flex items-center gap-1">
+              <Phone size={14} />
+              +91-9970399623
+            </p>
+            <Separator className="my-2" />
+            <p className="text-sm flex items-center gap-1 text-foreground/75 mb-6">
+              Loves to travel, explore new places, and meet new people ❤️🤗. I
+              am a Full Stack Developer 👨🏽‍💻 from Mumbai, India.
+            </p>
+            <Separator className="my-4" />
+            <div className="flex justify-start items-start gap-2">
+              <EditPersonalInfoModal className="rounded-full" size="sm" />
+              <EditResidentialInfoModal className="rounded-full" size="sm" />
+            </div>
+          </div>
+        </div>
+        <Separator
+          orientation="vertical"
+          className="!h-full border-t-[1px] border-border/90"
+        />
 
-        <div className="min-h-[40vh] bg-accent/30 mx-4 p-4 rounded border-[1px] border-border/90"></div>
-      </div>
+        {/* info card */}
+        <div className="flex flex-1 flex-col gap-8 p-4 border border-border/90 text-foreground/90 rounded-md">
+          {/* personal info */}
+          <div className="flex flex-col gap-2">
+            <h4 className="scroll-m-20 text-md font-semibold tracking-tight flex items-center gap-2">
+              <IdCard size={18} className="text-primary" /> Personal Info
+            </h4>
+            <Separator className="mb-4" />
+            {/* accepts the user data as a prop */}
+            <PersonalInfo />
+          </div>
 
-      {/* Residential Address */}
-      <div id="residential-address" className="space-y-4">
-        <h1 className="text-md mt-8 rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
-          <MapPinHouse size={22} className="text-primary" />
-          Residential Address
-        </h1>
-
-        <div className="min-h-[40vh] bg-accent/30 w-full mx-4  p-4 rounded border-[1px] border-border/90"></div>
-      </div>
-
-      {/* Preferences */}
-      <div id="preferences" className="space-y-4">
-        <h1 className="text-md mt-8 rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
-          <Cog size={22} className="text-primary" />
-          Preferences
-        </h1>
-
-        <div className="min-h-[40vh] bg-accent/30 w-full mx-4  p-4 rounded border-[1px] border-border/90"></div>
+          {/* residential info */}
+          <div className="flex flex-col gap-2 mt-4">
+            <h4 className="scroll-m-20 text-md font-semibold tracking-tight flex items-center gap-2">
+              <MapPinHouse size={18} className="text-primary" /> Residential
+              Info
+            </h4>
+            <Separator className="mb-4" />
+            {/* accepts the user's residential data as a prop */}
+            <ResidentialInfo />
+          </div>
+        </div>
       </div>
     </section>
   );
