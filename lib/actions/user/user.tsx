@@ -4,13 +4,6 @@ import { z } from "zod";
 import { FormState } from "@/lib/types/forms/form-state";
 
 const updatePersonalInfoFormSchema = z.object({
-  phone: z
-    .string({
-      required_error: "Phone number is required",
-    })
-    .max(16, {
-      message: "Invalid Phone number",
-    }),
   dob: z.date({
     required_error: "A date of birth is required.",
   }),

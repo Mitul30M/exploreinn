@@ -23,13 +23,19 @@ import {
   IdCard,
   Inbox,
   LogOut,
+  Mail,
   Menu,
+  Phone,
   ShieldCheck,
   TicketsPlane,
 } from "lucide-react";
 import Link from "next/link";
+import { currentUser } from "@clerk/nextjs/server";
+import { SignOutButton, UserButton } from "@clerk/nextjs";
 
-export function UserProfileDropdown() {
+export async function UserProfileDropdown() {
+  const user = await currentUser();
+
   return (
     <DropdownMenu>
       {/* Trigger for dropdown */}
@@ -39,33 +45,39 @@ export function UserProfileDropdown() {
           <Avatar className="h-max w-max border">
             <AvatarImage
               className="h-6 w-6"
-              src="https://avatars.githubusercontent.com/u/120619177?s=400&u=d943ef3e7faacbfad1bdcb92d31e6946fee0a3af&v=4"
+              src={user?.imageUrl}
               alt="@username"
             />
-            <AvatarFallback>MM</AvatarFallback>
+            <AvatarFallback>{`${user?.firstName?.[0]?.toUpperCase()}${user?.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>{" "}
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
 
       {/* dropdown content */}
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel className="flex justify-start items-center gap-3">
-          <Avatar className="h-max w-max border">
-            <AvatarImage
-              className="h-8 w-8"
-              src="https://avatars.githubusercontent.com/u/120619177?s=400&u=d943ef3e7faacbfad1bdcb92d31e6946fee0a3af&v=4"
-              alt="@username"
-            />
-            <AvatarFallback>MM</AvatarFallback>
-          </Avatar>
+        <Link href={`/users/${user?.id}`}>
+          <DropdownMenuItem className="flex justify-start items-center gap-3">
+            <Avatar className="h-max w-max border">
+              <AvatarImage
+                className="h-8 w-8"
+                src={user?.imageUrl}
+                alt="@username"
+              />
+              <AvatarFallback>{`${user?.firstName?.[0]?.toUpperCase()}${user?.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>{" "}
+            </Avatar>
 
-          <div>
-            Mitul Mungase
-            <p className="text-sm font-medium dark:text-white/70 text-black/70">
-              mitul30m@icloud
-            </p>
-          </div>
-        </DropdownMenuLabel>
+            <div>
+              {user?.firstName} {user?.lastName}
+              <p className="text-xs my-1 text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
+                {user?.emailAddresses[0]?.emailAddress}
+              </p>
+              <p className="text-xs text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
+                {user?.phoneNumbers[0]?.phoneNumber}
+              </p>
+            </div>
+          </DropdownMenuItem>
+        </Link>
+
         <DropdownMenuSeparator />
 
         {/* dropdown group1 */}
@@ -93,10 +105,10 @@ export function UserProfileDropdown() {
             Inbox
           </DropdownMenuItem>
           <Link href={"/users/:userId/rewards"}>
-          <DropdownMenuItem className="hover:cursor-pointer">
-            <Gift />
-            Rewards
-          </DropdownMenuItem>
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <Gift />
+              Rewards
+            </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
 
@@ -123,10 +135,12 @@ export function UserProfileDropdown() {
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut />
-          Log out
-        </DropdownMenuItem>
+        <SignOutButton>
+          <DropdownMenuItem className="text-primary">
+            <LogOut />
+            Log out
+          </DropdownMenuItem>
+        </SignOutButton>
       </DropdownMenuContent>
     </DropdownMenu>
   );

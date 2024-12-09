@@ -11,9 +11,10 @@ import { Button } from "../../ui/button";
 import ThemeSwitcher from "../../ui/theme-switcher";
 import { UserProfileDropdown } from "./user-profile-dropdown";
 import { links } from "@/lib/navigation/main-nav";
+import { auth } from "@clerk/nextjs/server";
 
-
-const Navbar = () => {
+const Navbar = async () => {
+  const { userId } = await auth();
   return (
     <header className="flex items-center justify-between max-h-14 w-full px-4 border-y-[1px] border-border/90 mt-1 sticky top-0 bg-background shadow-sm z-10">
       {/* nav links */}
@@ -42,13 +43,19 @@ const Navbar = () => {
 
       {/* auth and theme */}
       <div className="flex flex-row justify-center items-center gap-1">
-        <Button variant="default" className="rounded-3xl" size="sm">
-          Login
-        </Button>
-        <Button variant="outline" className="rounded-3xl" size="sm">
-          SignUp
-        </Button>
-        <UserProfileDropdown />
+        {userId ? (
+          <UserProfileDropdown />
+        ) : (
+          <>
+            <Button variant="default" className="rounded-3xl" size="sm">
+              <Link href={"/sign-in"}>Login</Link>
+            </Button>
+            <Button variant="outline" className="rounded-3xl" size="sm">
+              <Link href={"/sign-up"}>SignUp</Link>
+            </Button>
+          </>
+        )}
+
         <ThemeSwitcher />
       </div>
     </header>

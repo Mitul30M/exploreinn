@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/sidebars/user-page-sidebar/user-dashboard-app-sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 import Link from "next/link";
+import { UserButton,SignedIn } from "@clerk/nextjs";
 
 export default function HomePage() {
   return (
@@ -12,8 +13,24 @@ export default function HomePage() {
       </h1>
 
       <div className="p-4 text-center flex flex-col items-center justify-center gap-4">
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
         <Link href="/discover" className="text-primary hover:text-foreground">
           /discover
+        </Link>
+
+        <Link
+          href="/protected/server"
+          className="text-primary hover:text-foreground"
+        >
+          /protected/server
+        </Link>
+        <Link
+          href="/protected/client"
+          className="text-primary hover:text-foreground"
+        >
+          /protected/client
         </Link>
         <Link
           href="/users/:userID"

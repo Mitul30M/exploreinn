@@ -40,13 +40,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { countries } from "@/lib/utils/country/countries";
 
 const updatePersonalInfoFormSchema = z.object({
-  phone: z
-    .string({
-      required_error: "Phone number is required",
-    })
-    .refine(async (val) => isValidPhoneNumber(val), {
-      message: "Invalid phone number format",
-    }),
+ 
   dob: z.date({
     required_error: "A date of birth is required.",
   }),
@@ -68,7 +62,6 @@ const EditPersonalInfoForm = () => {
     // mode:"onBlur",
     resolver: zodResolver(updatePersonalInfoFormSchema),
     defaultValues: {
-      phone: "",
       ...(state?.fields ?? {}),
     },
   });
@@ -131,26 +124,6 @@ const EditPersonalInfoForm = () => {
         }}
         className="flex flex-col items-start space-y-6"
       >
-        {/* phone number */}
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem className="flex flex-col items-start">
-              <FormLabel className="text-left text-sm font-medium">
-                Phone Number
-              </FormLabel>
-              <FormControl className="w-[280px]">
-                <PhoneInput placeholder="Enter a phone number" {...field} />
-              </FormControl>
-              <FormDescription className="text-left">
-                Enter your phone number. This will be used to send you
-                notifications.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         {/* date of birth */}
         <FormField
