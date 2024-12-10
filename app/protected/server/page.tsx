@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 async function ServerPage() {
-  const { userId, sessionClaims, ...authInfo } = await auth();
+  const authInfo= await auth();
   const user = await currentUser();
 
   // console.log(authInfo, "\n", userId, "\n\n");
@@ -18,12 +18,19 @@ async function ServerPage() {
           ? (sessionClaims.public_metadata as PublicMetadataType).userDB_id
           : "No session claims available"}
       </p> */}
-      <p>Clerk ID: {userId}</p>
+      {authInfo &&
+        Object.entries(authInfo).map(([key, value]) => (
+          <p key={key}>
+            <span className="font-bold">{key}:</span>{" "}
+            {JSON.stringify(value, null, 2)}
+          </p>
+        ))}
       <p className="font-bold text-primary">currentUser()</p>
       {user &&
         Object.entries(user).map(([key, value]) => (
           <p key={key}>
-            <span className="font-bold">{key}:</span> {JSON.stringify(value, null, 2)}
+            <span className="font-bold">{key}:</span>{" "}
+            {JSON.stringify(value, null, 2)}
           </p>
         ))}
     </main>

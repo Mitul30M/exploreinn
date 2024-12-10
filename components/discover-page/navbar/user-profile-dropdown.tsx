@@ -56,7 +56,7 @@ export async function UserProfileDropdown() {
       {/* dropdown content */}
       <DropdownMenuContent className="w-56">
         <Link href={`/users/${user?.id}`}>
-          <DropdownMenuItem className="flex justify-start items-center gap-3">
+          <DropdownMenuItem className="flex justify-start items-center gap-3 cursor-pointer">
             <Avatar className="h-max w-max border">
               <AvatarImage
                 className="h-8 w-8"
@@ -68,12 +68,12 @@ export async function UserProfileDropdown() {
 
             <div>
               {user?.firstName} {user?.lastName}
-              <p className="text-xs my-1 text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
+              {/* <p className="text-xs my-1 text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
                 {user?.emailAddresses[0]?.emailAddress}
               </p>
               <p className="text-xs text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
                 {user?.phoneNumbers[0]?.phoneNumber}
-              </p>
+              </p> */}
             </div>
           </DropdownMenuItem>
         </Link>

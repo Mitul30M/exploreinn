@@ -32,12 +32,6 @@ export default function HomePage() {
         >
           /protected/client
         </Link>
-        <Link
-          href="/users/:userID"
-          className="text-primary hover:text-foreground"
-        >
-          /users/:userID
-        </Link>
       </div>
     </main>
   );

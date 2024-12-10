@@ -14,38 +14,42 @@ import { Button } from "@/components/ui/button";
 import ResidentialInfo from "@/components/user-page/info/residential-info";
 import { EditPersonalInfoModal } from "@/components/user-page/info/edit-modals/edit-personal-info";
 import { EditResidentialInfoModal } from "@/components/user-page/info/edit-modals/edit-residential-info";
+import { currentUser } from "@clerk/nextjs/server";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  // instead of using currentUser(), just obtain the user's id from the url and find the user in the database and then pass it to the component
+  const user = await currentUser();
+
   return (
     <section className="w-full space-y-4 pb-4 border-border/90 border-y-[1px]">
       <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
         <SquareUser size={22} className="text-primary" />
-        Mitul's Account
+        {user?.firstName}'s Account
       </h1>
 
       <div className="p-4 flex gap-6 h-max border-border/90 border m-4 rounded-md">
         {/* profile card */}
         <div className="flex flex-col gap-4 max-w-[300px]">
           <Avatar className="w-24 h-24 border-2 border-accent">
-            <AvatarImage src="https://avatars.githubusercontent.com/u/120619177?s=400&u=d943ef3e7faacbfad1bdcb92d31e6946fee0a3af&v=4" />
-            <AvatarFallback>MM</AvatarFallback>
+            <AvatarImage src={user?.imageUrl} />
+            <AvatarFallback>{`${user?.firstName?.[0]?.toUpperCase()}${user?.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>
           </Avatar>
 
           <div className="">
             {/* name */}
             <h4 className="scroll-m-20 text-md font-semibold tracking-tight">
-              Mitul Mungase, 20
+              {user?.firstName} {user?.lastName}, 20
             </h4>
             <Separator className="my-4" />
             {/* email */}
             <p className="text-sm flex items-center gap-1">
               <Mail size={14} />
-              mitul30m@icloud.com
+              {user?.emailAddresses[0]?.emailAddress}
             </p>
             {/* phone */}
             <p className="text-sm flex items-center gap-1">
               <Phone size={14} />
-              +91-9970399623
+              {user?.phoneNumbers[0]?.phoneNumber}
             </p>
             <Separator className="my-2" />
             <p className="text-sm flex items-center gap-1 text-foreground/75 mb-6">
