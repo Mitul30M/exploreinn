@@ -2,6 +2,60 @@
 
 import { z } from "zod";
 import { FormState } from "@/lib/types/forms/form-state";
+import prisma from "@/lib/prisma-client";
+
+export async function createUser(data: {
+  clerkId: string;
+  phone: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImg: string;
+}) {
+  const user = await prisma.user.create({
+    data: {
+      clerkId: data.clerkId,
+      email: data.email,
+      phoneNo: data.phone,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      profileImg: data.profileImg,
+    },
+  });
+
+  return { user }; // Return the user and secret to save in Clerk's private metadata
+}
+
+export async function updateUser(
+  data: {
+    email?: string;
+    phoneNo?: string;
+    firstName?: string;
+    lastName?: string;
+    profileImg?: string;
+  },
+  clerkId?: string,
+  userId?: string
+) {
+  const whereClause = clerkId ? { clerkId } : { id: userId };
+
+  const user = await prisma.user.update({
+    where: whereClause,
+    data,
+  });
+
+  return user;
+}
+
+export async function deleteUser(clerkId?: string, userId?: string) {
+  const whereClause = clerkId ? { clerkId } : { id: userId };
+
+  const user = await prisma.user.delete({
+    where: whereClause,
+  });
+
+  return user;
+}
 
 const updatePersonalInfoFormSchema = z.object({
   dob: z.date({

@@ -12,6 +12,7 @@
     "@clerk/elements": "^0.21.1",
     "@clerk/nextjs": "^6.8.0",
     "@hookform/resolvers": "^3.9.1",
+    "@prisma/client": "^6.0.1",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.2",
@@ -44,6 +45,7 @@
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-hook-form": "^7.53.2",
     "react-phone-number-input": "^3.4.10",
+    "svix": "^1.43.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.4",
@@ -51,13 +53,15 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.17.9",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
+    "prisma": "^6.0.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }
