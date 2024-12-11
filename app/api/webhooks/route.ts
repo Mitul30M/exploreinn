@@ -88,7 +88,7 @@ export async function POST(req: Request) {
           //   privateMetadata: { secret, userDB_id: user.id },
           // });
           await client.users.updateUser(clerkId, {
-            publicMetadata: { userDB_id: user.id },
+            publicMetadata: { userDB_id: user.id, onboardingComplete: false },
           });
         } catch (err) {
           console.error("Error updating Clerk metadata:", err);

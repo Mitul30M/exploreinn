@@ -14,13 +14,17 @@ generator client {
 }
 
 model User {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId    String   @unique // Clerk's user ID for linking
-  email      String   @unique
-  phoneNo    String   @unique
-  firstName  String
-  lastName   String
-  profileImg String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId     String   @unique
+  email       String   @unique
+  phoneNo     String   @unique
+  firstName   String
+  lastName    String
+  profileImg  String
+  dob         DateTime?
+  gender      String?
+  country     String? 
+  address     Json?   // Grouped address fields
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

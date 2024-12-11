@@ -17,7 +17,7 @@ import { EditResidentialInfoModal } from "@/components/user-page/info/edit-modal
 import { currentUser } from "@clerk/nextjs/server";
 
 export default async function ProfilePage() {
-  // instead of using currentUser(), just obtain the user's id from the url and find the user in the database and then pass it to the component
+  // instead of using currentUser(), just obtain the user's id from the url and find the user in the database and then pass it to the component & revalidate the path whenever any server action changes the user's data
   const user = await currentUser();
 
   return (

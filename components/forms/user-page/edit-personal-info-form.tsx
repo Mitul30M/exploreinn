@@ -38,22 +38,10 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { countries } from "@/lib/utils/country/countries";
-
-const updatePersonalInfoFormSchema = z.object({
- 
-  dob: z.date({
-    required_error: "A date of birth is required.",
-  }),
-  gender: z.enum(["Male", "Female", "Other"], {
-    required_error: "Please select your gender.",
-  }),
-  country: z.string({
-    required_error: "Please select your country.",
-  }),
-});
+import { updatePersonalInfoFormSchema } from "@/lib/schemas/zod-schema";
 
 const EditPersonalInfoForm = () => {
-  const [state, formAction] = useActionState(updatePersonalInfo, {
+  const [state, formAction, isPending] = useActionState(updatePersonalInfo, {
     message: "",
     type: undefined,
   });
@@ -124,7 +112,6 @@ const EditPersonalInfoForm = () => {
         }}
         className="flex flex-col items-start space-y-6"
       >
-
         {/* date of birth */}
         <FormField
           control={form.control}
@@ -231,7 +218,7 @@ const EditPersonalInfoForm = () => {
           )}
         />
 
-        <div className="self-end flex gap-4 items-center">
+        <div className="flex gap-4 items-center">
           {state?.message !== "" && state.type && (
             <Badge
               variant={"outline"}
@@ -252,15 +239,15 @@ const EditPersonalInfoForm = () => {
           )}
           <Button
             type="submit"
-            disabled={form.formState.isSubmitting}
-            className="self-end rounded-full"
+            disabled={isPending}
+            className="rounded-full w-full"
           >
-            {form.formState.isSubmitting ? (
+            {isPending ? (
               <Loader className="animate-spin" />
             ) : (
               <HardDriveUpload />
             )}
-            {form.formState.isSubmitting ? "Updating..." : "Update"}
+            {isPending ? "Saving..." : "Continue"}
           </Button>
         </div>
       </form>

@@ -13,7 +13,7 @@ export default function AuthLayout({
 }) {
   return (
     <>
-      <div className="relative hidden flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 min-h-screen bg-background border-border/90 border-x-[1px] !max-w-7xl m-auto">
+      <div className="relative flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 min-h-screen bg-background border-border/90 border-x-[1px] !max-w-7xl m-auto">
         <div className="relative hidden h-full flex-col bg-muted p-8  dark:border-r lg:flex">
           <div className="absolute inset-0 bg-primary" />
           <div className="relative z-20 flex items-center text-lg font-medium text-background ">

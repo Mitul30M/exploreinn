@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 async function ServerPage() {
-  const authInfo= await auth();
+  const { userId, sessionClaims, ...authInfo } = await auth();
   const user = await currentUser();
 
   // console.log(authInfo, "\n", userId, "\n\n");
@@ -12,12 +12,17 @@ async function ServerPage() {
     <main className="flex flex-col w-full gap-6 row-start-2 items-center sm:items-start min-h-screen bg-background border-border/90 border-[1px] max-w-7xl m-auto p-20">
       <h1>Server</h1>
       <p className=" font-bold text-primary">auth()</p>
-      {/* <p>
+      <p>
         MongoDB ID:{" "}
         {sessionClaims?.public_metadata
           ? (sessionClaims.public_metadata as PublicMetadataType).userDB_id
           : "No session claims available"}
-      </p> */}
+        isOnboardingComplete:{" "}
+        {sessionClaims?.public_metadata
+          ? (sessionClaims.public_metadata as PublicMetadataType)
+              .onboardingComplete
+          : "No session claims available"}
+      </p>
       {authInfo &&
         Object.entries(authInfo).map(([key, value]) => (
           <p key={key}>

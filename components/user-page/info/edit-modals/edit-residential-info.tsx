@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { PenTool } from "lucide-react";
 
@@ -37,7 +38,9 @@ export function EditResidentialInfoModal({ ...props }) {
           </DialogDescription>
         </DialogHeader>
         <Separator className="my-2" />
+        <ScrollArea className="h-[500px]">
         <EditResidentialInfoForm />
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
