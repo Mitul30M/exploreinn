@@ -14,17 +14,38 @@ generator client {
 }
 
 model User {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId     String   @unique
-  email       String   @unique
-  phoneNo     String   @unique
-  firstName   String
-  lastName    String
-  profileImg  String
-  dob         DateTime?
-  gender      String?
-  country     String? 
-  address     Json?   // Grouped address fields
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId    String    @unique
+  role       Role      @default(User)
+  email      String    @unique
+  phoneNo    String    @unique
+  firstName  String
+  lastName   String
+  profileImg String
+  dob        DateTime?
+  gender     Gender?
+  country    String?
+  address    Address? // Grouped address fields
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+type Address {
+  residence  String
+  street     String
+  city       String
+  province   String
+  landmark   String @default("")
+  postalCode String
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum Role {
+  User
+  Admin
 }

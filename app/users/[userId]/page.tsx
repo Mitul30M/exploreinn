@@ -14,11 +14,33 @@ import { Button } from "@/components/ui/button";
 import ResidentialInfo from "@/components/user-page/info/residential-info";
 import { EditPersonalInfoModal } from "@/components/user-page/info/edit-modals/edit-personal-info";
 import { EditResidentialInfoModal } from "@/components/user-page/info/edit-modals/edit-residential-info";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/actions/user/user";
+import { notFound } from "next/navigation";
+import { User } from "@prisma/client";
 
-export default async function ProfilePage() {
-  // instead of using currentUser(), just obtain the user's id from the url and find the user in the database and then pass it to the component & revalidate the path whenever any server action changes the user's data
-  const user = await currentUser();
+export const metadata = {
+  title: "Profile",
+  description: "View your profile",
+};
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) {
+  const { userId, sessionClaims } = await auth();
+  // this has been implemented so tht no one other than the one authorized can see their profile. to safeguard the user's data
+  const userID = (await params).userId;
+  if (
+    userID != (sessionClaims?.public_metadata as PublicMetadataType).userDB_id
+  ) {
+    notFound();
+  }
+  const user = await getUser(userID);
+
+  if (!user) {
+    notFound();
+  }
 
   return (
     <section className="w-full space-y-4 pb-4 border-border/90 border-y-[1px]">
@@ -31,7 +53,7 @@ export default async function ProfilePage() {
         {/* profile card */}
         <div className="flex flex-col gap-4 max-w-[300px]">
           <Avatar className="w-24 h-24 border-2 border-accent">
-            <AvatarImage src={user?.imageUrl} />
+            <AvatarImage src={user?.profileImg} />
             <AvatarFallback>{`${user?.firstName?.[0]?.toUpperCase()}${user?.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>
           </Avatar>
 
@@ -44,12 +66,12 @@ export default async function ProfilePage() {
             {/* email */}
             <p className="text-sm flex items-center gap-1">
               <Mail size={14} />
-              {user?.emailAddresses[0]?.emailAddress}
+              {user?.email}
             </p>
             {/* phone */}
             <p className="text-sm flex items-center gap-1">
               <Phone size={14} />
-              {user?.phoneNumbers[0]?.phoneNumber}
+              {user?.phoneNo}
             </p>
             <Separator className="my-2" />
             <p className="text-sm flex items-center gap-1 text-foreground/75 mb-6">
@@ -58,8 +80,16 @@ export default async function ProfilePage() {
             </p>
             <Separator className="my-4" />
             <div className="flex justify-start items-start gap-2">
-              <EditPersonalInfoModal className="rounded-full" size="sm" />
-              <EditResidentialInfoModal className="rounded-full" size="sm" />
+              <EditPersonalInfoModal
+                user={user!}
+                className="rounded-full"
+                size="sm"
+              />
+              <EditResidentialInfoModal
+                user={user!}
+                className="rounded-full"
+                size="sm"
+              />
             </div>
           </div>
         </div>
@@ -77,7 +107,7 @@ export default async function ProfilePage() {
             </h4>
             <Separator className="mb-4" />
             {/* accepts the user data as a prop */}
-            <PersonalInfo />
+            <PersonalInfo user={user!} />
           </div>
 
           {/* residential info */}
@@ -88,7 +118,7 @@ export default async function ProfilePage() {
             </h4>
             <Separator className="mb-4" />
             {/* accepts the user's residential data as a prop */}
-            <ResidentialInfo />
+            <ResidentialInfo user={user!} />
           </div>
         </div>
       </div>

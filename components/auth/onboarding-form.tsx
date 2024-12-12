@@ -13,7 +13,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FileCheck, HardDriveUpload, Loader, ServerCrash } from "lucide-react";
+import {
+  FileCheck,
+  HardDriveUpload,
+  Heart,
+  Loader,
+  ServerCrash,
+} from "lucide-react";
 import { useActionState, useRef, startTransition, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -39,6 +45,8 @@ import { UserOnboardingFormSchema } from "@/lib/schemas/zod-schema";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
+import { ToastAction } from "../ui/toast";
+import Image from "next/image";
 
 const UserOnboardingForm = () => {
   const router = useRouter();
@@ -68,15 +76,21 @@ const UserOnboardingForm = () => {
     if (state.type === "success") {
       toast({
         title: state.message,
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-background border border-dashed p-4">
-            <code className="text-foreground font-medium">
-              {state.fields && JSON.stringify(state.fields, null, 2)}
-            </code>
-          </pre>
+        action: (
+          <ToastAction
+            // variant="outline"
+            altText="Proceed"
+            className="w-full sm:w-auto text-primary py-3"
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            {/* <Heart size={16} className="text-primary" /> */}
+           <Image src="/logos/logo-rose.svg" alt="Exploreinn" height={26} width={26} />
+            Proceed
+          </ToastAction>
         ),
       });
-      return router.push("/");
     } else if (state.type === "error") {
       console.log(state);
       toast({

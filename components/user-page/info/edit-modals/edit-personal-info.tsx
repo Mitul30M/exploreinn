@@ -11,9 +11,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { User } from "@prisma/client";
 import { PenTool } from "lucide-react";
 
-export function EditPersonalInfoModal({ ...props }) {
+export function EditPersonalInfoModal({
+  user,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Button> & {
+  user: User;
+}) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -24,16 +30,16 @@ export function EditPersonalInfoModal({ ...props }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 mb-2">
-            {" "}
-            <PenTool size={20} className="text-primary"/>
+            <PenTool size={20} className="text-primary" />
             Edit Personal Info
           </DialogTitle>
           <DialogDescription>
-            Make changes to your personal information here. Click save when you're done.
+            Make changes to your personal information here. Click save when
+            you're done.
           </DialogDescription>
         </DialogHeader>
         <Separator className="my-2" />
-        <EditPersonalInfoForm />
+        <EditPersonalInfoForm user={user} />
       </DialogContent>
     </Dialog>
   );

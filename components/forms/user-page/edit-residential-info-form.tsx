@@ -20,8 +20,9 @@ import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { updateResidentialInfoFormSchema } from "@/lib/schemas/zod-schema";
+import { User } from "@prisma/client";
 
-const EditResidentialInfoForm = () => {
+const EditResidentialInfoForm = ({ user, ...props }: { user: User }) => {
   const [state, formAction] = useActionState(updateResidentialInfo, {
     message: "",
     type: undefined,
@@ -30,13 +31,13 @@ const EditResidentialInfoForm = () => {
   const form = useForm<z.infer<typeof updateResidentialInfoFormSchema>>({
     // mode:"onBlur",
     resolver: zodResolver(updateResidentialInfoFormSchema),
-      defaultValues: {
-          residence: "",
-          street: "",
-          city: "",
-          province: "",
-          landmark: "",
-          postalCode: "",
+    defaultValues: {
+      residence: user.address?.residence,
+      street: user.address?.street,
+      city: user.address?.city,
+      province: user.address?.province,
+      landmark: user.address?.landmark,
+      postalCode: user.address?.postalCode,
       ...(state?.fields ?? {}),
     },
   });

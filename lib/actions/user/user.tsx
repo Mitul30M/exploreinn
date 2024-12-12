@@ -1,6 +1,5 @@
 "use server";
 
-import { z } from "zod";
 import { FormState } from "@/lib/types/forms/form-state";
 import prisma from "@/lib/prisma-client";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@/lib/schemas/zod-schema";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createUser(data: {
   clerkId: string;
@@ -39,6 +39,7 @@ export async function onboardUser(
 ): Promise<FormState> {
   try {
     const { userId, sessionClaims } = await auth();
+    console.log(userId, sessionClaims);
     const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
       .userDB_id;
     if (!userId || !userDbId) {
@@ -103,7 +104,6 @@ export async function onboardUser(
       });
     }
     revalidatePath("/");
-
     // Success
     return {
       message: "User Onboarding Completed successfully",
@@ -117,6 +117,20 @@ export async function onboardUser(
       message: "Internal server error",
     };
   }
+}
+
+export async function getUser(userDbId?: string) {
+  const whereClause = { id: userDbId };
+
+  const user = await prisma.user.findUnique({
+    where: whereClause,
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return user;
 }
 
 export async function updateUser(
@@ -137,6 +151,7 @@ export async function updateUser(
     data,
   });
 
+  revalidatePath(`/users/${user.id}`);
   return user;
 }
 
@@ -193,6 +208,7 @@ export async function updatePersonalInfo(
     console.log(user);
 
     // Success
+    revalidatePath(`/users/${user.id}`);
     return {
       message: "User info updated successfully",
       type: "success",
@@ -249,6 +265,7 @@ export async function updateResidentialInfo(
     console.log(user);
 
     // Success
+    revalidatePath(`/users/${user.id}`);
     return {
       message: "Residential info updated successfully",
       type: "success",
