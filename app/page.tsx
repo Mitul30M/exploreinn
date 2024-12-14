@@ -19,7 +19,12 @@ export default function HomePage() {
         <Link href="/discover" className="text-primary hover:text-foreground">
           /discover
         </Link>
-
+        <Link
+          href="/listings/:listingId"
+          className="text-primary hover:text-foreground"
+        >
+          /listings/:listingId
+        </Link>
         <Link
           href="/protected/server"
           className="text-primary hover:text-foreground"
