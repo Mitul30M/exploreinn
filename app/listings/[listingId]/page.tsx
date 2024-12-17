@@ -1,4 +1,6 @@
 import { ImageCarousel } from "@/components/listing-page/image-carousel";
+import RatingsPanel from "@/components/listing-page/ratings-panel";
+import ListingReviewsSection from "@/components/listing-page/reviews-section";
 import { RoomTypesCarousel } from "@/components/listing-page/room-carousel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,7 @@ import {
   HandPlatter,
   Heart,
   Hotel,
+  MessageCircleHeart,
   Plane,
   PlaneTakeoff,
   Pyramid,
@@ -37,7 +40,7 @@ const ListingPage = () => {
   return (
     <section className="w-full">
       {/* header */}
-      <header className="flex justify-between items-center m-4">
+      <header className="flex justify-between items-center m-4 mx-8">
         {/* only if the listing's grade is Excellent */}
         <Badge
           variant={"secondary"}
@@ -81,7 +84,7 @@ const ListingPage = () => {
         </TooltipProvider>
       </header>
       {/* listing title & ratings */}
-      <section className="flex justify-between items-center p-4 border-[1px] border-x-0 border-border/90 ">
+      <section className="flex justify-between items-center p-4 px-8 border-[1px] border-x-0 border-border/90 ">
         {/* listing title */}
         <div className="flex flex-col gap-1">
           <h1 className=" text-2xl font-bold tracking-tight">
@@ -148,39 +151,34 @@ const ListingPage = () => {
       </section>
 
       {/* listing & booking details */}
-      <section className="flex gap-4 p-4 border-x-0 border-t-[1px] border-border/90 ">
+      <section className="flex gap-8 p-8 border-x-0 border-t-[1px] border-border/90 ">
         {/* listing details */}
-        <div className="h-max w-full flex-1  space-y-4">
-          {/* listing title, description, email, phone */}
-          <div className="space-y-4 h-max border-[1px] border-border/90  rounded-sm pb-4">
-            {/* listing title */}
-            <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
-              <Hotel className="text-primary" />
-              {listing.title}
-            </h1>
-            {/* email */}
-            <div className="w-full flex items-center justify-between px-4">
-              <p className="text-sm">Email Address</p>
-              <p className="font-semibold">{listing.email}</p>
-            </div>
-            {/* phone */}
-            <div className="w-full flex items-center justify-between px-4">
-              <p className="text-sm">Phone No.</p>
-              <p className="font-semibold">{listing.phoneNo}</p>
-            </div>
-            {/* listing description */}
-            <p className=" text-[16px] w-full h-min text-foreground/75 tracking-tight border-border/90 border-t-[1px] p-4 line-clamp-5">
-              {listing.description}
-            </p>
-          </div>
+        <div className="h-max w-full flex-1  space-y-8">
           {/* listing location */}
           <div className=" h-max border-[1px] border-border/90 rounded-sm">
-            <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
-              <Earth className="text-primary" />
-              {listing.title} Location
+            <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex gap-2">
+              <Hotel className="text-primary mt-2" />
+              <div className="flex flex-col gap-0">
+                <h1 className=" text-lg font-bold tracking-tight">
+                  {listing.title}
+                </h1>
+                <p className="text-muted-foreground/95 text-sm font-medium tracking-tight">
+                  {listing.location}
+                </p>
+              </div>
             </h1>
+            {/* email */}
+            <div className="w-full flex items-center justify-between p-4 pb-0">
+              <p className="text-sm">Email Address</p>
+              <p className="font-semibold text-[16px]">{listing.email}</p>
+            </div>
+            {/* phone */}
+            <div className="w-full flex items-center justify-between p-4">
+              <p className="text-sm">Phone No.</p>
+              <p className="font-semibold text-[16px]">{listing.phoneNo}</p>
+            </div>
             {/* map; for now its just an image later we will use a mapbox api */}
-            <div className="w-full h-[350px]  p-4 ">
+            <div className="w-full h-[350px] border-border/90 border-t-[1px] p-4 ">
               <Image
                 src={"/exploreinn-map.png"}
                 alt="map"
@@ -264,11 +262,11 @@ const ListingPage = () => {
             </h1>
             {/* scrollable amenities */}
             <ScrollArea className="w-full h-[500px] ">
-              <div className="p-4 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="p-4 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {listing.amenities.map((amenity, index) => (
                   <Badge
                     variant="outline"
-                    className="border-none rounded-md cursor-pointer flex items-center justify-center gap-2 p-2 px-3 w-max  text-card-foreground/80 "
+                    className="border-none rounded-md cursor-pointer flex items-center justify-center gap-2 w-max  text-card-foreground/80 "
                   >
                     <span className=" primary">
                       {cloneElement(amenity.icon, {
@@ -277,7 +275,7 @@ const ListingPage = () => {
                         className: "text-primary ",
                       })}
                     </span>
-                    <span className="text-[16px] ">{amenity.name}</span>
+                    <span className="text-sm ">{amenity.name}</span>
                   </Badge>
                 ))}
               </div>
@@ -285,21 +283,31 @@ const ListingPage = () => {
           </div>
         </div>
         {/* booking details */}
-        <div className="sticky top-16 h-[350px] w-full border-border/90 border-[1px] hidden sm:flex flex-1 rounded-sm"></div>
+        <div className="sticky top-20 h-[350px] w-full border-border/90 border-[1px] hidden sm:flex flex-1 rounded-sm"></div>
       </section>
 
       {/* listing room types carousel */}
-      <section className="w-full h-screen space-y-4 mb-8 pb-4 border-border/90 border-y-[1px]">
-        <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
+      <section className="w-full space-y-4  pb-4 border-border/90 border-y-[1px]">
+        <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
           <DoorOpen className="text-primary" />
           Rooms available in {listing.title}
         </h1>
         <div className="mx-4">
           <RoomTypesCarousel
             rooms={listing.roomTypes}
-            className="p-4 border-border/90 border-[1px] !w-full rounded-sm"
+            className="!w-full rounded-sm p-4"
           />
         </div>
+      </section>
+
+      {/* listing ratings & reviews */}
+      <section className="w-full space-y-8  border-border/90 border-b-[1px] pb-8 mb-8">
+        <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+          <MessageCircleHeart className="text-primary" />
+          {listing.title} Ratings & Reviews
+        </h1>
+        <RatingsPanel />
+        <ListingReviewsSection />
       </section>
     </section>
   );

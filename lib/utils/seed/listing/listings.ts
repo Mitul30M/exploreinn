@@ -61,13 +61,16 @@ export const listings = [
     // room types & prices
     roomTypes: [
       {
-        name: "Deluxe Room",
+        name: "Deluxe Room in Hotel Aloha",
         tag: "Great for couples!",
         // isAvailabe will be based on if any booking off exists for the room or any such event
         isAvailable: true,
         price: 1750,
-        scratchedPrice: 2000,
+        basePrice: 2000,
         maxOccupancy: 2,
+        totalRooms: 50,
+        availableRooms: 20,
+        maxRoomsPerBookings: 5,
         beds: {
           type: "King Sized Bed",
           count: 1,
@@ -75,7 +78,7 @@ export const listings = [
         // cover image of the room
         image: "",
         images: ["", "", "", "", "", ""],
-        roomArea: 70,
+        area: 70,
         isReserveNowBookLaterAllowed: true,
         views: [
           {
@@ -87,107 +90,21 @@ export const listings = [
             description: "Garden view from the room",
           },
         ],
-        extras: [
+        perks: [
           {
-            name: "Breakfast Buffet",
-            cost: 340,
+            name: "Free Wi-Fi",
+            description: "Free Wi-Fi in the room",
           },
           {
-            name: "Breakfast + Lunch Buffet",
-            cost: 500,
-          },
-          {
-            name: "Lunch Buffet",
-            cost: 600,
-          },
-          {
-            name: "Dinner Buffet",
-            cost: 600,
-          },
-          {
-            name: "Breakfast + Lunch + Dinner Buffet",
-            cost: 1000,
-          },
-        ],
-      },
-      {
-        name: "Deluxe Room",
-        tag: "Great for couples!",
-        // isAvailabe will be based on if any booking off exists for the room or any such event
-        isAvailable: true,
-        price: 1750,
-        scratchedPrice: 2000,
-        maxOccupancy: 2,
-        beds: {
-          type: "King Sized Bed",
-          count: 1,
-        },
-        // cover image of the room
-        image: "",
-        images: ["", "", "", "", "", ""],
-        roomArea: 70,
-        isReserveNowBookLaterAllowed: true,
-        views: [
-          {
-            name: "City View",
-            description: "Boston City skyline view from the room",
-          },
-          {
-            name: "Garden View",
-            description: "Garden view from the room",
+            name: "Free Welcome Drink",
+            description: "Free Welcome Drink in the room",
           },
         ],
         extras: [
           {
-            name: "Breakfast Buffet",
-            cost: 340,
+            name: "No Add-Ons",
+            cost: 0,
           },
-          {
-            name: "Breakfast + Lunch Buffet",
-            cost: 500,
-          },
-          {
-            name: "Lunch Buffet",
-            cost: 600,
-          },
-          {
-            name: "Dinner Buffet",
-            cost: 600,
-          },
-          {
-            name: "Breakfast + Lunch + Dinner Buffet",
-            cost: 1000,
-          },
-        ],
-      },
-      {
-        name: "Deluxe Room",
-        tag: "Great for couples!",
-        // isAvailabe will be based on if any booking off exists for the room or any such event
-        isAvailable: true,
-        price: 1750,
-        scratchedPrice: 2000,
-        maxOccupancy: 2,
-        beds: {
-          type: "King Sized Bed",
-          count: 1,
-        },
-        // cover image of the room
-        image: "",
-        images: ["", "", "", "", "", ""],
-        roomArea: 70,
-        isReserveNowBookLaterAllowed: true,
-        views: [
-          {
-            name: "City View",
-            description: "Boston City skyline view from the room",
-          },
-          {
-            name: "Garden View",
-            description: "Garden view from the room",
-          },
-        ],
-        extras: [
           {
             name: "Breakfast Buffet",
             cost: 340,
@@ -211,6 +128,17 @@ export const listings = [
         ],
       },
     ],
+    // avg of ratings
+    overallRating: 9.8,
+    // these ratings are out of 10 and avg of each rating for the same by all reviews
+    ratings: {
+      cleanliness: 9.8,
+      comfort: 9.8,
+      communication: 9.8,
+      location: 9.8,
+      valueForMoney: 9.8,
+      checkIn: 9.8,
+    },
   },
 ];
 
