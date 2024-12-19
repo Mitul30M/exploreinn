@@ -16,15 +16,6 @@ export default function HomePage() {
         <SignedIn>
           <UserButton />
         </SignedIn>
-        <Link href="/discover" className="text-primary hover:text-foreground">
-          /discover
-        </Link>
-        <Link
-          href="/listings/:listingId"
-          className="text-primary hover:text-foreground"
-        >
-          /listings/:listingId
-        </Link>
         <Link
           href="/protected/server"
           className="text-primary hover:text-foreground"
@@ -36,6 +27,21 @@ export default function HomePage() {
           className="text-primary hover:text-foreground"
         >
           /protected/client
+        </Link>
+        <Link href="/discover" className="text-primary hover:text-foreground">
+          /discover
+        </Link>
+        <Link
+          href="/listings/:listingId"
+          className="text-primary hover:text-foreground"
+        >
+          /listings/:listingId
+        </Link>
+        <Link
+          href="/listings/new"
+          className="text-primary hover:text-foreground"
+        >
+          /listings/new
         </Link>
       </div>
     </main>
