@@ -17,9 +17,9 @@ import { useDebouncedCallback } from "use-debounce";
 
 // Zod Schema for city input validation
 const cityInputSchema = z.string();
+const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
 
 const LocationInput = () => {
-  const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
   const [cityInput, setCityInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
 

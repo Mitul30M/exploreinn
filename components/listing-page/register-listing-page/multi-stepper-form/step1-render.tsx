@@ -26,7 +26,7 @@ const RenderStep1 = () => {
       </h1>
 
       {/* Listing Name */}
-      <div className="flex flex-col w-full max-w-lg gap-4">
+      <div className="flex flex-col w-full max-w-lg gap-2">
         <Label
           htmlFor="listingName"
           className="text-[14px]  text-accent-foreground"
@@ -39,7 +39,7 @@ const RenderStep1 = () => {
           type="text"
           id="listingName"
           placeholder=""
-          className="!text-[16px] font-medium h-10 valid:bg-background rounded-full px-4"
+          className="!text-[16px] font-medium h-10 valid:bg-background rounded-lg px-4"
           onChange={useDebouncedCallback((event) => {
             dispatch(setListingName(event.target.value));
           }, 150)}
@@ -50,7 +50,7 @@ const RenderStep1 = () => {
       </div>
 
       {/* Listing Type */}
-      <div className="flex flex-col max-w-xl gap-4">
+      <div className="flex flex-col gap-4">
         <Label
           htmlFor="listingType"
           className="text-[14px]  text-accent-foreground"
@@ -65,15 +65,17 @@ const RenderStep1 = () => {
             //   console.log("Value changed to:", value);
             dispatch(setListingType(value));
           }}
-          className="flex gap-2 flex-wrap "
+          className="flex gap-2 flex-wrap  !max-w-[700px]"
         >
           {listingTypes.map((type) => (
             <Label htmlFor={type} key={type}>
               <Badge
                 variant="outline"
                 key={type}
-                className={`flex items-center space-x-2 w-max p-2 px-4 text-sm justify-center gap-2 cursor-pointer rounded-full ${
-                  listingType === type ? "bg-primary text-white" : ""
+                className={`flex items-center space-x-2 w-max p-2 px-4 text-sm justify-center gap-2 cursor-pointer rounded-full hover:bg-accent ${
+                  listingType === type
+                    ? "bg-primary hover:bg-primary text-white"
+                    : ""
                 }`}
               >
                 <RadioGroupItem value={type} id={type} className="hidden" />

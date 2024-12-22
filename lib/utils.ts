@@ -70,3 +70,13 @@ export const formatDate = (date: string | Date): string => {
 export const lowerCase = (str: string): string => {
   return str.charAt(0).toLowerCase() + str.slice(1).toLowerCase();
 };
+
+
+export const convertUnicodeToFlag = (unicode: string) => {
+  // Split the Unicode string into an array
+  const codePoints = unicode
+    .split(" ")
+    .map((u) => parseInt(u.replace("U+", ""), 16)); // Convert each to a number
+  // Convert code points to a string
+  return String.fromCodePoint(...codePoints);
+};

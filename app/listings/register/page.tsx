@@ -10,12 +10,15 @@ import {
   prevStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
 import RenderStep1 from "@/components/listing-page/register-listing-page/multi-stepper-form/step1-render";
+import RenderStep2 from "@/components/listing-page/register-listing-page/multi-stepper-form/step2-render";
+import RenderStep3 from "@/components/listing-page/register-listing-page/multi-stepper-form/step3-render";
+import RenderStep4 from "@/components/listing-page/register-listing-page/multi-stepper-form/step4-render";
 
 const RegisterNewListingPage = () => {
   const progress = useAppSelector(
     (state: RootState) => state.registerListing.progress
   );
-  const dispatch:AppDispatch = useAppDispatch();
+  const dispatch: AppDispatch = useAppDispatch();
 
   return (
     <section className="w-full">
@@ -35,7 +38,7 @@ const RegisterNewListingPage = () => {
           <Button
             variant="outline"
             className="shadow-none hover:shadow-sm"
-            disabled={progress === 0}
+            disabled={progress === 1}
             onClick={() => dispatch(prevStep())}
           >
             <CircleArrowLeft />
@@ -57,12 +60,14 @@ const RegisterNewListingPage = () => {
 
 const renderStep = (progress: number) => {
   switch (progress) {
-    case 0:
-      return <RenderStep1 />;
     case 1:
-      return "Step2";
+      return <RenderStep1 />;
     case 2:
-      return "Step3";
+      return <RenderStep2 />;
+    case 3:
+      return <RenderStep3 />;
+    case 4:
+      return <RenderStep4 />;
     default:
       return <div>Unknown Step</div>;
   }

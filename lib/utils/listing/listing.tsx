@@ -51,7 +51,7 @@ export const listingTypes = [
   "Apartment",
   "Villa",
   "Cottage",
-  "Hostel",
+  "Inn",
   "Farmstay",
   "Capsule Hotel",
   "Camping Site",
