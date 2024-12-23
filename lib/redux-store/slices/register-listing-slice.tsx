@@ -9,6 +9,7 @@ export interface RegisterListing {
   listingType: string;
   email: string;
   phone: string;
+  description: string;
   geometry: {
     type: "Point";
     //  lng, lat
@@ -32,6 +33,7 @@ const initialState: RegisterListing = {
   listingType: "Hotel",
   email: "",
   phone: "",
+  description: "",
   geometry: null, // Initialize as null
   address: {
     street: "",
@@ -74,6 +76,10 @@ export const registerListingSlice = createSlice({
     // to set phone
     setPhone: (state, action: PayloadAction<string>) => {
       state.phone = action.payload;
+    },
+    // to set description
+    setDescription: (state, action: PayloadAction<string>) => {
+      state.description = action.payload;
     },
     // to set geometry
     setGeometry: (
@@ -122,6 +128,7 @@ export const {
   setListingType,
   setEmail,
   setPhone,
+  setDescription,
   setGeometry,
   setAddress,
 } = registerListingSlice.actions;

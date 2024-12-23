@@ -18,6 +18,7 @@ import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
+  setDescription,
   setEmail,
   setPhone,
   setStep,
@@ -28,6 +29,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { NotebookTabs } from "lucide-react";
+import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
 
 const RenderStep4 = () => {
   const { listingName, address, email, phone } = useAppSelector(
@@ -62,7 +64,8 @@ const RenderStep4 = () => {
     phone: z
       .string()
       .min(1, "Phone number is required")
-      .refine(isValidPhoneNumber, { message: "Invalid phone number" }), // Customize further validation as needed
+      .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+    description: z.string().min(10, "Description is required"),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -76,6 +79,7 @@ const RenderStep4 = () => {
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     dispatch(setEmail(data.email));
     dispatch(setPhone(data.phone));
+    dispatch(setDescription(data.description));
   };
 
   return (
@@ -90,18 +94,17 @@ const RenderStep4 = () => {
           Set contact details so exploreInn users can reach out to you.
         </p>
       </div>
-
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-full gap-8 items-center"
+          className="flex flex-col w-full gap-8"
         >
           {/* Email Field */}
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
+              <FormItem className="flex flex-col gap-2 !max-w-[300px]">
                 <FormLabel
                   htmlFor="email"
                   className="text-[14px] text-accent-foreground"
@@ -127,7 +130,7 @@ const RenderStep4 = () => {
             control={form.control}
             name="phone"
             render={({ field }) => (
-              <FormItem className="flex flex-col gap-2">
+              <FormItem className="flex flex-col gap-2 !max-w-[300px]">
                 <FormLabel className="text-[14px] text-accent-foreground">
                   Phone Number
                 </FormLabel>
@@ -137,6 +140,24 @@ const RenderStep4 = () => {
                     {...field}
                     className="!text-[16px] font-medium valid:bg-background rounded-lg"
                   />
+                </FormControl>
+                <FormMessage className="text-primary font-semibold" />
+              </FormItem>
+            )}
+          />
+
+          {/* Description Field */}
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel className="text-[14px] text-accent-foreground">
+                  Describe your listing so users & the recommendation engine can
+                  know about your listing.
+                </FormLabel>
+                <FormControl>
+                  <TextEditor {...field} />
                 </FormControl>
                 <FormMessage className="text-primary font-semibold" />
               </FormItem>

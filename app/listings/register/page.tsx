@@ -13,6 +13,7 @@ import RenderStep1 from "@/components/listing-page/register-listing-page/multi-s
 import RenderStep2 from "@/components/listing-page/register-listing-page/multi-stepper-form/step2-render";
 import RenderStep3 from "@/components/listing-page/register-listing-page/multi-stepper-form/step3-render";
 import RenderStep4 from "@/components/listing-page/register-listing-page/multi-stepper-form/step4-render";
+import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
 
 const RegisterNewListingPage = () => {
   const progress = useAppSelector(
@@ -22,6 +23,7 @@ const RegisterNewListingPage = () => {
 
   return (
     <section className="w-full">
+      
       <div className="max-w-4xl mx-auto my-16 p-4  rounded-sm">
         {renderStep(progress)}
       </div>
