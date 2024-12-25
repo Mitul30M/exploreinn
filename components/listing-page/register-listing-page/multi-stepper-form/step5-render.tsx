@@ -44,8 +44,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import NextImage from "next/image";
-import { useEdgeStore } from "@/lib/edge-store/edge-store";
 import { Progress } from "@/components/ui/progress";
+import { getSignedURL } from "@/lib/actions/s3-buckets/s3-bucket";
 const FileUploadForm = z.object({
   files: z
     .array(
@@ -61,13 +61,24 @@ const FileUploadForm = z.object({
 
 type FormType = z.infer<typeof FileUploadForm>;
 
+const computeSHA256 = async (file: File) => {
+  const buffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+};
+
 const RenderStep5 = () => {
   const { email, phone, description, listingName } = useAppSelector(
     (state: RootState) => state.registerListing
   );
   const dispatch: AppDispatch = useAppDispatch();
-  const { edgestore } = useEdgeStore();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number[]>([]);
+
   useEffect(() => {
     if (!email.length || !phone.length) {
       toast({
@@ -115,47 +126,82 @@ const RenderStep5 = () => {
 
   const onSubmit = async (data: FormType) => {
     const { files } = data;
-
     if (!files) return;
-
-    const uploadPromises = files.map((file, index) => {
-      setProgress((prev) => {
-        const updated = [...prev];
-        updated[index] = 0; // Initialize progress for this file
-        return updated;
-      });
-      return edgestore.publicFiles.upload({
-        file,
-        input: { type: "listing" },
-        onProgressChange: (progressValue) => {
-          setProgress((prev) => {
-            const updated = [...prev];
-            updated[index] = progressValue; // Update progress
-            return updated;
-          });
-        },
-      });
-    });
-
+    setIsLoading(true);
     try {
-      const res = await Promise.all(uploadPromises);
+      let successCount = 0;
+      const promise = await Promise.all(
+        files.map(async (file, index) => {
+          const signedURLResult = await getSignedURL({
+            fileSize: file.size,
+            fileType: file.type,
+            checksum: await computeSHA256(file),
+          });
+          if (signedURLResult.error !== undefined) {
+            // console.error("Error: ", signedURLResult.error);
+            toast({
+              title: `*Error while Uploading Files`,
+              description: signedURLResult.error,
+              action: (
+                <ToastAction
+                  className="text-primary text-nowrap flex items-center gap-1 justify-center"
+                  altText="error"
+                >
+                  <HardDriveUpload className="size-4 text-primary" /> Try Again
+                </ToastAction>
+              ),
+            });
+            return;
+          }
+          const { url } = signedURLResult.success;
+          console.log({ url });
+          const response = await fetch(url, {
+            method: "PUT",
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+          if (response.ok) {
+            console.log("File uploaded successfully",response);
+            successCount++;
+          }
+
+        })
+      );
+      if (successCount === files.length) {
+        toast({
+          title: `${files.length} Files Uploaded Successfully`,
+          description: "All images uploaded successfully to the server.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <HardDriveUpload className="size-4 text-primary" /> Success
+            </ToastAction>
+          ),
+        });
+      }
+    } catch (error) {
       toast({
-        title: `${files.length} Files Uploaded Successfully`,
-        description: "All images uploaded successfully to the server.",
+        title: `*Error while Uploading Files`,
+        description:
+          "Something went wrong while uploading files to the s3 bucket.",
         action: (
           <ToastAction
             className="text-primary text-nowrap flex items-center gap-1 justify-center"
-            altText="success"
+            altText="error"
           >
-            <HardDriveUpload className="size-4 text-primary" /> Success
+            <HardDriveUpload className="size-4 text-primary" /> Try Again
           </ToastAction>
         ),
       });
-    } catch (error) {
-      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-  };
-
+  };  
+  
   return (
     <div className="space-y-14 w-full pb-10">
       <div className=" flex flex-col gap-4">
@@ -188,9 +234,15 @@ const RenderStep5 = () => {
                 >
                   <FileInput className="border-[1px] rounded w-full border-border/90 hover:bg-accent/50 hover:border-primary">
                     <div className="flex items-center justify-center flex-col p-4 !w-full min-h-[300px] gap-4 ">
-                      <ImageUp className="size-12 text-primary" />
+                      {isLoading ? (
+                        <HardDriveUpload className="size-12 text-primary" />
+                      ) : (
+                        <ImageUp className="size-12 text-primary" />
+                      )}
                       <div className="space-y-2 text-center">
-                        <p className="text-lg font-semibold">Upload Images</p>
+                        <p className="text-lg font-semibold">
+                          {isLoading ? "Uploading Images" : "Upload Images"}
+                        </p>
                         <p className="text-sm font-medium leading-none text-accent-foreground/80">
                           Max 10 images, each with size less than 4MB.
                         </p>
@@ -240,8 +292,8 @@ const RenderStep5 = () => {
               ))}
             </div>
           )}
-          <Button type="submit" className="h-8 w-fit">
-            Upload
+          <Button type="submit" className="h-8 w-fit" disabled={isLoading}>
+            {isLoading ? "Uploading" : "Upload"}
             <HardDriveUpload />
           </Button>
         </form>
