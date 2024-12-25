@@ -30,9 +30,11 @@ import { Button } from "@/components/ui/button";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { NotebookTabs } from "lucide-react";
 import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
+import DOMPurify from "dompurify";
+
 
 const RenderStep4 = () => {
-  const { listingName, address, email, phone } = useAppSelector(
+  const { listingName, address, email, phone, description } = useAppSelector(
     (state: RootState) => state.registerListing
   );
   const dispatch: AppDispatch = useAppDispatch();
@@ -73,6 +75,7 @@ const RenderStep4 = () => {
     defaultValues: {
       email: email,
       phone: phone,
+      description: description,
     },
   });
 
@@ -179,3 +182,16 @@ const RenderStep4 = () => {
 };
 
 export default RenderStep4;
+
+export const RenderHTML = ({ content }: { content: string }) => {
+  const sanitizedContent = DOMPurify.sanitize(content);
+
+  return (
+    <div
+      className="description-content"
+      dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+    />
+  );
+};
+
+
