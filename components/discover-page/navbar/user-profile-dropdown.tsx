@@ -32,9 +32,12 @@ import {
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
 import { SignOutButton, UserButton } from "@clerk/nextjs";
+import { getUser } from "@/lib/actions/user/user";
 
 export async function UserProfileDropdown() {
-  const user = await currentUser();
+  const clerkUser = await currentUser();
+  const userDB_id = (clerkUser?.publicMetadata as PublicMetadataType).userDB_id;
+  const user = await getUser(userDB_id);
 
   return (
     <DropdownMenu>
@@ -45,7 +48,7 @@ export async function UserProfileDropdown() {
           <Avatar className="h-max w-max border">
             <AvatarImage
               className="h-6 w-6"
-              src={user?.imageUrl}
+              src={user?.profileImg}
               alt="@username"
             />
             <AvatarFallback>{`${user?.firstName?.[0]?.toUpperCase()}${user?.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>{" "}
@@ -54,26 +57,31 @@ export async function UserProfileDropdown() {
       </DropdownMenuTrigger>
 
       {/* dropdown content */}
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56 ">
         <Link href={`/users/${user?.id}`}>
           <DropdownMenuItem className="flex justify-start items-center gap-3 cursor-pointer">
             <Avatar className="h-max w-max border">
               <AvatarImage
                 className="h-8 w-8"
-                src={user?.imageUrl}
+                src={user?.profileImg}
                 alt="@username"
               />
               <AvatarFallback>{`${user?.firstName?.[0]?.toUpperCase()}${user?.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>{" "}
             </Avatar>
 
-            <div>
-              {user?.firstName} {user?.lastName}
+            <div className="font-semibold">
+              {user?.firstName} {user?.lastName}{" "}
+              {user?.gender === "Male"
+                ? "(M)"
+                : user?.gender === "Female"
+                ? "(F)"
+                : null}
               {/* <p className="text-xs my-1 text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
-                {user?.emailAddresses[0]?.emailAddress}
-              </p>
-              <p className="text-xs text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
-                {user?.phoneNumbers[0]?.phoneNumber}
+                {user?.email}
               </p> */}
+              <p className="text-xs text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
+                {user?.phoneNo}
+              </p>
             </div>
           </DropdownMenuItem>
         </Link>
@@ -82,19 +90,19 @@ export async function UserProfileDropdown() {
 
         {/* dropdown group1 */}
         <DropdownMenuGroup>
-          <Link href={"/users/:userId"}>
+          <Link href={`/users/${user?.id}`}>
             <DropdownMenuItem className="hover:cursor-pointer">
               <IdCard />
               Profile
             </DropdownMenuItem>
           </Link>
-          <Link href={"/users/:userId/wishlist"}>
+          <Link href={`/users/${user?.id}/wishlist`}>
             <DropdownMenuItem className="hover:cursor-pointer">
               <BookHeart />
               Wishlist
             </DropdownMenuItem>
           </Link>
-          <Link href={"/users/:userId/bookings"}>
+          <Link href={`/users/${user?.id}/bookings`}>
             <DropdownMenuItem className="hover:cursor-pointer">
               <TicketsPlane />
               Bookings
@@ -104,7 +112,7 @@ export async function UserProfileDropdown() {
             <Inbox />
             Inbox
           </DropdownMenuItem>
-          <Link href={"/users/:userId/rewards"}>
+          <Link href={`/users/${user?.id}/rewards`}>
             <DropdownMenuItem className="hover:cursor-pointer">
               <Gift />
               Rewards

@@ -25,6 +25,7 @@ export interface RegisterListing {
     fullAddress: string;
     landmark?: string;
   };
+  images: string[];
 }
 
 const initialState: RegisterListing = {
@@ -45,6 +46,7 @@ const initialState: RegisterListing = {
     fullAddress: "",
     landmark: "",
   },
+  images: [],
 };
 
 export const registerListingSlice = createSlice({
@@ -116,6 +118,14 @@ export const registerListingSlice = createSlice({
         fullAddress: action.payload.fullAddress,
       };
     },
+    // to push new images
+    pushImage: (state, action: PayloadAction<string>) => {
+      state.images.push(action.payload);
+    },
+    // to remove images
+    removeImage: (state, action: PayloadAction<string>) => {
+      state.images = state.images.filter((img) => img !== action.payload);
+    },
   },
 });
 
@@ -131,6 +141,8 @@ export const {
   setDescription,
   setGeometry,
   setAddress,
+  pushImage,
+  removeImage,
 } = registerListingSlice.actions;
 
 export default registerListingSlice.reducer;

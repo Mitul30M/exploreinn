@@ -5,7 +5,7 @@ async function ServerPage() {
   const user = await currentUser();
 
   // console.log(authInfo, "\n", userId, "\n\n");
-  // console.log(user);
+  console.log(user);
   // console.log("session claims: ", sessionClaims);
 
   return (

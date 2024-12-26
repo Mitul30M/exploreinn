@@ -1,7 +1,11 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3Client = new S3Client({
@@ -25,6 +29,7 @@ type GetSignedURLParams = {
   fileType: string;
   fileSize: number;
   checksum: string;
+  prefix: "listing" | "room" | "post" | "attachment";
 };
 
 import crypto from "crypto";
@@ -38,7 +43,17 @@ const generateFileName = (bytes = 32) =>
 //   return [...array].map((b) => b.toString(16).padStart(2, "0")).join("");
 // };
 
+/**
+ * Generates a signed URL for uploading an object to AWS S3.
+ *
+ * @param {string} prefix - The prefix to use for the object key.
+ * @param {string} fileType - The type of the file being uploaded.
+ * @param {number} fileSize - The size of the file being uploaded.
+ * @param {string} checksum - The SHA256 checksum of the file being uploaded.
+ * @returns {Promise<{error?: string, success?: {url: string}}>} A promise that resolves to an object with a signed URL or an error message.
+ */
 export async function getSignedURL({
+  prefix,
   fileType,
   fileSize,
   checksum,
@@ -57,7 +72,7 @@ export async function getSignedURL({
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: `${userId}-${generateFileName()}`,
+    Key: `${prefix}-${generateFileName()}`,
     ContentType: fileType,
     ContentLength: fileSize,
     ChecksumSHA256: checksum,
@@ -73,4 +88,25 @@ export async function getSignedURL({
     { expiresIn: 60 } // 60 seconds
   );
   return { success: { url } };
+}
+
+
+/**
+ * Deletes an object from AWS S3.
+ *
+ * @param {string} key - The key of the object to be deleted.
+ * @returns {Promise<{error?: string}>} A promise that resolves to an object with an error message if the user is not authenticated.
+ */
+
+export async function deleteFile(key: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    return { error: "Not Authenticated" };
+  }
+  await s3Client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: key.split('/').pop()?.split('?')[0] || '',
+    })
+  );
 }

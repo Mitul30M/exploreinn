@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { userAccountNavData } from "@/lib/navigation/user-account-nav";
 import { inboxNav, Mail } from "@/lib/utils/seed/user-inbox/mails";
 import MailList from "@/components/user-page/inbox/mail-list";
 import { toast } from "@/hooks/use-toast";
@@ -26,6 +25,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { CheckCircle2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
+import { useUser } from "@clerk/nextjs";
 
 // This is sample data
 interface InboxSidebarProps {
@@ -95,6 +95,8 @@ export function InboxSidebar({
     });
   };
 
+  const { user } = useUser();
+
   return (
     <div className="flex-row bg-purple-400 !max-h-screen rounded-xl" {...props}>
       {/* This is the first sidebar */}
@@ -105,7 +107,13 @@ export function InboxSidebar({
         className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border border-x-0"
       >
         <SidebarHeader>
-          <NavUser user={userAccountNavData.user} />
+          <NavUser
+            user={{
+              name: user?.fullName!,
+              email: user?.emailAddresses[0]!.emailAddress!,
+              avatar: user?.imageUrl!,
+            }}
+          />
         </SidebarHeader>
         <Separator className="" />
         <SidebarContent>

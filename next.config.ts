@@ -12,9 +12,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "plus.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "exploreinn-local.s3.ap-south-1.amazonaws.com",
+      },
     ],
   },
-  reactStrictMode:false,
+  reactStrictMode: false,
 };
 
 export default nextConfig;

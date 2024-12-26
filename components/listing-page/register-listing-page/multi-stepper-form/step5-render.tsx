@@ -6,6 +6,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
+  pushImage,
+  removeImage,
   setAddress,
   setListingName,
   setListingType,
@@ -21,7 +23,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DropzoneOptions } from "react-dropzone";
-import { HardDriveUpload, Image, ImageUp, Paperclip } from "lucide-react";
+import {
+  HardDriveUpload,
+  Hourglass,
+  Image,
+  ImageUp,
+  Paperclip,
+  Trash2,
+} from "lucide-react";
 import {
   Form,
   FormField,
@@ -45,7 +54,7 @@ import {
 } from "@/components/ui/hover-card";
 import NextImage from "next/image";
 import { Progress } from "@/components/ui/progress";
-import { getSignedURL } from "@/lib/actions/s3-buckets/s3-bucket";
+import { deleteFile, getSignedURL } from "@/lib/actions/s3-buckets/s3-bucket";
 const FileUploadForm = z.object({
   files: z
     .array(
@@ -72,7 +81,7 @@ const computeSHA256 = async (file: File) => {
 };
 
 const RenderStep5 = () => {
-  const { email, phone, description, listingName } = useAppSelector(
+  const { email, phone, description, listingName, images } = useAppSelector(
     (state: RootState) => state.registerListing
   );
   const dispatch: AppDispatch = useAppDispatch();
@@ -133,6 +142,7 @@ const RenderStep5 = () => {
       const promise = await Promise.all(
         files.map(async (file, index) => {
           const signedURLResult = await getSignedURL({
+            prefix: "listing",
             fileSize: file.size,
             fileType: file.type,
             checksum: await computeSHA256(file),
@@ -163,10 +173,13 @@ const RenderStep5 = () => {
             },
           });
           if (response.ok) {
-            console.log("File uploaded successfully",response);
+            console.log("File uploaded successfully", response);
+            // the response.url  such tht url is in the format of https://bucketname.s3.amazonaws.com/keyname.extention?xyxw
+            // so just insert the part of url before the query starts(before ?)
+            const url = response.url.split("?")[0];
+            dispatch(pushImage(url));
             successCount++;
           }
-
         })
       );
       if (successCount === files.length) {
@@ -200,10 +213,10 @@ const RenderStep5 = () => {
     } finally {
       setIsLoading(false);
     }
-  };  
-  
+  };
+
   return (
-    <div className="space-y-14 w-full pb-10">
+    <div className="space-y-14 w-full pb-10 space-y-4">
       <div className=" flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 5</Badge>
@@ -235,7 +248,7 @@ const RenderStep5 = () => {
                   <FileInput className="border-[1px] rounded w-full border-border/90 hover:bg-accent/50 hover:border-primary">
                     <div className="flex items-center justify-center flex-col p-4 !w-full min-h-[300px] gap-4 ">
                       {isLoading ? (
-                        <HardDriveUpload className="size-12 text-primary" />
+                        <Hourglass className="size-12 text-primary animate-spin" />
                       ) : (
                         <ImageUp className="size-12 text-primary" />
                       )}
@@ -292,12 +305,46 @@ const RenderStep5 = () => {
               ))}
             </div>
           )}
-          <Button type="submit" className="h-8 w-fit" disabled={isLoading}>
+          <Button
+            type="submit"
+            size="sm"
+            className=" w-fit"
+            disabled={isLoading || images.length === 10}
+          >
+            {isLoading ? <Hourglass /> : <HardDriveUpload />}
             {isLoading ? "Uploading" : "Upload"}
-            <HardDriveUpload />
           </Button>
         </form>
       </Form>
+
+      {/* Uploaded Images */}
+      {images.length ? (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 p-2 border-[1px] border-border/90">
+          {images.map((image, i) => (
+            <div className="relative h-max" key={i}>
+              <NextImage
+                key={i}
+                src={image}
+                alt={image}
+                width={200}
+                height={200}
+                className="h-auto max-w-full object-contain rounded border-border/90 border-[1px]"
+              />
+              <Button
+                size={"icon"}
+                variant={"secondary"}
+                className="absolute top-2 right-2 bg-background/10 dark:bg-foreground/10"
+                onClick={async () => {
+                  await deleteFile(image);
+                  dispatch(removeImage(image));
+                }}
+              >
+                <Trash2 className="text-primary" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };
