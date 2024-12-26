@@ -26,6 +26,7 @@ export interface RegisterListing {
     landmark?: string;
   };
   images: string[];
+  amenities: string[];
 }
 
 const initialState: RegisterListing = {
@@ -47,6 +48,7 @@ const initialState: RegisterListing = {
     landmark: "",
   },
   images: [],
+  amenities: [],
 };
 
 export const registerListingSlice = createSlice({
@@ -126,6 +128,16 @@ export const registerListingSlice = createSlice({
     removeImage: (state, action: PayloadAction<string>) => {
       state.images = state.images.filter((img) => img !== action.payload);
     },
+    // to set amenities
+    pushAmenity: (state, action: PayloadAction<string>) => {
+      state.amenities.push(action.payload);
+    },
+    // to remove amenities
+    removeAmenity: (state, action: PayloadAction<string>) => {
+      state.amenities = state.amenities.filter(
+        (amenity) => amenity !== action.payload
+      );
+    },
   },
 });
 
@@ -143,6 +155,8 @@ export const {
   setAddress,
   pushImage,
   removeImage,
+  pushAmenity,
+  removeAmenity,
 } = registerListingSlice.actions;
 
 export default registerListingSlice.reducer;

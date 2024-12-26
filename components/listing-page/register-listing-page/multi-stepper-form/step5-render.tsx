@@ -216,15 +216,15 @@ const RenderStep5 = () => {
   };
 
   return (
-    <div className="space-y-14 w-full pb-10 space-y-4">
+    <div className="w-full pb-10 space-y-4">
       <div className=" flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 5</Badge>
           Upload Images of {listingName}
         </h1>
         <p className="text-sm text-accent-foreground">
-          Select good images to make your listing stand out & attract
-          travellers.
+          Select good images to make your listing stand out & attract travelers.
+          You can add & delete images later as well.
         </p>
       </div>
 
@@ -319,9 +319,9 @@ const RenderStep5 = () => {
 
       {/* Uploaded Images */}
       {images.length ? (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 p-2 border-[1px] border-border/90">
+        <div className=" border-[1px] border-border/90 columns-3 md:columns-5 p-2 gap-2 [&>div:not(:first-child)]:mt-2">
           {images.map((image, i) => (
-            <div className="relative h-max" key={i}>
+            <div className="relative h-max " key={i}>
               <NextImage
                 key={i}
                 src={image}
@@ -332,8 +332,8 @@ const RenderStep5 = () => {
               />
               <Button
                 size={"icon"}
-                variant={"secondary"}
-                className="absolute top-2 right-2 bg-background/10 dark:bg-foreground/10"
+                variant={"ghost"}
+                className="absolute top-2 right-2 "
                 onClick={async () => {
                   await deleteFile(image);
                   dispatch(removeImage(image));

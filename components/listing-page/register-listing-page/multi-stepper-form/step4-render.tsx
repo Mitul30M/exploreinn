@@ -157,7 +157,7 @@ const RenderStep4 = () => {
               <FormItem className="flex flex-col gap-2">
                 <FormLabel className="text-[14px] text-accent-foreground">
                   Describe your listing so users & the recommendation engine can
-                  know about your listing.
+                  know about your listing. You can update this later as well.
                 </FormLabel>
                 <FormControl>
                   <TextEditor {...field} />
