@@ -16,7 +16,7 @@ import { auth } from "@clerk/nextjs/server";
 const Navbar = async () => {
   const { userId } = await auth();
   return (
-    <header className="flex items-center justify-between max-h-14 w-full px-4 border-y-[1px] border-border/90 mt-1 sticky top-0 bg-background  z-10">
+    <header className="flex items-center justify-between max-h-14 w-full px-4 border-y-[1px] border-border/90  sticky top-0 bg-background  z-10">
       {/* nav links */}
       <NavigationMenu className="flex flex-row justify-center items-center gap-4">
         <Link href={"/"} className="mr-4 flex items-center gap-1 font-semibold">

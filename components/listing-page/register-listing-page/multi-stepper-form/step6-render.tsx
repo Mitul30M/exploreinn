@@ -19,7 +19,7 @@ import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
 const RenderStep6 = () => {
-  const { listingName, amenities, images } = useAppSelector(
+  const { listingName, amenities, images,coverImage } = useAppSelector(
     (state: RootState) => state.registerListing
   );
   const dispatch: AppDispatch = useAppDispatch();
@@ -28,6 +28,19 @@ const RenderStep6 = () => {
       toast({
         title: `*Images are required`,
         description: `Please upload ${listingName}'s images before proceeding.`,
+        action: (
+          <ToastAction className="text-primary text-nowrap" altText="Step 4">
+            Step 5
+          </ToastAction>
+        ),
+      });
+      dispatch(setStep(5));
+      return;
+    }
+    if (!coverImage || !coverImage.length) {
+      toast({
+        title: `*Please Set a Cover Image.`,
+        description: `Set Cover Image for ${listingName} by clicking on the Image Button on the preview.`,
         action: (
           <ToastAction className="text-primary text-nowrap" altText="Step 4">
             Step 5

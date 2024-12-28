@@ -110,3 +110,59 @@ export async function deleteFile(key: string) {
     })
   );
 }
+
+
+/**
+ * Generates a signed URL for uploading legal documents to AWS S3.
+ *
+ * @param {{ prefix: string; fileType: string; fileSize: number; checksum: string }} params
+ * @returns {Promise<{error?: string, success?: {url: string}}>} A promise that resolves to an object with an error message if the user is not authenticated, or an object with a success message containing the signed URL if the user is authenticated.
+ */
+export async function getSignedURLForLegalDocs({
+  prefix,
+  fileType,
+  fileSize,
+  checksum,
+}: GetSignedURLParams): SignedURLResponse {
+  const { userId } = await auth();
+  if (!userId) {
+    return { error: "Not Authenticated" };
+  }
+  if (
+    ![
+      "application/pdf",
+      "applocation/docx",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+    ].includes(fileType)
+  ) {
+    return { error: "File type not allowed" };
+  }
+
+  if (fileSize > maxFileSize) {
+    return { error: "File size too large" };
+  }
+
+  const putObjectCommand = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: `${prefix}-legalDoc-${generateFileName()}`,
+    ContentType: fileType,
+    ContentLength: fileSize,
+    ChecksumSHA256: checksum,
+    // Let's also add some metadata which is stored in s3.
+    Metadata: {
+      userId,
+    },
+  });
+
+  const url = await getSignedUrl(
+    s3Client,
+    putObjectCommand,
+    { expiresIn: 60 } // 60 seconds
+  );
+  return { success: { url } };
+}

@@ -50,7 +50,7 @@ const RenderStep4 = () => {
     ) {
       toast({
         title: "*Address is Required",
-        description: "Please set ${listingName}'s address before moving ahead.",
+        description: `Please set ${listingName}'s address before moving ahead.`,
         action: (
           <ToastAction className="text-primary text-nowrap" altText="Step 3">
             Step 3

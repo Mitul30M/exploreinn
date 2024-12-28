@@ -16,6 +16,8 @@ import RenderStep4 from "@/components/listing-page/register-listing-page/multi-s
 import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
 import RenderStep5 from "@/components/listing-page/register-listing-page/multi-stepper-form/step5-render";
 import RenderStep6 from "@/components/listing-page/register-listing-page/multi-stepper-form/step6-render";
+import RenderStep7 from "@/components/listing-page/register-listing-page/multi-stepper-form/step7-render";
+import RenderStep8 from "@/components/listing-page/register-listing-page/multi-stepper-form/step8-render";
 
 const RegisterNewListingPage = () => {
   const progress = useAppSelector(
@@ -75,6 +77,10 @@ const renderStep = (progress: number) => {
       return <RenderStep5 />;
     case 6:
       return <RenderStep6 />;
+    case 7:
+      return <RenderStep7 />;
+    case 8:
+      return <RenderStep8 />;
     default:
       return <div>Unknown Step</div>;
   }

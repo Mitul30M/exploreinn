@@ -26,7 +26,32 @@ export interface RegisterListing {
     landmark?: string;
   };
   images: string[];
+  coverImage: string;
   amenities: string[];
+  legalDocs: string[];
+  room: {
+    name: string;
+    tag: string;
+    basePrice: number;
+    totalRoomsAllocated: number;
+    maxOccupancy: number;
+    area: number;
+    beds: {
+      type: string;
+      count: number;
+    };
+    isWifiAvailable: boolean;
+    isAirConditioned: boolean;
+    hasCityView: boolean;
+    hasSeaView: boolean;
+    perks: string[];
+    extras: {
+      name: string;
+      cost: number;
+    }[];
+    images: string[];
+    coverImage: string;
+  };
 }
 
 const initialState: RegisterListing = {
@@ -48,7 +73,34 @@ const initialState: RegisterListing = {
     landmark: "",
   },
   images: [],
+  coverImage: "",
   amenities: [],
+  legalDocs: [],
+  room: {
+    name: "",
+    tag: "",
+    basePrice: 0,
+    totalRoomsAllocated: 0,
+    maxOccupancy: 0,
+    area: 0,
+    beds: {
+      type: "",
+      count: 0,
+    },
+    isWifiAvailable: false,
+    isAirConditioned: false,
+    hasCityView: false,
+    hasSeaView: false,
+    perks: [],
+    extras: [
+      {
+        name: "No Extras",
+        cost: 0,
+      },
+    ],
+    images: [],
+    coverImage: "",
+  },
 };
 
 export const registerListingSlice = createSlice({
@@ -128,6 +180,10 @@ export const registerListingSlice = createSlice({
     removeImage: (state, action: PayloadAction<string>) => {
       state.images = state.images.filter((img) => img !== action.payload);
     },
+    // to set cover image
+    setCoverImage: (state, action: PayloadAction<string>) => {
+      state.coverImage = action.payload;
+    },
     // to set amenities
     pushAmenity: (state, action: PayloadAction<string>) => {
       state.amenities.push(action.payload);
@@ -137,6 +193,34 @@ export const registerListingSlice = createSlice({
       state.amenities = state.amenities.filter(
         (amenity) => amenity !== action.payload
       );
+    },
+    // to set legalDocs
+    pushLegalDocs: (state, action: PayloadAction<string>) => {
+      state.legalDocs.push(action.payload);
+    },
+    // to remove legalDocs
+    removeLegalDocs: (state, action: PayloadAction<string>) => {
+      state.legalDocs = state.legalDocs.filter(
+        (legalDoc) => legalDoc !== action.payload
+      );
+    },
+    // to set room details
+    setRoom: (state, action: PayloadAction<typeof state.room>) => {
+      state.room = action.payload;
+    },
+    // to push room images
+    pushRoomImage: (state, action: PayloadAction<string>) => {
+      state.room.images.push(action.payload);
+    },
+    // to remove room images
+    removeRoomImage: (state, action: PayloadAction<string>) => {
+      state.room.images = state.room.images.filter(
+        (img) => img !== action.payload
+      );
+    },
+    // to set room cover image
+    setRoomCoverImage: (state, action: PayloadAction<string>) => {
+      state.room.coverImage = action.payload;
     },
   },
 });
@@ -155,8 +239,15 @@ export const {
   setAddress,
   pushImage,
   removeImage,
+  setCoverImage,
   pushAmenity,
   removeAmenity,
+  pushLegalDocs,
+  removeLegalDocs,
+  setRoom,
+  pushRoomImage,
+  removeRoomImage,
+  setRoomCoverImage,
 } = registerListingSlice.actions;
 
 export default registerListingSlice.reducer;

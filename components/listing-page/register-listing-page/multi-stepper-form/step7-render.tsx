@@ -6,32 +6,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
-  pushImage,
-  removeImage,
-  setAddress,
-  setCoverImage,
-  setListingName,
-  setListingType,
+  pushLegalDocs,
   setStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
-import { listingTypes } from "@/lib/utils/listing/listing";
 import { useDebouncedCallback } from "use-debounce";
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { DropzoneOptions } from "react-dropzone";
-import {
-  HardDriveUpload,
-  Hourglass,
-  Image,
-  ImageUp,
-  Paperclip,
-  Trash2,
-} from "lucide-react";
 import {
   Form,
   FormField,
@@ -42,20 +27,23 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import {
+  FileInput,
   FileUploader,
   FileUploaderContent,
   FileUploaderItem,
-  FileInput,
 } from "@/components/ui/file-upload";
-import { Button } from "@/components/ui/button";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import NextImage from "next/image";
+  FileUp,
+  FolderUp,
+  HardDriveUpload,
+  Hourglass,
+  Paperclip,
+  Pin,
+} from "lucide-react";
+import { HoverCard } from "@/components/ui/hover-card";
 import { Progress } from "@/components/ui/progress";
-import { deleteFile, getSignedURL } from "@/lib/actions/s3-buckets/s3-bucket";
+import { Button } from "@/components/ui/button";
+import { getSignedURLForLegalDocs } from "@/lib/actions/s3-buckets/s3-bucket";
 import { computeSHA256 } from "@/lib/utils/seed/sha256";
 const FileUploadForm = z.object({
   files: z
@@ -64,46 +52,31 @@ const FileUploadForm = z.object({
         message: "File size must be less than 4MB",
       })
     )
-    .max(10, {
-      message: "Maximum 10 files are allowed",
-    })
-    .nullable(),
+    .min(5, {
+      message: "Please upload at least 5 files",
+    }).nullable(),
 });
 
 type FormType = z.infer<typeof FileUploadForm>;
-
-const RenderStep5 = () => {
-  const { email, phone, description, listingName, images, coverImage } =
-    useAppSelector((state: RootState) => state.registerListing);
+const RenderStep7 = () => {
+  const { listingName, amenities, legalDocs } = useAppSelector(
+    (state: RootState) => state.registerListing
+  );
   const dispatch: AppDispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number[]>([]);
-
   useEffect(() => {
-    if (!email.length || !phone.length) {
+    if (!amenities.length || amenities.length < 6) {
       toast({
-        title: `*Email and Phone are required`,
-        description: `Please set ${listingName}'s email and phone before moving ahead.`,
+        title: `*Select at least 6 Amenities`,
+        description: `Please select ${listingName}'s amenities before proceeding.`,
         action: (
           <ToastAction className="text-primary text-nowrap" altText="Step 4">
-            Step 4
+            Step 6
           </ToastAction>
         ),
       });
-      dispatch(setStep(4));
-      return;
-    }
-    if (!description.length) {
-      toast({
-        title: `*Description is required`,
-        description: `Please set ${listingName}'s description before moving ahead.`,
-        action: (
-          <ToastAction className="text-primary text-nowrap" altText="Step 4">
-            Step 4
-          </ToastAction>
-        ),
-      });
-      dispatch(setStep(4));
+      dispatch(setStep(6));
       return;
     }
   }, []);
@@ -117,6 +90,7 @@ const RenderStep5 = () => {
 
   const dropzone = {
     accept: {
+      "application/*": [".pdf", ".docx"],
       "image/*": [".jpg", ".jpeg", ".png", ".webp"],
     },
     multiple: true,
@@ -132,7 +106,7 @@ const RenderStep5 = () => {
       let successCount = 0;
       const promise = await Promise.all(
         files.map(async (file, index) => {
-          const signedURLResult = await getSignedURL({
+          const signedURLResult = await getSignedURLForLegalDocs({
             prefix: "listing",
             fileSize: file.size,
             fileType: file.type,
@@ -141,7 +115,7 @@ const RenderStep5 = () => {
           if (signedURLResult.error !== undefined) {
             // console.error("Error: ", signedURLResult.error);
             toast({
-              title: `*Error while Uploading Files`,
+              title: `*Error while Uploading Documents`,
               description: signedURLResult.error,
               action: (
                 <ToastAction
@@ -168,7 +142,7 @@ const RenderStep5 = () => {
             // the response.url  such tht url is in the format of https://bucketname.s3.amazonaws.com/keyname.extention?xyxw
             // so just insert the part of url before the query starts(before ?)
             const url = response.url.split("?")[0];
-            dispatch(pushImage(url));
+            dispatch(pushLegalDocs(url));
             successCount++;
           }
         })
@@ -176,7 +150,7 @@ const RenderStep5 = () => {
       if (successCount === files.length) {
         toast({
           title: `${files.length} Files Uploaded Successfully`,
-          description: "All images uploaded successfully to the server.",
+          description: "All documents uploaded successfully to the server.",
           action: (
             <ToastAction
               className="text-primary text-nowrap flex items-center gap-1 justify-center"
@@ -186,7 +160,6 @@ const RenderStep5 = () => {
             </ToastAction>
           ),
         });
-        dispatch(setCoverImage(images[0]));
       }
     } catch (error) {
       toast({
@@ -208,19 +181,25 @@ const RenderStep5 = () => {
   };
 
   return (
-    <div className="w-full pb-10 space-y-4">
+    <div className="space-y-14 w-full">
       <div className=" flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
-          <Badge className="rounded-full w-max">Step 5</Badge>
-          Upload Images of {listingName}
+          <Badge className="rounded-full w-max">Step 7</Badge>
+          {listingName}'s Legal Documentation
         </h1>
         <p className="text-sm text-accent-foreground">
-          Select good images to make your listing stand out & attract travelers.
-          You can add & delete images later as well.
+          Please upload legal documentation for {listingName}. We won't share
+          these documents with anyone else & are required just for verification
+          purposes. These may include your Tax Identification Number (TIN),
+          VAT/GST certificate, business registration documents, proof of
+          property ownership (e.g., property deed, lease agreement, or NOC), or
+          any region-specific requirements such as an ABN, PAN, or CRN. Ensure
+          the documents are clear and legible and upload them in PDF, JPEG, or
+          PNG format
         </p>
       </div>
 
-      {/* Image Upload */}
+      {/* Legal Docs Upload */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -242,14 +221,17 @@ const RenderStep5 = () => {
                       {isLoading ? (
                         <Hourglass className="size-12 text-primary animate-spin" />
                       ) : (
-                        <ImageUp className="size-12 text-primary" />
+                        <FileUp className="size-12 text-primary" />
                       )}
                       <div className="space-y-2 text-center">
                         <p className="text-lg font-semibold">
-                          {isLoading ? "Uploading Images" : "Upload Images"}
+                          {isLoading
+                            ? "Uploading Documents"
+                            : "Upload Documents"}
                         </p>
                         <p className="text-sm font-medium leading-none text-accent-foreground/80">
-                          Max 10 images, each with size less than 4MB.
+                          Upload the aforementioned legal docs, each with size
+                          less than 4MB.
                         </p>
                       </div>
                     </div>
@@ -266,7 +248,7 @@ const RenderStep5 = () => {
                             }`}
                             className="p-1 min-w-[600px] h-max"
                           >
-                            <Image className="h-4 w-4 stroke-current text-primary" />
+                            <Paperclip className="h-4 w-4 stroke-current text-primary" />
                             {/* <NextImage
                               src={URL.createObjectURL(file)}
                               alt={file.name}
@@ -290,6 +272,7 @@ const RenderStep5 = () => {
               </FormItem>
             )}
           />
+          
           {form.formState.errors && (
             <div className="text-destructive text-sm">
               {Object.values(form.formState.errors).map((error) => (
@@ -301,61 +284,15 @@ const RenderStep5 = () => {
             type="submit"
             size="sm"
             className=" w-fit"
-            disabled={isLoading || images.length === 10}
+            disabled={isLoading || legalDocs.length > 8}
           >
             {isLoading ? <Hourglass /> : <HardDriveUpload />}
             {isLoading ? "Uploading" : "Upload"}
           </Button>
         </form>
       </Form>
-
-      {/* Uploaded Images */}
-      {images.length ? (
-        <div className=" border-[1px] border-border/90 columns-3 md:columns-5 p-2 gap-2 [&>div:not(:first-child)]:mt-2">
-          {images.map((image, i) => (
-            <div className="relative h-max " key={i}>
-              <NextImage
-                key={i}
-                src={image}
-                alt={image}
-                width={200}
-                height={200}
-                className="h-auto max-w-full object-contain rounded border-border/90 border-[1px]"
-              />
-              <Button
-                size={"icon"}
-                variant={"ghost"}
-                className="absolute top-2 right-2 "
-                onClick={async () => {
-                  if (image === coverImage) {
-                    dispatch(setCoverImage(images[1]));
-                  }
-                  await deleteFile(image);
-                  dispatch(removeImage(image));
-                }}
-              >
-                <Trash2 className="text-primary" />
-              </Button>
-              <Button
-                size={"icon"}
-                disabled={coverImage === image}
-                variant={"ghost"}
-                className="absolute top-10 right-2 "
-                onClick={() => {
-                  dispatch(setCoverImage(image));
-                }}
-              >
-                <Image
-                  className={
-                    coverImage === image ? "text-primary" : "text-foreground"
-                  }
-                />
-              </Button>
-            </div>
-          ))}
-        </div>
-      ) : null}
     </div>
   );
 };
-export default RenderStep5;
+
+export default RenderStep7;

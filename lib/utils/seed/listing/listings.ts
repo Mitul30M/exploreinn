@@ -70,7 +70,7 @@ export const listings = [
         maxOccupancy: 2,
         totalRooms: 50,
         availableRooms: 20,
-        maxRoomsPerBookings: 5,
+        maxRoomsPerBookings: 5, //skippable
         beds: {
           type: "King Sized Bed",
           count: 1,
