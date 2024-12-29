@@ -18,6 +18,9 @@ import RenderStep5 from "@/components/listing-page/register-listing-page/multi-s
 import RenderStep6 from "@/components/listing-page/register-listing-page/multi-stepper-form/step6-render";
 import RenderStep7 from "@/components/listing-page/register-listing-page/multi-stepper-form/step7-render";
 import RenderStep8 from "@/components/listing-page/register-listing-page/multi-stepper-form/step8-render";
+import RenderStep9 from "@/components/listing-page/register-listing-page/multi-stepper-form/step9-render";
+import RenderStep10 from "@/components/listing-page/register-listing-page/multi-stepper-form/step10-render";
+import RenderStep11 from "@/components/listing-page/register-listing-page/multi-stepper-form/step11-render";
 
 const RegisterNewListingPage = () => {
   const progress = useAppSelector(
@@ -81,6 +84,14 @@ const renderStep = (progress: number) => {
       return <RenderStep7 />;
     case 8:
       return <RenderStep8 />;
+    case 9:
+      return <RenderStep9 />;
+    case 10:
+      return <RenderStep10 />;
+    case 11:
+      return <RenderStep11 />;
+    case 12:
+      return;
     default:
       return <div>Unknown Step</div>;
   }

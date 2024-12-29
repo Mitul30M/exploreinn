@@ -93,6 +93,7 @@
     "svix": "^1.43.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "timescape": "^0.7.1",
     "uploadthing": "^7.4.1",
     "use-debounce": "^10.0.4",
     "use-resize-observer": "^9.1.0",

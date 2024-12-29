@@ -52,6 +52,21 @@ export interface RegisterListing {
     images: string[];
     coverImage: string;
   };
+  taxIN: string;
+  taxRates: {
+    name: string;
+    rate: number;
+  }[];
+  checkInTime: string;
+  checkOutTime: string;
+  checkInRulesAndRestrictions: string;
+  groundRulesAndRestrictions: string;
+  cancellationPolicy: string;
+  socialMediaLinks: {
+    name: string;
+    link: string;
+  }[];
+  tags: string[];
 }
 
 const initialState: RegisterListing = {
@@ -101,6 +116,15 @@ const initialState: RegisterListing = {
     images: [],
     coverImage: "",
   },
+  taxIN: "",
+  taxRates: [{ name: "", rate: 0 }],
+  checkInTime: "",
+  checkOutTime: "",
+  checkInRulesAndRestrictions: "",
+  groundRulesAndRestrictions: "",
+  cancellationPolicy: "",
+  socialMediaLinks: [],
+  tags: [],
 };
 
 export const registerListingSlice = createSlice({
@@ -222,6 +246,45 @@ export const registerListingSlice = createSlice({
     setRoomCoverImage: (state, action: PayloadAction<string>) => {
       state.room.coverImage = action.payload;
     },
+    // to set taxIN
+    setTaxIN: (state, action: PayloadAction<string>) => {
+      state.taxIN = action.payload;
+    },
+    // to set taxRates
+    setTaxRates: (state, action: PayloadAction<typeof state.taxRates>) => {
+      state.taxRates = action.payload;
+    },
+    // to set checkInTime
+    setCheckInTime: (state, action: PayloadAction<string>) => {
+      state.checkInTime = action.payload;
+    },
+    // to set checkOutTime
+    setCheckOutTime: (state, action: PayloadAction<string>) => {
+      state.checkOutTime = action.payload;
+    },
+    // to set checkInRulesAndRestrictions
+    setCheckInRulesAndRestrictions: (state, action: PayloadAction<string>) => {
+      state.checkInRulesAndRestrictions = action.payload;
+    },
+    // to set groundRulesAndRestrictions
+    setGroundRulesAndRestrictions: (state, action: PayloadAction<string>) => {
+      state.groundRulesAndRestrictions = action.payload;
+    },
+    // to set cancellationPolicy
+    setCancellationPolicy: (state, action: PayloadAction<string>) => {
+      state.cancellationPolicy = action.payload;
+    },
+    // to set socialMediaLinks
+    setSocialMediaLinks: (
+      state,
+      action: PayloadAction<typeof state.socialMediaLinks>
+    ) => {
+      state.socialMediaLinks = action.payload;
+    },
+    // to set tags
+    setTags: (state, action: PayloadAction<string[]>) => {
+      state.tags = action.payload;
+    },
   },
 });
 
@@ -248,6 +311,15 @@ export const {
   pushRoomImage,
   removeRoomImage,
   setRoomCoverImage,
+  setTaxIN,
+  setTaxRates,
+  setCheckInTime,
+  setCheckOutTime,
+  setCheckInRulesAndRestrictions,
+  setGroundRulesAndRestrictions,
+  setCancellationPolicy,
+  setSocialMediaLinks,
+  setTags,
 } = registerListingSlice.actions;
 
 export default registerListingSlice.reducer;
