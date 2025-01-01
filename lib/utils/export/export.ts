@@ -71,3 +71,45 @@ export function exportTableToCSV<TData>(
   link.click();
   document.body.removeChild(link);
 }
+
+export const fetchNearbyPlaces = async (
+  latitude: number,
+  longitude: number,
+  query: string,
+  limit?: number
+) => {
+  const baseUrl = "https://api.foursquare.com/v3/places/search";
+  const searchParams = new URLSearchParams({
+    query,
+    ll: `${latitude},${longitude}`,
+    exclude_all_chains: "true",
+    limit: limit ? limit.toString() : "1",
+  });
+
+  const url = `${baseUrl}?${searchParams.toString()}`;
+
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: process.env.NEXT_PUBLIC_FOURSQUARE_API_KEY as string, // Replace with your actual API key
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return (
+      data?.results?.map((place: { name: string; distance: number }) => ({
+        name: place.name,
+        distance: (place.distance / 1000).toFixed(2),
+      })) || []
+    );
+  } catch (error) {
+    console.error("Error fetching nearby places:", error);
+    return [];
+  }
+};

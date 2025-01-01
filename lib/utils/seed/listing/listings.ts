@@ -45,18 +45,15 @@ export const listings = [
           distance: 1.5,
         },
       ],
-      railwayStation: [
-        {
-          name: "North Station",
-          distance: 0.8,
-        },
-      ],
-      airport: [
-        {
-          name: "Boston Logan International Airport",
-          distance: 15.2,
-        },
-      ],
+      railwayStation: {
+        name: "North Station",
+        distance: 0.8,
+      },
+
+      airport: {
+        name: "Boston Logan International Airport",
+        distance: 15.2,
+      },
     },
     // room types & prices
     roomTypes: [

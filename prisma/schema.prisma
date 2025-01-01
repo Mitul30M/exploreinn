@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -13,21 +10,41 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// User can own multiple listings, but each listing is owned by only one user.
+// Each listing can have multiple managers, and a user can manage multiple listings.
+
+enum Role {
+  User
+  Admin
+}
+
+// User
 model User {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId    String    @unique
-  role       Role      @default(User)
-  email      String    @unique
-  phoneNo    String    @unique
-  firstName  String
-  lastName   String
-  profileImg String
-  dob        DateTime?
-  gender     Gender?
-  country    String?
-  address    Address? // Grouped address fields
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId           String    @unique
+  role              Role      @default(User)
+  email             String    @unique
+  phoneNo           String    @unique
+  firstName         String
+  lastName          String
+  profileImg        String
+  dob               DateTime?
+  gender            Gender?
+  country           String?
+  address           Address? // Grouped address fields
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  // Relationships
+  ownedListings     Listing[] @relation("OwnedListings")
+  managedListingIds String[]  @default([]) @db.ObjectId
+  managedListings   Listing[] @relation("ManagedListings", fields: [managedListingIds], references: [id])
+  reviews           Review[]
+}
+
+enum Gender {
+  Male
+  Female
+  Other
 }
 
 type Address {
@@ -39,13 +56,154 @@ type Address {
   postalCode String
 }
 
-enum Gender {
-  Male
-  Female
-  Other
+// Listing
+model Listing {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  type         String
+  email        String
+  phoneNo      String
+  description  String
+  checkInTime  String
+  checkOutTime String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Geometry & address
+  geometry     GeoJSON
+  address      ListingAddress
+  distanceFrom DistanceFrom
+
+  // Images, Legal Docs, Policies, Rules & Regulations
+  images                      String[]
+  legalDocs                   String[]
+  coverImage                  String
+  taxIN                       String
+  taxRates                    TaxRates[]
+  isBookNowPayLaterAllowed    Boolean    @default(true)
+  checkInRulesAndRestrictions String
+  groundRulesAndRestrictions  String
+  cancellationPolicy          String
+
+  // Relationships
+  owner      User     @relation("OwnedListings", fields: [ownerId], references: [id])
+  ownerId    String   @db.ObjectId
+  managers   User[]   @relation("ManagedListings", fields: [managerIds], references: [id])
+  managerIds String[] @db.ObjectId
+  rooms      Room[]
+
+  // Amenities
+  amenities String[]
+
+  // Reviews & Ratings
+  reviews         Review[]
+  starRating      Float // Out of 5, avg of stars for all reviews
+  overallRating   Float           @default(7) // Out of 10, 10 being best and 0 being poorest, avg of overallRatings of the same by all reviews
+  exploreinnGrade ExploreinnGrade @default(Good) //given based on overallRating
+
+  // socials
+  socialMediaLinks String[]
+  tags             String[]
 }
 
-enum Role {
-  User
-  Admin
+type GeoJSON {
+  type        String  @default("Point") // For GeoJSON type, e.g., "Point"
+  coordinates Float[]
+}
+
+type ListingAddress {
+  street       String
+  neighborhood String
+  city         String
+  state        String
+  country      String
+  zipCode      String
+  fullAddress  String
+  landmark     String? @default("") // Optional field
+}
+
+type DistanceFrom {
+  touristDestinations DistanceFromDestination[]
+  airport             DistanceFromDestination
+  railwayStation      DistanceFromDestination
+  busStop             DistanceFromDestination
+}
+
+type DistanceFromDestination {
+  name     String
+  distance Float
+}
+
+enum ExploreinnGrade {
+  Excellent
+  VeryGood
+  Good
+  Fair
+  Poor
+}
+
+type TaxRates {
+  name String
+  rate Float
+}
+
+// Review
+model Review {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  content       String
+  stars         Float    @default(0)
+  cleanliness   Float    @default(0)
+  comfort       Float    @default(0)
+  communication Float    @default(0)
+  checkIn       Float    @default(0)
+  valueForMoney Float    @default(0)
+  location      Float    @default(0)
+  overallRating Float    @default(0) //avg of above 6 fields
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  String  @db.ObjectId
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String  @db.ObjectId
+}
+
+// Room
+model Room {
+  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  tag                 String
+  isAvailable         Boolean
+  isDynamicallyPriced Boolean     @default(false)
+  price               Float //used if dynamic-pricing is enabled, default to basePrice when created
+  basePrice           Float //used if dynamic-pricing is disabled
+  totalRoomsAllocated Int
+  maxOccupancy        Int
+  area                Float
+  beds                RoomBed
+  isWifiAvailable     Boolean
+  isAirConditioned    Boolean
+  hasCityView         Boolean
+  hasSeaView          Boolean
+  perks               String[]
+  extras              RoomExtra[]
+  images              String[]
+  coverImage          String
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  // Relationships
+  listing   Listing @relation(fields: [listingId], references: [id])
+  listingId String  @db.ObjectId
+}
+
+type RoomBed {
+  type  String
+  count Int
+}
+
+type RoomExtra {
+  name String
+  cost Float
 }

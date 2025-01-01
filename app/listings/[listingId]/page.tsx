@@ -217,36 +217,31 @@ const ListingPage = () => {
             </div>
             {/* airport */}
             <div className="w-full space-y-2 p-4 pt-0 pb-2">
-              {listing.distanceFrom?.airport &&
-                listing.distanceFrom?.airport.map((destination, index) => (
-                  <div key={index} className="w-full flex items-center  gap-2">
-                    <p className="text-sm">
-                      <Plane className="w-4 h-4 text-card-foreground/65" />
-                    </p>
-                    <p className="font-medium text-sm text-card-foreground/65">
-                      Approx {destination.distance}Km from {destination.name}.
-                    </p>
-                  </div>
-                ))}
+              {listing.distanceFrom?.airport && (
+                <div className="w-full flex items-center  gap-2">
+                  <p className="text-sm">
+                    <Plane className="w-4 h-4 text-card-foreground/65" />
+                  </p>
+                  <p className="font-medium text-sm text-card-foreground/65">
+                    Approx {listing.distanceFrom?.airport.distance}Km from{" "}
+                    {listing.distanceFrom?.airport.name}.
+                  </p>
+                </div>
+              )}
             </div>
             {/* railway station */}
             <div className="w-full space-y-2 p-4 pt-0">
-              {listing.distanceFrom?.railwayStation &&
-                listing.distanceFrom?.railwayStation.map(
-                  (destination, index) => (
-                    <div
-                      key={index}
-                      className="w-full flex items-center  gap-2"
-                    >
-                      <p className="text-sm">
-                        <TrainFront className="w-4 h-4 text-card-foreground/65" />
-                      </p>
-                      <p className="font-medium text-sm text-card-foreground/65">
-                        Approx {destination.distance}Km from {destination.name}.
-                      </p>
-                    </div>
-                  )
-                )}
+              {listing.distanceFrom?.railwayStation && (
+                <div className="w-full flex items-center  gap-2">
+                  <p className="text-sm">
+                    <Plane className="w-4 h-4 text-card-foreground/65" />
+                  </p>
+                  <p className="font-medium text-sm text-card-foreground/65">
+                    Approx {listing.distanceFrom?.railwayStation.distance}Km
+                    from {listing.distanceFrom?.railwayStation.name}.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="w-full space-y-2 p-4 pt-0 flex flex-row justify-end">
               <Button variant={"outline"} className="rounded-full text-primary">

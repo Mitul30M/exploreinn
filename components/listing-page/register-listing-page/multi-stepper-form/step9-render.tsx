@@ -10,6 +10,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +18,7 @@ import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
+  setIsBookNowPayLater,
   setStep,
   setTaxIN,
   setTaxRates,
@@ -26,11 +28,11 @@ import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Minus, NotebookTabs, Plus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 const RenderStep9 = () => {
-  const { listingName, taxIN, taxRates, room } = useAppSelector(
-    (state: RootState) => state.registerListing
-  );
+  const { listingName, taxIN, taxRates, room, isBookNowPayLaterAllowed } =
+    useAppSelector((state: RootState) => state.registerListing);
   const dispatch: AppDispatch = useAppDispatch();
 
   useEffect(() => {
@@ -60,6 +62,7 @@ const RenderStep9 = () => {
   }, []);
 
   const FormSchema = z.object({
+    isBookNowPayLater: z.boolean(),
     taxIN: z.string().min(10, "TaxIN is required").max(20, "TaxIN is required"),
     taxRates: z.array(
       z.object({
@@ -72,6 +75,7 @@ const RenderStep9 = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      isBookNowPayLater: isBookNowPayLaterAllowed,
       taxIN: taxIN ? taxIN : "",
       taxRates: taxRates ? taxRates : [{ name: "", rate: 0 }],
     },
@@ -80,6 +84,7 @@ const RenderStep9 = () => {
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     dispatch(setTaxIN(data.taxIN));
     dispatch(setTaxRates(data.taxRates));
+    dispatch(setIsBookNowPayLater(data.isBookNowPayLater));
     console.log(data);
   };
 
@@ -100,6 +105,31 @@ const RenderStep9 = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col w-full gap-8"
         >
+          {/* Book Now Pay Later */}
+          <FormField
+            control={form.control}
+            name="isBookNowPayLater"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border-primary border-2 p-4 max-w-[700px] shadow-sm">
+                <div className="space-y-1">
+                  <FormLabel className="text-primary font-semibold">
+                    Enable Book-Now-Pay-Later?
+                  </FormLabel>
+                  <FormDescription>
+                    Users can book the room they want & the payment will be
+                    handled during the checkIn.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           {/* TIN */}
           <FormField
             control={form.control}

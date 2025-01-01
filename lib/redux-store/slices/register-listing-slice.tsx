@@ -25,6 +25,24 @@ export interface RegisterListing {
     fullAddress: string;
     landmark?: string;
   };
+  distanceFrom: {
+    touristDestinations: {
+      name: string;
+      distance: number;
+    }[];
+    airport: {
+      name: string;
+      distance: number;
+    };
+    railwayStation: {
+      name: string;
+      distance: number;
+    };
+    busStop: {
+      name: string;
+      distance: number;
+    };
+  };
   images: string[];
   coverImage: string;
   amenities: string[];
@@ -59,6 +77,7 @@ export interface RegisterListing {
   }[];
   checkInTime: string;
   checkOutTime: string;
+  isBookNowPayLaterAllowed: boolean;
   checkInRulesAndRestrictions: string;
   groundRulesAndRestrictions: string;
   cancellationPolicy: string;
@@ -69,8 +88,94 @@ export interface RegisterListing {
   tags: string[];
 }
 
+import { z } from "zod";
+
+export const RegisterListingSchema = z.object({
+  progress: z.number(),
+  listingName: z.string(),
+  listingType: z.string(),
+  email: z.string().email(),
+  phone: z.string(),
+  description: z.string(),
+  geometry: z.object({
+    type: z.literal("Point"),
+    coordinates: z.tuple([z.number(), z.number()]),
+  }),  address: z.object({
+    street: z.string(),
+    neighborhood: z.string(),
+    city: z.string(),
+    state: z.string(),
+    country: z.string(),
+    zipCode: z.string(),
+    fullAddress: z.string(),
+    landmark: z.string(),
+  }),
+  distanceFrom: z.object({
+    touristDestinations: z.array(z.object({
+      name: z.string(),
+      distance: z.number(),
+    })),
+    airport: z.object({
+      name: z.string(),
+      distance: z.number(),
+    }),
+    railwayStation: z.object({
+      name: z.string(),
+      distance: z.number(),
+    }),
+    busStop: z.object({
+      name: z.string(),
+      distance: z.number(),
+    }),
+  }),
+  images: z.array(z.string()),
+  coverImage: z.string(),
+  amenities: z.array(z.string()),
+  legalDocs: z.array(z.string()),
+  room: z.object({
+    name: z.string(),
+    tag: z.string(),
+    basePrice: z.number(),
+    totalRoomsAllocated: z.number(),
+    maxOccupancy: z.number(),
+    area: z.number(),
+    beds: z.object({
+      type: z.string(),
+      count: z.number(),
+    }),
+    isWifiAvailable: z.boolean(),
+    isAirConditioned: z.boolean(),
+    hasCityView: z.boolean(),
+    hasSeaView: z.boolean(),
+    perks: z.array(z.string()),
+    extras: z.array(z.object({
+      name: z.string(),
+      cost: z.number(),
+    })),
+    images: z.array(z.string()),
+    coverImage: z.string(),
+  }),
+  taxIN: z.string(),
+  taxRates: z.array(z.object({
+    name: z.string(),
+    rate: z.number(),
+  })),
+  checkInTime: z.string(),
+  checkOutTime: z.string(),
+  isBookNowPayLaterAllowed: z.boolean(),
+  checkInRulesAndRestrictions: z.string(),
+  groundRulesAndRestrictions: z.string(),
+  cancellationPolicy: z.string(),
+  socialMediaLinks: z.array(z.object({
+    name: z.string(),
+    link: z.string(),
+  })),
+  tags: z.array(z.string()),
+});
+
+
 const initialState: RegisterListing = {
-  progress: 1,
+  progress: 14,
   listingName: "",
   listingType: "Hotel",
   email: "",
@@ -86,6 +191,12 @@ const initialState: RegisterListing = {
     zipCode: "",
     fullAddress: "",
     landmark: "",
+  },
+  distanceFrom: {
+    touristDestinations: [],
+    airport: { name: "", distance: 0 },
+    railwayStation: { name: "", distance: 0 },
+    busStop: { name: "", distance: 0 },
   },
   images: [],
   coverImage: "",
@@ -120,12 +231,15 @@ const initialState: RegisterListing = {
   taxRates: [{ name: "", rate: 0 }],
   checkInTime: "",
   checkOutTime: "",
+  isBookNowPayLaterAllowed: true,
   checkInRulesAndRestrictions: "",
   groundRulesAndRestrictions: "",
   cancellationPolicy: "",
   socialMediaLinks: [],
   tags: [],
 };
+
+
 
 export const registerListingSlice = createSlice({
   name: "new-listing",
@@ -170,6 +284,34 @@ export const registerListingSlice = createSlice({
         type: "Point",
         coordinates: [action.payload.lng, action.payload.lat],
       };
+    },
+    // to set distanceFrom.touristDestination
+    setDistanceFromTouristDestinations: (
+      state,
+      action: PayloadAction<{ name: string; distance: number }[]>
+    ) => {
+      state.distanceFrom.touristDestinations = action.payload;
+    },
+    // to set distanceFrom.airport
+    setDistanceFromAirport: (
+      state,
+      action: PayloadAction<{ name: string; distance: number }>
+    ) => {
+      state.distanceFrom.airport = action.payload;
+    },
+    // to set distanceFrom.railwayStation
+    setDistanceFromRailwayStation: (
+      state,
+      action: PayloadAction<{ name: string; distance: number }>
+    ) => {
+      state.distanceFrom.railwayStation = action.payload;
+    },
+    // to set distanceFrom.busStop
+    setDistanceFromBusStop: (
+      state,
+      action: PayloadAction<{ name: string; distance: number }>
+    ) => {
+      state.distanceFrom.busStop = action.payload;
     },
     // to set address
     setAddress: (
@@ -285,11 +427,23 @@ export const registerListingSlice = createSlice({
     setTags: (state, action: PayloadAction<string[]>) => {
       state.tags = action.payload;
     },
+    // to set isBookNowPayLaterAllowed
+    setIsBookNowPayLater: (state, action: PayloadAction<boolean>) => {
+      state.isBookNowPayLaterAllowed = action.payload;
+    },
+    // initialize the store with default values
+    loadRegisterListingSlice: (
+      state,
+      action: PayloadAction<RegisterListing>
+    ) => {
+      state = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
+  loadRegisterListingSlice,
   nextStep,
   prevStep,
   setStep,
@@ -300,6 +454,10 @@ export const {
   setDescription,
   setGeometry,
   setAddress,
+  setDistanceFromBusStop,
+  setDistanceFromTouristDestinations,
+  setDistanceFromAirport,
+  setDistanceFromRailwayStation,
   pushImage,
   removeImage,
   setCoverImage,
@@ -320,6 +478,5 @@ export const {
   setCancellationPolicy,
   setSocialMediaLinks,
   setTags,
-} = registerListingSlice.actions;
-
-export default registerListingSlice.reducer;
+  setIsBookNowPayLater,
+} = registerListingSlice.actions;export default registerListingSlice.reducer;

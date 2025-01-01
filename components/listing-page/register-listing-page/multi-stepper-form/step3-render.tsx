@@ -7,6 +7,9 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
   setAddress,
+  setDistanceFromAirport,
+  setDistanceFromBusStop,
+  setDistanceFromRailwayStation,
   setListingName,
   setListingType,
   setStep,
@@ -17,10 +20,10 @@ import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useQuery } from "@tanstack/react-query";
+import { fetchNearbyPlaces } from "@/lib/utils/export/export";
 
-// Set your Mapbox token
 const RenderStep3 = () => {
-  const { geometry, listingName, address } = useAppSelector(
+  const { geometry, listingName, address, distanceFrom } = useAppSelector(
     (state: RootState) => state.registerListing
   );
   const dispatch: AppDispatch = useAppDispatch();
@@ -39,65 +42,55 @@ const RenderStep3 = () => {
       dispatch(setStep(2));
       return;
     }
+    // fetch & set airport
+    const nearestAirport = fetchNearbyPlaces(
+      geometry.coordinates[1],
+      geometry.coordinates[0],
+      "airport"
+    );
+    nearestAirport
+      .then((airports) => {
+        if (Array.isArray(airports) && airports.length > 0) {
+          dispatch(setDistanceFromAirport(airports[0]));
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching nearest airport:", error);
+      });
+
+    // fetch & set nearest railway station
+    const nearestRailwayStation = fetchNearbyPlaces(
+      geometry.coordinates[1],
+      geometry.coordinates[0],
+      "train station",
+    );
+    nearestRailwayStation
+      .then((railwayStations) => {
+        if (Array.isArray(railwayStations) && railwayStations.length > 0) {
+          dispatch(setDistanceFromRailwayStation(railwayStations[0]));
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching nearest airport:", error);
+      });
+
+    // fetch & set nearest bus station
+    const nearestBusStation = fetchNearbyPlaces(
+      geometry.coordinates[1],
+      geometry.coordinates[0],
+      "bus station"
+    );
+    nearestBusStation
+      .then((busStations) => {
+        if (Array.isArray(busStations) && busStations.length > 0) {
+          dispatch(setDistanceFromBusStop(busStations[0]));
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching nearest airport:", error);
+      });
   }, []);
 
-  //   const {
-  //     data,
-  //     isLoading: queryLoading,
-  //     error,
-  //     isSuccess,
-  //   } = useQuery({
-  //     queryKey: ["address", new Date().toISOString()],
-  //     queryFn: async () => await fetchAddress(),
-  // });
-
-  //   const fetchAddress = async () => {
-  //     if (!TOKEN) {
-  //       console.error("Mapbox API key is missing");
-  //       return {};
-  //     }
-  //     if (geometry === null) {
-  //       console.log("Coordinates not set");
-  //       return {};
-  //     }
-  //     try {
-  //       const url = new URL(`https://api.mapbox.com/search/geocode/v6/reverse`);
-  //       url.searchParams.append("access_token", TOKEN);
-  //       url.searchParams.append("longitude", geometry!.coordinates[0].toString());
-  //       url.searchParams.append("latitude", geometry!.coordinates[1].toString());
-  //       url.searchParams.append("limit", "1");
-  //       url.searchParams.append("permanent", "true");
-
-  //       const response = await fetch(url.toString());
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch Address suggestions");
-  //       }
-  //       const data = await response.json();
-  //       dispatch(
-  //         setAddress({
-  //           fullAddress: data.features[0].properties.full_address,
-  //           street: data.features[0].properties.full_address.split(",")[0].trim(),
-  //           neighborhood: data.features[0].properties.context.neighborhood
-  //             ? data.features[0].properties.context.neighborhood.name
-  //             : data.features[0].properties.context.locality
-  //             ? data.features[0].properties.context.locality.name
-  //             : "",
-  //           city: data.features[0].properties.context.city
-  //             ? data.features[0].properties.context.neighborhood.city
-  //             : data.features[0].properties.context.place
-  //             ? data.features[0].properties.context.place.name
-  //             : "",
-  //           state: data.features[0].properties.context.region.name,
-  //           country: data.features[0].properties.context.country.name,
-  //           zipCode: data.features[0].properties.context.postcode.name,
-  //         })
-  //       );
-  //       return data;
-  //     } catch (error) {
-  //       console.log("Error fetching Address suggestions:", error);
-  //       return {};
-  //     }
-  //   };
 
   return (
     <div className="space-y-14 w-full">
@@ -109,6 +102,30 @@ const RenderStep3 = () => {
 
         <div className="text-[14px] text-accent-foreground">
           {Object.entries(address).map(([key, value]) => (
+            <p key={key}>
+              <span className="font-medium">
+                {key}: {JSON.stringify(value, null, 2)}
+              </span>
+            </p>
+          ))}
+          Nearest Airport
+          {Object.entries(distanceFrom.airport).map(([key, value]) => (
+            <p key={key}>
+              <span className="font-medium">
+                {key}: {JSON.stringify(value, null, 2)}
+              </span>
+            </p>
+          ))}
+          Nearest Railway Station
+          {Object.entries(distanceFrom.railwayStation).map(([key, value]) => (
+            <p key={key}>
+              <span className="font-medium">
+                {key}: {JSON.stringify(value, null, 2)}
+              </span>
+            </p>
+          ))}
+          Nearest Bus Stop
+          {Object.entries(distanceFrom.busStop).map(([key, value]) => (
             <p key={key}>
               <span className="font-medium">
                 {key}: {JSON.stringify(value, null, 2)}
