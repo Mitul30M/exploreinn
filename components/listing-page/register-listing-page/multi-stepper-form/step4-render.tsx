@@ -167,11 +167,7 @@ const RenderStep4 = () => {
             )}
           />
 
-          <Button
-            type="submit"
-            size="sm"
-            className="rounded w-max self-end mb-1"
-          >
+          <Button type="submit" size="sm" className="rounded w-max mb-1">
             <NotebookTabs />
             Save
           </Button>

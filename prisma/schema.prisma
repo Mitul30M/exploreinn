@@ -89,7 +89,7 @@ model Listing {
   owner      User     @relation("OwnedListings", fields: [ownerId], references: [id])
   ownerId    String   @db.ObjectId
   managers   User[]   @relation("ManagedListings", fields: [managerIds], references: [id])
-  managerIds String[] @db.ObjectId
+  managerIds String[] @default([]) @db.ObjectId
   rooms      Room[]
 
   // Amenities
@@ -102,7 +102,7 @@ model Listing {
   exploreinnGrade ExploreinnGrade @default(Good) //given based on overallRating
 
   // socials
-  socialMediaLinks String[]
+  socialMediaLinks SocialMediaLinks[]
   tags             String[]
 }
 
@@ -147,6 +147,11 @@ type TaxRates {
   rate Float
 }
 
+type SocialMediaLinks {
+  name String
+  link String
+}
+
 // Review
 model Review {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -171,27 +176,28 @@ model Review {
 
 // Room
 model Room {
-  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  tag                 String
-  isAvailable         Boolean
-  isDynamicallyPriced Boolean     @default(false)
-  price               Float //used if dynamic-pricing is enabled, default to basePrice when created
-  basePrice           Float //used if dynamic-pricing is disabled
-  totalRoomsAllocated Int
-  maxOccupancy        Int
-  area                Float
-  beds                RoomBed
-  isWifiAvailable     Boolean
-  isAirConditioned    Boolean
-  hasCityView         Boolean
-  hasSeaView          Boolean
-  perks               String[]
-  extras              RoomExtra[]
-  images              String[]
-  coverImage          String
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  id                      String      @id @default(auto()) @map("_id") @db.ObjectId
+  name                    String
+  tag                     String
+  isAvailable             Boolean
+  isDynamicallyPriced     Boolean     @default(false)
+  price                   Float //used if dynamic-pricing is enabled, default to basePrice when created
+  basePrice               Float //used if dynamic-pricing is disabled
+  totalRoomsAllocated     Int
+  currentlyAvailableRooms Int
+  maxOccupancy            Int
+  area                    Float
+  beds                    RoomBed
+  isWifiAvailable         Boolean
+  isAirConditioned        Boolean
+  hasCityView             Boolean
+  hasSeaView              Boolean
+  perks                   String[]
+  extras                  RoomExtra[]
+  images                  String[]
+  coverImage              String
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
 
   // Relationships
   listing   Listing @relation(fields: [listingId], references: [id])
