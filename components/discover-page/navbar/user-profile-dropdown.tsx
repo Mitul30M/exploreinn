@@ -43,7 +43,10 @@ export async function UserProfileDropdown() {
     <DropdownMenu>
       {/* Trigger for dropdown */}
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="rounded-full ps-3 pe-1">
+        <Button
+          variant="outline"
+          className="rounded-xl ps-3 pe-1 shadow-none hover:shadow-sm"
+        >
           <Menu />
           <Avatar className="h-max w-max border">
             <AvatarImage
@@ -59,7 +62,7 @@ export async function UserProfileDropdown() {
       {/* dropdown content */}
       <DropdownMenuContent className="w-56 ">
         <Link href={`/users/${user?.id}`}>
-          <DropdownMenuItem className="flex justify-start items-center gap-3 cursor-pointer">
+          <DropdownMenuItem className="flex justify-start items-center gap-2 cursor-pointer">
             <Avatar className="h-max w-max border">
               <AvatarImage
                 className="h-8 w-8"
@@ -79,9 +82,9 @@ export async function UserProfileDropdown() {
               {/* <p className="text-xs my-1 text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
                 {user?.email}
               </p> */}
-              <p className="text-xs text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
-                {user?.phoneNo}
-              </p>
+              <p className="text-xs h-max w-full text-foreground/70 font-medium flex flex-row items-center gap-[6px] line-clamp-1">
+                {user?.email && user.email.length > 24 ? `${user.email.slice(0, 24)}...` : user?.email}
+              </p>{" "}
             </div>
           </DropdownMenuItem>
         </Link>

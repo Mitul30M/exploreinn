@@ -12,23 +12,25 @@ import Image from "next/image";
 import { HotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 import { Separator } from "@/components/ui/separator";
 import ListingAmenities from "./listing-amenities";
+import { TListingCard } from "@/lib/actions/listings/listings";
+import Link from "next/link";
 
-type TListingCardProps = {
-  id: number;
-  title: string;
-  image: string;
-  startingRoomPrice: number;
-  starRating: number;
-  exploreinnRating: number;
-  exploreinnGrade: string;
-  reviews: number;
-  location: string;
-  amenities: HotelAmenities[];
-};
+// type TListingCardProps = {
+//   id: number;
+//   title: string;
+//   image: string;
+//   startingRoomPrice: number;
+//   starRating: number;
+//   exploreinnRating: number;
+//   exploreinnGrade: string;
+//   reviews: number;
+//   location: string;
+//   amenities: HotelAmenities[];
+// };
 
-const ListingCard = async ({ listing }: { listing: TListingCardProps }) => {
+const ListingCard = async ({ listing }: { listing: TListingCard }) => {
   // ***currency conversion from $ -> default-user-currency
-  const amount = listing.startingRoomPrice; // $baseRoomPrice
+  const amount = Math.min(...listing.rooms.map((room) => room.basePrice));
   const toCurrency = "INR"; // Convert to Indian Rupees
   const formattedCurrency = await convertCurrency({
     amount,
@@ -39,68 +41,72 @@ const ListingCard = async ({ listing }: { listing: TListingCardProps }) => {
   return (
     <Card
       key={listing.id}
-      className="flex flex-col overflow-hidden rounded-md border-border/90 shadow-none hover:shadow-sm"
+      className="flex flex-col group overflow-hidden rounded-md border-border/90 shadow-none hover:shadow-sm"
     >
-      <CardHeader className="p-4">
-        <Image
-          src={listing.image}
-          alt={listing.title}
-          width={290}
-          height={200}
-          className="w-full h-[200px] object-cover rounded-sm "
-        />
-      </CardHeader>
-      <CardContent className="flex-grow px-4 py-0">
-        <CardTitle className="text-lg font-semibold mb-1">
-          {listing.title}
-        </CardTitle>
-        <p className="text-sm text-muted-foreground mb-2">{listing.location}</p>
+      <Link href={`/listings/${listing.id}`}>
+        <CardHeader className="p-4">
+          <Image
+            src={listing.coverImage}
+            alt={listing.name}
+            width={290}
+            height={200}
+            className="w-full h-[200px] object-cover rounded-sm "
+          />
+        </CardHeader>
+        <CardContent className="flex-grow px-4 py-0">
+          <CardTitle className="text-lg font-semibold mb-1 group-hover:text-primary group-hover:underline group-hover:underline-offset-2">
+            {listing.name}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mb-2">
+            {listing.address.city}, {listing.address.state}
+          </p>
 
-        <div className="flex items-center mb-1 justify-between">
-          {/* Guest Star Ratings */}
-          <div className="flex items-center ">
-            <Star className="w-4 h-4 text-primary mr-1" />
-            <span className="text-sm font-medium">{listing.starRating}</span>
-            <span className="text-sm text-muted-foreground ml-1">
-              ({listing.reviews} reviews)
+          <div className="flex items-center mb-1 justify-between">
+            {/* Guest Star Ratings */}
+            <div className="flex items-center ">
+              <Star className="w-4 h-4 text-primary mr-1" />
+              <span className="text-sm font-medium">{listing.starRating}</span>
+              <span className="text-sm text-muted-foreground ml-1">
+                ({listing.reviews.length} reviews)
+              </span>
+            </div>
+
+            {/* exploreinn Ratings */}
+            <div className="flex items-center">
+              <Badge
+                variant="outline"
+                className={
+                  "flex gap-1 font-semibold " +
+                  (listing.overallRating >= 9 ? "text-primary" : "")
+                }
+              >
+                {listing.overallRating} {listing.exploreinnGrade}{" "}
+                {listing.overallRating >= 9 && <ThumbsUp width={14} />}
+                {}
+              </Badge>
+            </div>
+          </div>
+
+          <Separator className="my-4" />
+
+          {/* Ammenities */}
+          <ListingAmenities amenities={listing.amenities} />
+
+          <Separator className="mt-4 px-4" />
+        </CardContent>
+
+        <CardFooter className="p-4 pt-4">
+          <div className="text-lg font-semibold">
+            <p className="text-xs text-muted-foreground font-normal mb-1">
+              Rooms starting from
+            </p>
+            {formattedCurrency}{" "}
+            <span className="text-sm font-normal text-muted-foreground">
+              /night
             </span>
           </div>
-
-          {/* exploreinn Ratings */}
-          <div className="flex items-center">
-            <Badge
-              variant="outline"
-              className={
-                "flex gap-1 font-semibold " +
-                (listing.exploreinnRating >= 9 ? "text-primary" : "")
-              }
-            >
-              {listing.exploreinnRating} {listing.exploreinnGrade}{" "}
-              {listing.exploreinnRating >= 9 && <ThumbsUp width={14} />}
-              {}
-            </Badge>
-          </div>
-        </div>
-
-        <Separator className="my-4" />
-
-        {/* Ammenities */}
-        <ListingAmenities listing={listing.amenities} />
-
-        <Separator className="mt-4 px-4" />
-      </CardContent>
-
-      <CardFooter className="p-4 pt-4">
-        <div className="text-lg font-semibold">
-          <p className="text-xs text-muted-foreground font-normal mb-1">
-            Rooms starting from
-          </p>
-          {formattedCurrency}{" "}
-          <span className="text-sm font-normal text-muted-foreground">
-            /night
-          </span>
-        </div>
-      </CardFooter>
+        </CardFooter>
+      </Link>
     </Card>
   );
 };

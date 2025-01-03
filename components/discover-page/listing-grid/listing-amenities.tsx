@@ -5,18 +5,24 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { HotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
+import {
+  hotelAmenities,
+  HotelAmenities,
+} from "@/lib/utils/hotel-ammenities/hotel-amenities";
 import { cloneElement } from "react";
 
 interface ListingAmenitiesProps {
-  listing: HotelAmenities[];
+  amenities: string[];
 }
 
-const ListingAmenities = ({ listing }: ListingAmenitiesProps) => {
+const ListingAmenities = ({ amenities }: ListingAmenitiesProps) => {
+  const listingAmenities = hotelAmenities.filter((amenity) =>
+    amenities.includes(amenity.name)
+  );
   return (
     <TooltipProvider>
       <div className="flex flex-wrap justify-start items-center content-center"></div>
-      {listing.slice(0, 6).map((amenity, index) => (
+      {listingAmenities.slice(0, 6).map((amenity, index) => (
         <Tooltip key={index}>
           <TooltipTrigger>
             <Badge
@@ -37,7 +43,7 @@ const ListingAmenities = ({ listing }: ListingAmenitiesProps) => {
           </TooltipContent>
         </Tooltip>
       ))}
-      {listing.length > 5 && (
+      {amenities.length > 5 && (
         <Badge
           variant="outline"
           className="mr-2 -mt-2  text-xs py-1 text-muted-foreground rounded-full"

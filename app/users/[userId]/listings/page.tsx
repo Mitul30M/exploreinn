@@ -1,41 +1,46 @@
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { bookingTableColumns } from "@/components/user-page/bookings/booking-table-columns";
-import { UserBookingsDataTable } from "@/components/user-page/bookings/bookings-data-table";
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
+import { listingTableColumns } from "@/components/user-page/listings/listing-table-columns";
+import { UserListingsDataTable } from "@/components/user-page/listings/listings-data-table";
+import { getOwnedListings } from "@/lib/actions/listings/listings";
 import { bookings } from "@/lib/utils/seed/bookings";
 import { currentUser } from "@clerk/nextjs/server";
-import { TicketsPlane } from "lucide-react";
-import React from "react";
+import { HandCoins, HotelIcon, TicketsPlane } from "lucide-react";
+import { list } from "postcss";
 
-const UserBookingsPage =async ({
+const UserListingsPage = async ({
   params,
   searchParams,
 }: {
   params: { userId: string };
   searchParams?: { [key: string]: string | string[] | undefined };
-  }) => {
-  
+}) => {
   const user = await currentUser();
-  
+  const ownedListings = await getOwnedListings();
+  // console.log(ownedListings);
+
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       {/* Personal Info */}
-      <div id="personal-info" className="space-y-4">
+      <div id="hotel-owner" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
-          <TicketsPlane size={22} className="text-primary" />
-          {user?.firstName}'s Booking History
+          <HandCoins size={22} className="text-primary" />
+          {user?.firstName}'s Owned Listings
         </h1>
 
-        {/* User's Booking History */}
-        <UserBookingsDataTable
-          columns={bookingTableColumns}
-          data={bookings}
+        {/* User's OwnedListings */}
+        <UserListingsDataTable
+          columns={listingTableColumns}
+          data={ownedListings}
           className="mx-4"
         />
+
+        {/* User Managed Listings */}
       </div>
     </section>
   );
 };
 
-export default UserBookingsPage;
+export default UserListingsPage;

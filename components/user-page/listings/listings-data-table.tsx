@@ -38,13 +38,11 @@ import {
   Hotel,
   Columns3,
 } from "lucide-react";
-import { ScrollBar, ScrollArea } from "../scroll-area";
-import { DataTablePagination } from "./data-table-pagination";
-import { Input } from "../input";
-import { Button } from "../button";
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
 import { UserBookingsTableFloatingActionBar } from "@/components/user-page/bookings/bookings-table-floating-action-bar";
-import { OwnedListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
+import { ListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -57,12 +55,14 @@ interface DataTableProps<TData, TValue> {
    */
   floatingActionBar?: React.ReactNode | null;
   className?: string;
+  isOwnerTable?: boolean;
 }
 
-export function DataTable<TData, TValue>({
+export function UserListingsDataTable<TData, TValue>({
   columns,
   data,
   className,
+  isOwnerTable = true,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -96,6 +96,11 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className={"relative z-0 rounded-md border p-4 " + className}>
+      {/* check if the table has a column named bookingStatus & paymentStatus. if yes thn its the bookings table from /users/[userId]/bookings else it a normal data table without any Facets Filters */}
+      <div className="flex items-center pb-4">
+        <ListingsDataTableToolbar table={table} isOwnerTable={isOwnerTable} />
+      </div>
+
       <ScrollArea className="w-full rounded-md border-[1px] border-border/90 ">
         <Table className="rounded-md">
           <TableHeader className="bg-accent/50">
@@ -149,6 +154,8 @@ export function DataTable<TData, TValue>({
         </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
+
+      <DataTablePagination table={table} />
     </div>
   );
 }

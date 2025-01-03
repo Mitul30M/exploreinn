@@ -25,10 +25,14 @@ import {
 } from "@/lib/redux-store/slices/register-listing-slice";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 const ConfirmNewRegistration = () => {
   const listing = useAppSelector((state: RootState) => state.registerListing);
   const router = useRouter();
+  const user = useUser();
+  const userDbID = (user?.user?.publicMetadata as PublicMetadataType)
+    ?.userDB_id;
   const [state, formAction, isPending] = useActionState(enlistListing, {
     message: "",
     type: undefined,
@@ -78,7 +82,7 @@ const ConfirmNewRegistration = () => {
           </div>
         ),
       });
-      router.push('/')
+      router.push(`/users/${userDbID}/listings`);
     } else if (state.type === "error") {
       console.log(state);
       toast({

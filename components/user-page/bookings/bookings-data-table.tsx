@@ -38,13 +38,10 @@ import {
   Hotel,
   Columns3,
 } from "lucide-react";
-import { ScrollBar, ScrollArea } from "../scroll-area";
-import { DataTablePagination } from "./data-table-pagination";
-import { Input } from "../input";
-import { Button } from "../button";
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
 import { UserBookingsTableFloatingActionBar } from "@/components/user-page/bookings/bookings-table-floating-action-bar";
-import { OwnedListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -59,7 +56,7 @@ interface DataTableProps<TData, TValue> {
   className?: string;
 }
 
-export function DataTable<TData, TValue>({
+export function UserBookingsDataTable<TData, TValue>({
   columns,
   data,
   className,
@@ -96,6 +93,13 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className={"relative z-0 rounded-md border p-4 " + className}>
+      {/* check if the table has a column named bookingStatus & paymentStatus. if yes thn its the bookings table from /users/[userId]/bookings else it a normal data table without any Facets Filters */}
+      {table.getColumn("bookingStatus") && table.getColumn("paymentStatus") && (
+        <div className="flex items-center pb-4">
+          <BookingsDataTableToolbar table={table} />
+        </div>
+      )}
+
       <ScrollArea className="w-full rounded-md border-[1px] border-border/90 ">
         <Table className="rounded-md">
           <TableHeader className="bg-accent/50">
@@ -149,6 +153,17 @@ export function DataTable<TData, TValue>({
         </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
+
+      <DataTablePagination table={table} />
+      {/* for user hotel bookings data table */}
+      {table.getColumn("hotelName") &&
+        table.getColumn("bookingStatus") &&
+        table.getColumn("paymentStatus") &&
+        table.getFilteredSelectedRowModel().rows.length > 0 && (
+          <UserBookingsTableFloatingActionBar table={table} />
+        )}
+
+      {/* for hotel management dashboard bookings data table  make it similar like above but instead of hotelName use guestName*/}
     </div>
   );
 }

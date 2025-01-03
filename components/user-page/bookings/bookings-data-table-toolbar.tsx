@@ -50,7 +50,7 @@ export function BookingsDataTableToolbar<TData>({
             setSearchQuery(newFilterValue);
             table.setGlobalFilter(newFilterValue);
           }, 500)}
-          className="h-8 w-[150px] lg:w-[250px] rounded-3xl"
+          className="h-8 w-[150px] lg:w-[250px] rounded-lg shadow-sm"
         />
         {table.getColumn("bookingStatus") && (
           <DataTableFacetedFilter
@@ -81,14 +81,14 @@ export function BookingsDataTableToolbar<TData>({
               replace(`${pathname}?${params.toString()}`);
               table.resetColumnFilters();
             }}
-            className="h-8 px-2 lg:px-3 rounded-3xl"
+            className="h-8 px-2 lg:px-3 rounded"
           >
             Reset
             <X />
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} className="ml-2 rounded-3xl" />
+      <DataTableViewOptions table={table} className="ml-2 rounded" />
     </div>
   );
 }
