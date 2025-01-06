@@ -32,10 +32,15 @@ export function ImageCarousel({
     >
       <CarouselContent className="">
         {images.map((_, index) => (
-          <CarouselItem key={index} className="w-full h-full">
+          <CarouselItem key={_} className="w-full h-full">
             <div className=" w-full bg-muted  h-[300px]  md:h-[400px]   lg:h-[450px]  xl:h-[500px] flex items-center justify-center">
-              {index + 1}
-              {/* <Image src={_} alt="image" width={600} height={600} className="!w-full !h-full object-cover" /> */}
+              <Image
+                src={_}
+                alt="image"
+                width={600}
+                height={600}
+                className="!w-full !h-full object-cover"
+              />
             </div>
           </CarouselItem>
         ))}

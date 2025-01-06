@@ -16,8 +16,21 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Separator } from "../ui/separator";
+import { Listing, Review } from "@prisma/client";
+import { getRatingLabel } from "@/lib/utils/listing/util-functions";
 
-const RatingsPanel = () => {
+interface RatingsPanelProps {
+  // listing: Listing;
+  reviews: Review[];
+  overallRating: number;
+  exploreinnGrade: string;
+}
+
+const RatingsPanel = ({
+  reviews,
+  overallRating,
+  exploreinnGrade,
+}: RatingsPanelProps) => {
   return (
     <div className="w-full flex items-center px-8 gap-8">
       {/* overall ratings */}
@@ -28,19 +41,32 @@ const RatingsPanel = () => {
 
         <div className="w-[350px]  rounded-md border-border/90 border-[1px] p-4 space-y-8">
           {/* only if total reviews are more than 150 and overall rating is 8.5 and above */}
-          <Badge className="flex items-center gap-1 rounded w-max">
-            <Sparkles className="w-4 h-4" />
-            Guest favorite
-          </Badge>
+          {reviews.length > 150 && overallRating > 8.5 ? (
+            <Badge
+              className="flex items-center gap-1 rounded w-max"
+              // variant={"secondary"}
+            >
+              <Sparkles className="w-4 h-4" />
+              Guest Favorite
+            </Badge>
+          ) : (
+            <Badge
+              className="flex items-center gap-1 rounded w-max"
+              variant={"secondary"}
+            >
+              {/* <ThumbsUp className="w-4 h-4" /> */}
+              Overall
+            </Badge>
+          )}
           <p className="flex w-full justify-between items-center">
             <span className="text-xl font-semibold text-card-foreground">
-              Excellent
+              {exploreinnGrade}
             </span>
             <span className="text-3xl font-semibold text-card-foreground">
-              9.8
+              {overallRating}
             </span>
           </p>
-          <p className="text-sm text-muted-foreground">Rated by 1,050 guests</p>
+          <p className="text-sm text-muted-foreground">Rated by {reviews.length} guests</p>
         </div>
       </div>
 
@@ -66,14 +92,24 @@ const RatingsPanel = () => {
                 </Badge>
                 <p className="flex w-full justify-between items-center">
                   <span className="text-xl font-semibold text-card-foreground">
-                    Excellent
+                    {getRatingLabel(
+                      reviews.reduce((acc, review) => acc + review.comfort, 0) /
+                        reviews.length
+                    )}{" "}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    9.8
+                    {reviews?.length > 0
+                      ? (
+                          reviews.reduce(
+                            (acc, review) => acc + review.comfort,
+                            0
+                          ) / reviews.length
+                        ).toFixed(1)
+                      : 0}{" "}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Rated by 1,050 guests
+                  Rated by {reviews.length} guests
                 </p>
               </div>
             </div>
@@ -95,14 +131,26 @@ const RatingsPanel = () => {
                 </Badge>
                 <p className="flex w-full justify-between items-center">
                   <span className="text-xl font-semibold text-card-foreground">
-                    Excellent
+                    {getRatingLabel(
+                      reviews.reduce(
+                        (acc, review) => acc + review.valueForMoney,
+                        0
+                      ) / reviews.length
+                    )}{" "}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    9.8
+                    {reviews?.length > 0
+                      ? (
+                          reviews.reduce(
+                            (acc, review) => acc + review.valueForMoney,
+                            0
+                          ) / reviews.length
+                        ).toFixed(1)
+                      : 0}{" "}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Rated by 1,050 guests
+                  Rated by {reviews.length} guests
                 </p>
               </div>
             </div>
@@ -124,14 +172,24 @@ const RatingsPanel = () => {
                 </Badge>
                 <p className="flex w-full justify-between items-center">
                   <span className="text-xl font-semibold text-card-foreground">
-                    Excellent
+                    {getRatingLabel(
+                      reviews.reduce((acc, review) => acc + review.checkIn, 0) /
+                        reviews.length
+                    )}{" "}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    9.8
+                    {reviews?.length > 0
+                      ? (
+                          reviews.reduce(
+                            (acc, review) => acc + review.checkIn,
+                            0
+                          ) / reviews.length
+                        ).toFixed(1)
+                      : 0}{" "}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Rated by 1,050 guests
+                  Rated by {reviews.length} guests
                 </p>
               </div>
             </div>
@@ -153,14 +211,26 @@ const RatingsPanel = () => {
                 </Badge>
                 <p className="flex w-full justify-between items-center">
                   <span className="text-xl font-semibold text-card-foreground">
-                    Excellent
+                    {getRatingLabel(
+                      reviews.reduce(
+                        (acc, review) => acc + review.cleanliness,
+                        0
+                      ) / reviews.length
+                    )}{" "}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    9.8
+                    {reviews?.length > 0
+                      ? (
+                          reviews.reduce(
+                            (acc, review) => acc + review.cleanliness,
+                            0
+                          ) / reviews.length
+                        ).toFixed(1)
+                      : 0}{" "}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Rated by 1,050 guests
+                  Rated by {reviews.length} guests
                 </p>
               </div>
             </div>
@@ -182,14 +252,26 @@ const RatingsPanel = () => {
                 </Badge>
                 <p className="flex w-full justify-between items-center">
                   <span className="text-xl font-semibold text-card-foreground">
-                    Excellent
+                    {getRatingLabel(
+                      reviews.reduce(
+                        (acc, review) => acc + review.communication,
+                        0
+                      ) / reviews.length
+                    )}{" "}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    9.8
+                    {reviews?.length > 0
+                      ? (
+                          reviews.reduce(
+                            (acc, review) => acc + review.communication,
+                            0
+                          ) / reviews.length
+                        ).toFixed(1)
+                      : 0}{" "}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Rated by 1,050 guests
+                  Rated by {reviews.length} guests
                 </p>
               </div>
             </div>
@@ -211,14 +293,26 @@ const RatingsPanel = () => {
                 </Badge>
                 <p className="flex w-full justify-between items-center">
                   <span className="text-xl font-semibold text-card-foreground">
-                    Excellent
+                    {getRatingLabel(
+                      reviews.reduce(
+                        (acc, review) => acc + review.location,
+                        0
+                      ) / reviews.length
+                    )}{" "}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    9.8
+                    {reviews?.length > 0
+                      ? (
+                          reviews.reduce(
+                            (acc, review) => acc + review.location,
+                            0
+                          ) / reviews.length
+                        ).toFixed(1)
+                      : 0}{" "}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Rated by 1,050 guests
+                  Rated by {reviews.length} guests
                 </p>
               </div>
             </div>

@@ -5,12 +5,14 @@ import {
   TListingCard,
 } from "@/lib/actions/listings/listings";
 
-
 interface ListingGridProps extends React.HTMLAttributes<HTMLDivElement> {
   listings: TListingCard[];
 }
 
-export default async function ListingGrid({ listings, ...props }: ListingGridProps) {
+export default async function ListingGrid({
+  listings,
+  ...props
+}: ListingGridProps) {
   return (
     <div {...props}>
       {listings.map((listing) => (

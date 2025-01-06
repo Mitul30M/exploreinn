@@ -8,19 +8,32 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import { ListingRoom } from "@/lib/utils/seed/listing/listings";
 import { Badge } from "../ui/badge";
-import { Bed, BedDouble, Blinds, Gift, Ratio, Users } from "lucide-react";
+import {
+  AirVentIcon,
+  Bed,
+  BedDouble,
+  Blinds,
+  Castle,
+  Gift,
+  Glasses,
+  Ratio,
+  Umbrella,
+  Users,
+  Wifi,
+  WifiHigh,
+} from "lucide-react";
 import { AddOnsRadioGroup } from "./add-ons-radio-group";
 import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import BookRoomBtn from "./book-room-btn";
+import { Room } from "@prisma/client";
 
 export async function RoomTypesCarousel({
   rooms,
   className,
   ...props
 }: {
-  rooms: ListingRoom[];
+  rooms: Room[];
   className?: string;
 }) {
   // const plugin = React.useRef(
@@ -65,10 +78,16 @@ export async function RoomTypesCarousel({
                 )}
                 <CarouselContent className="">
                   {room.images.map((_, index) => (
-                    <CarouselItem key={index+10} className="w-full !h-[300px]">
+                    <CarouselItem key={_} className="w-full !h-[300px]">
                       <div className=" w-full !h-full flex items-center justify-center bg-muted">
-                        {index + 1}
-                        {/* <Image src={_} alt="image" width={600} height={600} className="!w-full !h-full object-cover" /> */}
+                        {/* {index + 1} */}
+                        <Image
+                          src={_}
+                          alt="image"
+                          width={400}
+                          height={400}
+                          className="!w-full !h-full object-cover"
+                        />
                       </div>
                     </CarouselItem>
                   ))}
@@ -94,11 +113,10 @@ export async function RoomTypesCarousel({
                 {room.perks.length &&
                   room.perks.map((perk, index) => (
                     <p
-                      key={index}
                       className="text-sm text-card-foreground font-medium flex items-center gap-2"
                     >
                       <Gift className="w-5 h-5 text-primary" />
-                      {perk.description}
+                      {perk}
                     </p>
                   ))}
                 {/* room area */}
@@ -111,17 +129,40 @@ export async function RoomTypesCarousel({
                   <Users className="w-5 h-5 text-primary" />
                   Best for {room.maxOccupancy} Guests
                 </p>
+                {/* wifi & air conditioning */}
+                {room.isWifiAvailable && (
+                  <p
+                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
+                  >
+                    <Wifi className="w-5 h-5 text-primary" />
+                    Room provides Wifi Connectivity
+                  </p>
+                )}
+                {room.isAirConditioned && (
+                  <p
+                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
+                  >
+                    <AirVentIcon className="w-5 h-5 text-primary" />
+                    Room is Air Conditioned
+                  </p>
+                )}
                 {/* room view */}
-                {room.views.length &&
-                  room.views.map((views, index) => (
-                    <p
-                      key={index}
-                      className="text-sm text-card-foreground font-medium flex items-center gap-2"
-                    >
-                      <Blinds className="w-5 h-5 text-primary" />
-                      {views.description}
-                    </p>
-                  ))}
+                {room.hasCityView && (
+                  <p
+                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
+                  >
+                    <Blinds className="w-5 h-5 text-primary" />
+                    Room has City View
+                  </p>
+                )}
+                {room.hasSeaView && (
+                  <p
+                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
+                  >
+                    <Blinds className="w-5 h-5 text-primary" />
+                    Room has Ocean/Sea View
+                  </p>
+                )}
               </div>
               {/* extras */}
               <div className="flex flex-col gap-3 w-full my-4 pb-4 border-border/90 border-b-[1px]">
@@ -167,7 +208,7 @@ export async function RoomTypesCarousel({
         })}
       </CarouselContent>
       <CarouselPrevious className="left-2" />
-                <CarouselNext className="right-2" />
+      <CarouselNext className="right-2" />
     </Carousel>
   );
 }

@@ -179,12 +179,12 @@ const RenderStep4 = () => {
 
 export default RenderStep4;
 
-export const RenderHTML = ({ content }: { content: string }) => {
+export const RenderHTML = ({ content, className }: { content: string, className?: string }) => {
   const sanitizedContent = DOMPurify.sanitize(content);
 
   return (
     <div
-      className="description-content"
+      className={"description-content " + className}
       dangerouslySetInnerHTML={{ __html: sanitizedContent }}
     />
   );

@@ -10,7 +10,7 @@ const FindListingsInput = () => {
       <LocationInput />
 
       {/* date range Selector */}
-      <DatePickerWithRange />
+      <DatePickerWithRange className="w-[300px] justify-center text-foreground hover:text-primary rounded-none border-x-0" />
 
       {/* no. of guests input */}
       <GuestCounterInput />

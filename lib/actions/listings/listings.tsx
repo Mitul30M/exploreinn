@@ -128,7 +128,6 @@ export async function enlistListing(
  * @param isCard - A boolean indicating if the listings are to be displayed as cards. Defaults to false.
  * @returns A promise that resolves to an array of listing previews with selected fields.
  */
-
 export type TListingCard = {
   id: string;
   name: string;
@@ -167,8 +166,10 @@ export type TListingCard = {
     basePrice: number;
   }[];
 };
-
-export async function getListingsPreview(): Promise<TListingCard[]> {
+export async function getListingsPreview(
+  query: string
+): Promise<TListingCard[]> {
+  console.log("\nsearching for: ", query);
   const listings = await prisma.listing.findMany({
     select: {
       id: true,
@@ -191,6 +192,79 @@ export async function getListingsPreview(): Promise<TListingCard[]> {
   return listings as TListingCard[];
 }
 
+/**
+ * Retrieves a listing by its id.
+ * The function returns the listing with all of its rooms and reviews.
+ * If the listing does not exist, the function returns null.
+ * @param listingId - The id of the listing to be retrieved.
+ * @returns A promise that resolves to the listing with all of its rooms and reviews if it exists, otherwise null.
+ */
+export async function getListingById(listingId: string) {
+  console.log("\nsearching for: ", listingId);
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id: listingId,
+    },
+    include: {
+      rooms: {
+        select: {
+          area: true,
+          basePrice: true,
+          beds: true,
+          coverImage: true,
+          extras: true,
+          hasCityView: true,
+          hasSeaView: true,
+          isAirConditioned: true,
+          isWifiAvailable: true,
+          name: true,
+          perks: true,
+          totalRoomsAllocated: true,
+          maxOccupancy: true,
+          currentlyAvailableRooms: true,
+          id: true,
+          images: true,
+          isAvailable: true,
+          price: true,
+          tag: true,
+        },
+      },
+      reviews: {
+        select: {
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+              profileImg: true,
+            },
+          },
+          stars: true,
+          cleanliness: true,
+          comfort: true,
+          communication: true,
+          checkIn: true,
+          valueForMoney: true,
+          location: true,
+          overallRating: true,
+          createdAt: true,
+          updatedAt: true,
+          id: true,
+          content: true,
+          authorId: true,
+        },
+      },
+    },
+  });
+
+  if (!listing) return null;
+  return listing;
+}
+
+/**
+ * Retrieves all listings owned by the currently authenticated user.
+ * @returns A promise that resolves to an array of listings with their respective details.
+ * @throws {Error} If the user is not authenticated.
+ */
 export type TOwnedListing = {
   id: string;
   name: string;
@@ -213,7 +287,6 @@ export type TOwnedListing = {
     currentlyAvailableRooms: number;
   }[];
 };
-
 export async function getOwnedListings(): Promise<TOwnedListing[]> {
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)

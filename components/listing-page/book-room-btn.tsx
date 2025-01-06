@@ -11,13 +11,14 @@ import {
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { ListingRoom } from "@/lib/utils/seed/listing/listings";
+import { Room } from "@prisma/client";
 
 const BookRoomBtn = ({
   room,
   className,
   ...props
 }: {
-  room: ListingRoom;
+  room: Room;
   className?: string;
 }) => {
   const [showCounter, setShowCounter] = useState<boolean>(false);
@@ -65,7 +66,7 @@ const BookRoomBtn = ({
             size="icon"
             className="rounded-full"
             onClick={incrementRooms}
-            disabled={rooms === room.maxRoomsPerBookings}
+            // disabled={rooms === room.maxRoomsPerBookings}
           >
             <Plus />
           </Button>

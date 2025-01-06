@@ -28,16 +28,13 @@ export function DatePickerWithRange({
   const maxDate = date?.from ? addDays(date.from, 30) : undefined;
 
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div className={cn("grid gap-2")}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             id="date"
             variant={"outline"}
-            className={cn(
-              "w-[300px] justify-center text-foreground hover:text-primary rounded-none border-x-0",
-              !date && "text-foreground"
-            )}
+            className={cn(!date && "text-foreground", className)}
           >
             <CalendarRange className="" />
             {date?.from ? (

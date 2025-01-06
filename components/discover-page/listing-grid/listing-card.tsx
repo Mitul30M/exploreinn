@@ -41,7 +41,7 @@ const ListingCard = async ({ listing }: { listing: TListingCard }) => {
   return (
     <Card
       key={listing.id}
-      className="flex flex-col group overflow-hidden rounded-md border-border/90 shadow-none hover:shadow-sm"
+      className="flex flex-col group overflow-hidden !max-w-[300px] rounded-md border-border/90 shadow-none hover:shadow-sm"
     >
       <Link href={`/listings/${listing.id}`}>
         <CardHeader className="p-4">
@@ -50,7 +50,7 @@ const ListingCard = async ({ listing }: { listing: TListingCard }) => {
             alt={listing.name}
             width={290}
             height={200}
-            className="w-full h-[200px] object-cover rounded-sm "
+            className="w-full h-[200px] aspect-square object-cover rounded-sm "
           />
         </CardHeader>
         <CardContent className="flex-grow px-4 py-0">
