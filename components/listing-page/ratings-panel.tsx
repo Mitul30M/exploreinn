@@ -32,49 +32,49 @@ const RatingsPanel = ({
   exploreinnGrade,
 }: RatingsPanelProps) => {
   return (
-    <div className="w-full flex items-center px-8 gap-8">
-      {/* overall ratings */}
-      <div>
-        <p className="text-md text-foreground/80 mb-4">
-          Overall Listing Rating
-        </p>
-
-        <div className="w-[350px]  rounded-md border-border/90 border-[1px] p-4 space-y-8">
-          {/* only if total reviews are more than 150 and overall rating is 8.5 and above */}
-          {reviews.length > 150 && overallRating > 8.5 ? (
-            <Badge
-              className="flex items-center gap-1 rounded w-max"
-              // variant={"secondary"}
-            >
-              <Sparkles className="w-4 h-4" />
-              Guest Favorite
-            </Badge>
-          ) : (
-            <Badge
-              className="flex items-center gap-1 rounded w-max"
-              variant={"secondary"}
-            >
-              {/* <ThumbsUp className="w-4 h-4" /> */}
-              Overall
-            </Badge>
-          )}
-          <p className="flex w-full justify-between items-center">
-            <span className="text-xl font-semibold text-card-foreground">
-              {exploreinnGrade}
-            </span>
-            <span className="text-3xl font-semibold text-card-foreground">
-              {overallRating}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground">Rated by {reviews.length} guests</p>
-        </div>
-      </div>
-
-      <Separator orientation="vertical" className="h-56" />
-
+    <div className="w-full flex items-center px-4 ">
       {/* individual ratings carousel */}
-      <Carousel className="cursor-grab flex-1 overflow-hidden ">
-        <CarouselContent className="gap-4">
+      <Carousel className="cursor-grab overflow-hidden ">
+        <CarouselContent className="">
+          <CarouselItem className="max-w-[350px] mr-4">
+            <div className="w-full h-max">
+              <p className="text-md text-foreground/80 mb-4">
+                Overall Listing Rating
+              </p>
+
+              <div className="w-[350px]  rounded-md border-border/90 border-[1px] p-4 space-y-8">
+                {/* only if total reviews are more than 150 and overall rating is 8.5 and above */}
+                {reviews.length > 150 && overallRating > 8.5 ? (
+                  <Badge
+                    className="flex items-center gap-1 rounded w-max"
+                    // variant={"secondary"}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Guest Favorite
+                  </Badge>
+                ) : (
+                  <Badge
+                    className="flex items-center gap-1 rounded w-max"
+                    variant={"secondary"}
+                  >
+                    {/* <ThumbsUp className="w-4 h-4" /> */}
+                    Overall
+                  </Badge>
+                )}
+                <p className="flex w-full justify-between items-center">
+                  <span className="text-xl font-semibold text-card-foreground">
+                    {exploreinnGrade}
+                  </span>
+                  <span className="text-3xl font-semibold text-card-foreground">
+                    {overallRating}
+                  </span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Rated by {reviews.length} guests
+                </p>
+              </div>
+            </div>
+          </CarouselItem>
           {/* Comfort Rating */}
           <CarouselItem className="max-w-[350px]">
             <div className="w-full h-max">

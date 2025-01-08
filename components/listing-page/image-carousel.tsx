@@ -39,7 +39,7 @@ export function ImageCarousel({
                 alt="image"
                 width={600}
                 height={600}
-                className="!w-full !h-full object-cover"
+                className="!w-full !h-full object-cover rounded"
               />
             </div>
           </CarouselItem>

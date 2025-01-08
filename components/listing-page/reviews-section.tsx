@@ -65,7 +65,7 @@ const ListingReviewsSection = ({ reviews }: ListingReviewsSectionProps) => {
   
 
   return (
-    <div className="w-full space-y-4 px-8 ">
+    <div className="w-full space-y-4 px-4 ">
       <div className="flex items-center gap-4">
         <Button
           variant={"outline"}

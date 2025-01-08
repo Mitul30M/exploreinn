@@ -60,7 +60,7 @@ const ListingPage = async ({ params }: { params: Params }) => {
     return (
       <section className="w-full">
         {/* header */}
-        <header className="flex justify-between items-center m-4 mx-8">
+        <header className="flex justify-between items-center m-4">
           {/* only if the listing's grade is Excellent */}
           {listing.exploreinnGrade === "Excellent" && (
             <Badge
@@ -107,7 +107,7 @@ const ListingPage = async ({ params }: { params: Params }) => {
           </TooltipProvider>
         </header>
         {/* listing title & ratings */}
-        <section className="flex justify-between items-center p-4 px-8 border-[1px] border-x-0 border-border/90 ">
+        <section className="flex justify-between items-center p-4  border-[1px] border-x-0 border-border/90 ">
           {/* listing title */}
           <div className="flex flex-col gap-1">
             <h1 className=" text-2xl font-bold tracking-tight">
@@ -147,7 +147,7 @@ const ListingPage = async ({ params }: { params: Params }) => {
         <section className="flex gap-4 m-4 border-[1px] border-border/90 rounded-sm">
           {/* image carousel */}
           <div className="h-max flex-1  rounded-sm">
-            <ImageCarousel images={listing.images} className="rounded-sm " />
+            <ImageCarousel images={listing.images} className="rounded " />
           </div>
           {/* bento grid of first 4 images */}
           <div className="hidden sm:flex flex-1  !min-h-full   rounded-sm">
@@ -174,11 +174,11 @@ const ListingPage = async ({ params }: { params: Params }) => {
         </section>
 
         {/* listing & booking details */}
-        <section className="flex gap-8 p-8 border-x-0 border-t-[1px] border-border/90 ">
+        <section className="flex gap-4 p-4 border-x-0 border-t-[1px] border-border/90 ">
           {/* listing details */}
-          <div className="h-max w-full   space-y-8">
+          <div className="h-max flex flex-col xl:flex-row  gap-4">
             {/* listing location */}
-            <div className=" h-max border-[1px] border-border/90 rounded-sm pb-2">
+            <div className=" h-max  border-[1px] border-border/90 rounded-sm pb-2">
               <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex gap-2">
                 <Hotel className="text-primary mt-2" />
                 <div className="flex flex-col gap-0">
@@ -283,14 +283,14 @@ const ListingPage = async ({ params }: { params: Params }) => {
               </div>*/}
             </div>
             {/* listing amenities */}
-            <div className="border-[1px] border-border/90 h-max rounded-sm">
-              <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
+            <div className="border-[1px]  border-border/90 h-max rounded-sm">
+              <h1 className=" text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
                 <HandPlatter className="text-primary" />
                 Amenities & Services Provided
               </h1>
               {/* scrollable amenities */}
-              <ScrollArea className="w-full h-[300px] ">
-                <div className="p-4 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <ScrollArea className="w-full h-[400px] ">
+                <div className="p-4 grid grid-cols-2 md:grid-cols-2  gap-2">
                   {listingAmenities.map((amenity, index) => (
                     <Badge
                       variant="outline"
@@ -314,28 +314,28 @@ const ListingPage = async ({ params }: { params: Params }) => {
           {/* booking details */}
           <BookingDetails
             listing={listing}
-            rooms={listing.rooms as Room[]}
-            className=" w-full h-max border-border/90 border-[1px]  rounded-sm p-4"
+            roomList={listing.rooms as Room[]}
+            className=" max-w-[400px] h-max border-border/90 border-[1px]  rounded-sm p-4"
           />
         </section>
 
         {/* listing room types carousel */}
         <section className="w-full space-y-4  pb-4 border-border/90 border-y-[1px]">
-          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
             <DoorOpen className="text-primary" />
             Rooms available in {listing.name}
           </h1>
           <div className="mx-4">
             <RoomTypesCarousel
               rooms={listing.rooms as Room[]}
-              className="!w-full rounded-sm p-4"
+              className="!w-full rounded-sm"
             />
           </div>
         </section>
 
         {/* listing ratings & reviews */}
-        <section className="w-full space-y-8  border-border/90 border-b-[1px] pb-8 mb-8">
-          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+        <section className="w-full space-y-4  border-border/90 border-b-[1px] pb-4 mb-4">
+          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
             <MessageCircleHeart className="text-primary" />
             {listing.name} Ratings & Reviews
           </h1>
@@ -347,57 +347,57 @@ const ListingPage = async ({ params }: { params: Params }) => {
           {listing.reviews.length ? (
             <ListingReviewsSection reviews={listing.reviews} />
           ) : (
-            <p className="px-8 font-medium text-primary">
+            <p className="px-4 font-medium text-primary">
               No Reviews for this listing yet. Be the first to review
             </p>
           )}
         </section>
 
         {/* Description */}
-        <section className="w-full space-y-8  border-border/90 border-t-[1px] pb-8 mb-8">
-          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+        <section className="w-full space-y-4  border-border/90 border-t-[1px] pb-4 mb-4">
+          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-4 flex items-center gap-2">
             <Info className="text-primary" />
             {listing.name}, {listing.address.city}, {listing.address.state},{" "}
             {listing.address.country}
           </h1>
 
-          <RenderHTML content={listing.description} className="px-8" />
+          <RenderHTML content={listing.description} className="px-4" />
         </section>
 
         {/* Rules & Regulations */}
-        <section className="w-full space-y-8  border-border/90 border-t-[1px] pb-8 ">
-          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+        <section className="w-full space-y-4  border-border/90 border-t-[1px] pb-4 ">
+          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-4 flex items-center gap-2">
             <List className="text-primary" />
             {listing.name}, Rules & Regulations
           </h1>
 
           <RenderHTML
             content={listing.groundRulesAndRestrictions}
-            className="px-8"
+            className="px-4"
           />
         </section>
 
         {/* Check In Rules & Regulations */}
-        <section className="w-full space-y-8  border-border/90 border-t-[1px] pb-8">
-          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+        <section className="w-full space-y-4  border-border/90 border-t-[1px] pb-4">
+          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-4 flex items-center gap-2">
             <List className="text-primary" />
             {listing.name}, Check In Rules & Regulations
           </h1>
 
           <RenderHTML
             content={listing.checkInRulesAndRestrictions}
-            className="px-8"
+            className="px-4"
           />
         </section>
 
-        {/* Check In Rules & Regulations */}
+        {/* Cancellation Policy */}
         <section className="w-full space-y-8  border-border/90 border-t-[1px] pb-8">
           <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
             <List className="text-primary" />
             {listing.name}, Cancellation Policy
           </h1>
 
-          <RenderHTML content={listing.cancellationPolicy} className="px-8" />
+          <RenderHTML content={listing.cancellationPolicy} className="px-4" />
         </section>
       </section>
     );

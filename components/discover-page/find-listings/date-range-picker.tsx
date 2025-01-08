@@ -15,13 +15,25 @@ import {
 } from "@/components/ui/popover";
 
 export function DatePickerWithRange({
+  to,
+  from,
   className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+  onDateSelect,
+}: {
+  from?: Date;
+  to?: Date;
+  className?: string;
+  onDateSelect?: (date: DateRange | undefined) => void;
+}) {
   const today = new Date();
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: undefined,
-    to: undefined, // Initially no range selected
+    from: from || undefined,
+    to: to || undefined, // Initially no range selected
   });
+
+  React.useEffect(() => {
+    onDateSelect?.(date);
+  }, [date, onDateSelect]);
 
   // Calculate the maximum date dynamically,
   // ****Also here 30 is just a place holder, it should be replaced by the max no. days the hotel allows fro booking****

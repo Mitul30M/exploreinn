@@ -23,15 +23,16 @@ import {
   setPhone,
   setStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { NotebookTabs } from "lucide-react";
 import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
-import DOMPurify from "dompurify";
-
+// import DOMPurify from "dompurify";
+// import { JSDOM } from "jsdom";
+import DOMPurify from "isomorphic-dompurify";
 
 const RenderStep4 = () => {
   const { listingName, address, email, phone, description } = useAppSelector(
@@ -179,13 +180,24 @@ const RenderStep4 = () => {
 
 export default RenderStep4;
 
-export const RenderHTML = ({ content, className }: { content: string, className?: string }) => {
-  const sanitizedContent = DOMPurify.sanitize(content);
+export const RenderHTML = ({
+  content,
+  className,
+}: {
+  content: string;
+  className?: string;
+}) => {
+  const sanitizedContent = useMemo(
+    () => ({
+      __html: DOMPurify.sanitize(content),
+    }),
+    [content]
+  );
 
   return (
     <div
       className={"description-content " + className}
-      dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+      dangerouslySetInnerHTML={sanitizedContent}
     />
   );
 };

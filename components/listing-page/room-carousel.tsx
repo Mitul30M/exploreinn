@@ -1,3 +1,4 @@
+// "use client";
 import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
 import {
@@ -23,12 +24,12 @@ import {
   Wifi,
   WifiHigh,
 } from "lucide-react";
-import { AddOnsRadioGroup } from "./add-ons-radio-group";
+import { Extras } from "./add-ons-radio-group";
 import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import BookRoomBtn from "./book-room-btn";
 import { Room } from "@prisma/client";
 
-export async function RoomTypesCarousel({
+export function RoomTypesCarousel({
   rooms,
   className,
   ...props
@@ -48,22 +49,11 @@ export async function RoomTypesCarousel({
       // onMouseEnter={plugin.current.stop}
       //   onMouseLeave={plugin.current.reset}
     >
-      <CarouselContent className="w-full gap-8">
+      <CarouselContent className="w-full">
         {rooms.map(async (room, index) => {
-          const formattedAddOns = await Promise.all(
-            room.extras.map(async (extra) => ({
-              ...extra,
-              cost: (await convertCurrency({
-                amount: extra.cost,
-                toCurrency: "INR",
-                fromCurrency: "USD",
-                returnNumber: true,
-              })) as number,
-            }))
-          );
           return (
             <CarouselItem
-              key={index}
+              key={room.id}
               className="max-w-[400px]  p-4 border-border/90 border-[1px] first:ms-4 rounded-md"
             >
               {/* room images */}
@@ -78,7 +68,7 @@ export async function RoomTypesCarousel({
                 )}
                 <CarouselContent className="">
                   {room.images.map((_, index) => (
-                    <CarouselItem key={_} className="w-full !h-[300px]">
+                    <CarouselItem key={_ + index} className="w-full !h-[300px]">
                       <div className=" w-full !h-full flex items-center justify-center bg-muted">
                         {/* {index + 1} */}
                         <Image
@@ -86,7 +76,7 @@ export async function RoomTypesCarousel({
                           alt="image"
                           width={400}
                           height={400}
-                          className="!w-full !h-full object-cover"
+                          className="!w-full !h-full object-cover rounded"
                         />
                       </div>
                     </CarouselItem>
@@ -114,6 +104,7 @@ export async function RoomTypesCarousel({
                   room.perks.map((perk, index) => (
                     <p
                       className="text-sm text-card-foreground font-medium flex items-center gap-2"
+                      key={index}
                     >
                       <Gift className="w-5 h-5 text-primary" />
                       {perk}
@@ -131,34 +122,26 @@ export async function RoomTypesCarousel({
                 </p>
                 {/* wifi & air conditioning */}
                 {room.isWifiAvailable && (
-                  <p
-                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
-                  >
+                  <p className="text-sm text-card-foreground font-medium flex items-center gap-2">
                     <Wifi className="w-5 h-5 text-primary" />
                     Room provides Wifi Connectivity
                   </p>
                 )}
                 {room.isAirConditioned && (
-                  <p
-                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
-                  >
+                  <p className="text-sm text-card-foreground font-medium flex items-center gap-2">
                     <AirVentIcon className="w-5 h-5 text-primary" />
                     Room is Air Conditioned
                   </p>
                 )}
                 {/* room view */}
                 {room.hasCityView && (
-                  <p
-                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
-                  >
+                  <p className="text-sm text-card-foreground font-medium flex items-center gap-2">
                     <Blinds className="w-5 h-5 text-primary" />
                     Room has City View
                   </p>
                 )}
                 {room.hasSeaView && (
-                  <p
-                    className="text-sm text-card-foreground font-medium flex items-center gap-2"
-                  >
+                  <p className="text-sm text-card-foreground font-medium flex items-center gap-2">
                     <Blinds className="w-5 h-5 text-primary" />
                     Room has Ocean/Sea View
                   </p>
@@ -170,32 +153,28 @@ export async function RoomTypesCarousel({
                   Add-Ons
                 </h2>
                 {/* store the selected add on in the redux store and then add it to the booking  */}
-                <AddOnsRadioGroup
-                  extras={formattedAddOns}
+                <Extras
+                  roomExtras={room.extras}
                   // onSelect={(selected) => {
                   //   console.log("Selected extra:", selected);
                   // }}
                 />
               </div>
-              {/* priciing */}
+              {/* pricing */}
               <div className="flex w-full justify-end items-center pb-4 border-border/90 border-b-[1px] mb-4">
                 <div className=" text-[16px] font-semibold w-max flex items-center gap-3">
-                  <Badge>
-                    {(100 - (room.price / room.basePrice) * 100).toFixed(1)}%
-                    Off
-                  </Badge>
-                  <span className="text-accent-foreground/70 text-sm line-through">
-                    {await convertCurrency({
-                      amount: room.basePrice,
-                      toCurrency: "INR",
-                      fromCurrency: "USD",
-                    })}
-                  </span>
-                  {await convertCurrency({
-                    amount: room.price,
-                    toCurrency: "INR",
-                    fromCurrency: "USD",
-                  })}
+                  {room.basePrice > room.price && (
+                    <>
+                      <Badge>
+                        {(100 - (room.price / room.basePrice) * 100).toFixed(1)}
+                        % Off
+                      </Badge>
+                      <span className="text-accent-foreground/70 text-sm line-through">
+                        ${room.basePrice.toFixed(2)}
+                      </span>
+                    </>
+                  )}
+                  ${room.price.toFixed(2)}
                 </div>
                 <span className="text-sm text-accent-foreground/80  font-medium">
                   /night

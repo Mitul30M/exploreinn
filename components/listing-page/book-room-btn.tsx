@@ -9,9 +9,15 @@ import {
   Plus,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ListingRoom } from "@/lib/utils/seed/listing/listings";
 import { Room } from "@prisma/client";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
+import { AppDispatch, RootState } from "@/lib/redux-store/store";
+import {
+  addRoom,
+  removeRoom,
+} from "@/lib/redux-store/slices/new-booking-slice";
 
 const BookRoomBtn = ({
   room,
@@ -22,28 +28,44 @@ const BookRoomBtn = ({
   className?: string;
 }) => {
   const [showCounter, setShowCounter] = useState<boolean>(false);
-  const [rooms, setRooms] = useState<number>(1);
+  // const [rooms, setRooms] = useState<number>(1);
+  const {
+    checkIn,
+    checkOut,
+    guests,
+    nights,
+    totalPayable,
+    tax,
+    extras,
+    rooms,
+    taxes,
+    totalWithoutTaxes,
+  } = useAppSelector((state: RootState) => state.newBooking);
+  const dispatch: AppDispatch = useAppDispatch();
+
+  const currentRoom = rooms.find((_) => _.roomID === room.id);
 
   const incrementRooms = () => {
-    setRooms((prev) => prev + 1);
+    // setRooms((prev) => prev + 1);
+    dispatch(addRoom({ name: room.name, rate: room.price, roomID: room.id }));
   };
 
   const decrementRooms = () => {
-    if (rooms > 1) {
-      setRooms((prev) => prev - 1);
-    } else {
-      setRooms(0);
-      setShowCounter(false);
-    }
+    dispatch(removeRoom(room.id));
   };
+
+  {
+    console.log(currentRoom);
+  }
 
   return (
     <div className="flex flex-col w-full gap-4">
-      {!showCounter ? (
+      {!rooms.find((_) => _.roomID === room.id) ||
+      rooms.find((_) => _.roomID === room.id)?.noOfRooms === 0 ? (
         <Button
-          className="rounded-full w-full"
+          className="rounded-lg w-full"
           onClick={() => {
-            setRooms(1);
+            incrementRooms();
             setShowCounter(true);
           }}
         >
@@ -60,7 +82,7 @@ const BookRoomBtn = ({
           >
             <Minus />
           </Button>
-          {rooms} Room{rooms !== 1 && "s"}
+          {currentRoom?.noOfRooms} Room{currentRoom?.noOfRooms !== 1 && "s"}
           <Button
             variant="outline"
             size="icon"

@@ -10,12 +10,23 @@ import { Button } from "@/components/ui/button";
 import { CircleMinus, CirclePlus, Minus, Plus, Users } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
-const GuestCounterInput = () => {
-  const [noOfGuests, setNoOfGuests] = useState<number>(1);
+const GuestCounterInput = ({
+  guestCount,
+  onIncrement,
+  onDecrement,
+}: {
+  guestCount?: number;
+  onIncrement?: () => void;
+  onDecrement?: () => void;
+}) => {
+  const [noOfGuests, setNoOfGuests] = useState<number>(
+    guestCount ? guestCount : 1
+  );
 
   // Function to increase the guest count
   const incrementGuests = () => {
     if (noOfGuests < 10) {
+      guestCount && onIncrement?.();
       setNoOfGuests(noOfGuests + 1);
     }
   };
@@ -23,6 +34,7 @@ const GuestCounterInput = () => {
   // Function to decrease the guest count
   const decrementGuests = () => {
     if (noOfGuests > 1) {
+      guestCount && onDecrement?.();
       setNoOfGuests(noOfGuests - 1);
     }
   };

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { registerListingSlice } from "./slices/register-listing-slice";
+import { newBookingSlice } from "./slices/new-booking-slice";
 export const makeStore = () => {
   return configureStore({
     reducer: {
       registerListing: registerListingSlice.reducer,
+      newBooking: newBookingSlice.reducer,
     },
   });
 };
