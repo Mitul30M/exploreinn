@@ -13,6 +13,9 @@ import { differenceInDays, format, isValid } from "date-fns";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import {
+  calculateTax,
+  calculateTotal,
+  calculateTotalPayable,
   decGuests,
   incGuests,
   setCheckIn,
@@ -35,16 +38,9 @@ const BookingDetails = ({
   const user = useUser();
 
   useEffect(() => {
-    // Add your initialization logic here
-    // const tomorrow = new Date();
-    // tomorrow.setDate(tomorrow.getDate() + 1);
-    // const dayAfterTomorrow = new Date();
-    // dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-    // dispatch(setCheckIn(tomorrow));
-    // dispatch(setCheckOut(dayAfterTomorrow));
-    // dispatch(setNights(differenceInDays(dayAfterTomorrow, tomorrow)));
     dispatch(setTax(listing.taxRates));
   }, []);
+
   const {
     checkIn,
     checkOut,
@@ -59,7 +55,14 @@ const BookingDetails = ({
   } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();
 
-  if (checkIn && checkOut && nights)
+  useEffect(() => {
+    console.log("room,extras,nights");
+    dispatch(calculateTotal());
+    dispatch(calculateTax());
+    dispatch(calculateTotalPayable());
+  }, [rooms, extras, nights]);
+
+  if (checkIn && checkOut && nights && rooms.length > 0)
     return (
       <div className={className}>
         <h1 className="text-lg font-semibold tracking-tight flex gap-2 items-center h-max w-max">
@@ -90,55 +93,29 @@ const BookingDetails = ({
           />
         </div>
 
-        {/* <Separator className="my-6" /> */}
-        {/* email */}
-        {/* <div className="w-full flex items-center justify-between">
-        <p className="text-sm">Email Address</p>
-        <p className="font-semibold text-[16px]">
-          {user.user?.emailAddresses[0].emailAddress}
-        </p>
-      </div> */}
-        {/* phone */}
-        {/* <div className="w-full flex items-center justify-between mt-2">
-        <p className="text-sm">Phone No.</p>
-        <p className="font-semibold text-[16px] ">
-          {user.user?.phoneNumbers[0].phoneNumber}
-        </p>
-      </div> */}
-
         <Separator className="my-6" />
-        {/* booking by */}
-        {/* <div className="w-full flex items-center justify-between">
-        <p className="text-sm">Booking By</p>
-        <p className="font-semibold text-[16px]">{user.user?.fullName}</p>
-      </div> */}
-        {/* Guests */}
         <div className="w-full flex items-center justify-between mt-2">
           <p className="text-sm">Guests</p>
           <p className="font-semibold text-[16px] ">{guests}</p>
         </div>
-        {/* Check In */}
         <div className="w-full flex items-center justify-between mt-2">
           <p className="text-sm">Check In</p>
           <p className="font-semibold text-[16px] ">
             {checkIn && format(checkIn, "dd MMMM yyyy")}
           </p>
         </div>
-        {/* Check Out */}
         <div className="w-full flex items-center justify-between mt-2">
           <p className="text-sm">Check Out</p>
           <p className="font-semibold text-[16px]">
             {checkOut && format(checkOut, "dd MMMM yyyy")}
           </p>
         </div>
-        {/* Nights */}
         <div className="w-full flex items-center justify-between mt-2">
           <p className="text-sm">Nights Staying</p>
           <p className="font-semibold text-[16px]">{nights}</p>
         </div>
 
         <Separator className="my-6" />
-        {/* room rate per night */}
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Room Rate ($/night)</p>
         </div>
@@ -150,13 +127,16 @@ const BookingDetails = ({
           >
             <p className="text-sm">{room.name}</p>
             <p className="font-semibold text-[16px]">
-              ${room.rate.toLocaleString()}/night
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(room.rate)}
+              /night
             </p>
           </div>
         ))}
 
         <Separator className="my-6" />
-        {/* extras */}
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Extras</p>
         </div>
@@ -168,7 +148,10 @@ const BookingDetails = ({
           >
             <p className="text-sm">{extra.name}</p>
             <p className="font-semibold text-[16px]">
-              ${(extra.cost * nights * guests).toLocaleString()}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(extra.cost * nights * guests)}
             </p>
           </div>
         ))}
@@ -179,7 +162,6 @@ const BookingDetails = ({
       </div> */}
 
         <Separator className="my-6" />
-        {/* booking fee */}
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Booking Fee</p>
         </div>
@@ -190,16 +172,33 @@ const BookingDetails = ({
             className="w-full flex items-center justify-between mt-2"
           >
             <p className="text-sm">
-              {room.noOfRooms}x {room.name} (${room.rate.toLocaleString()})
+              {room.noOfRooms}x {room.name} (
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(room.rate)}
+              )
             </p>
             <p className="font-semibold text-[16px]">
-              ${(room.noOfRooms * nights * room.rate).toLocaleString()}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(room.noOfRooms * nights * room.rate)}
             </p>
           </div>
         ))}
 
+        <div className="w-full flex items-center justify-between mt-2">
+          <p className="text-sm">Total</p>
+          <p className="font-semibold text-[16px]">
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(totalWithoutTaxes)}
+          </p>
+        </div>
+
         <Separator className="my-6" />
-        {/* taxes */}
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Taxes</p>
         </div>
@@ -212,22 +211,42 @@ const BookingDetails = ({
               {tax.name} ({tax.rate.toLocaleString()}%)
             </p>
             <p className="font-semibold text-[16px]">
-              $
-              {(
-                (nights * rooms.reduce((acc, room) => acc + room.rate, 0) +
-                  extras.reduce((acc, extra) => acc + extra.cost, 0)) *
-                tax.rate
-              ).toLocaleString()}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(
+                (rooms.reduce(
+                  (acc, room) => acc + room.noOfRooms * nights * room.rate,
+                  0
+                ) +
+                  extras.reduce(
+                    (acc, extra) => acc + extra.cost * nights * guests,
+                    0
+                  )) *
+                  (tax.rate / 100)
+              )}
             </p>
           </div>
         ))}
 
+        <div className="w-full flex items-center justify-between mt-2">
+          <p className="text-sm">Total Taxes</p>
+          <p className="font-semibold text-[16px]">
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(tax)}
+          </p>
+        </div>
+
         <Separator className="my-6" />
-        {/* total amount */}
         <div className="w-full flex items-center justify-between mt-2">
           <p className="font-semibold text-[16px]">Total Booking Amount</p>
           <p className="font-semibold text-[16px]">
-            ${totalPayable.toLocaleString()}
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(totalPayable)}
           </p>
         </div>
 

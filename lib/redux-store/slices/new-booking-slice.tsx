@@ -125,7 +125,7 @@ export const newBookingSlice = createSlice({
       const tax = state.taxes.reduce((total, tax) => {
         return total + tax.rate;
       }, 0);
-      state.tax = tax;
+      state.tax = (tax * state.totalWithoutTaxes)/100;
     },
     // calculate total payable
     calculateTotalPayable: (state) => {

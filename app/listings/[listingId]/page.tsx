@@ -347,9 +347,14 @@ const ListingPage = async ({ params }: { params: Params }) => {
           {listing.reviews.length ? (
             <ListingReviewsSection reviews={listing.reviews} />
           ) : (
-            <p className="px-4 font-medium text-primary">
-              No Reviews for this listing yet. Be the first to review
-            </p>
+            <div className="flex flex-col items-center m-4 justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
+              <p className="">
+                <MessageCircleHeart size={40} className="text-primary" strokeWidth={1.6} />
+              </p>
+              <p className="font-semibold text-primary">
+                No Reviews for this listing yet. Be the first to review
+              </p>
+            </div>
           )}
         </section>
 
@@ -391,8 +396,8 @@ const ListingPage = async ({ params }: { params: Params }) => {
         </section>
 
         {/* Cancellation Policy */}
-        <section className="w-full space-y-8  border-border/90 border-t-[1px] pb-8">
-          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-8 flex items-center gap-2">
+        <section className="w-full space-y-4  border-border/90 border-t-[1px] pb-4">
+          <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] py-4 px-4 flex items-center gap-2">
             <List className="text-primary" />
             {listing.name}, Cancellation Policy
           </h1>

@@ -9,6 +9,9 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
   addExtra,
+  calculateTax,
+  calculateTotal,
+  calculateTotalPayable,
   removeExtra,
 } from "@/lib/redux-store/slices/new-booking-slice";
 
@@ -47,6 +50,9 @@ export function Extras({ roomExtras }: AddOns) {
                 } else {
                   dispatch(removeExtra(extra.name));
                 }
+                dispatch(calculateTotal());
+                dispatch(calculateTax());
+                dispatch(calculateTotalPayable());
               }}
             />
             <div className="flex flex-1 justify-between items-center">

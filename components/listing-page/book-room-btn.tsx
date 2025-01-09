@@ -16,6 +16,9 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
   addRoom,
+  calculateTax,
+  calculateTotal,
+  calculateTotalPayable,
   removeRoom,
 } from "@/lib/redux-store/slices/new-booking-slice";
 
@@ -54,9 +57,7 @@ const BookRoomBtn = ({
     dispatch(removeRoom(room.id));
   };
 
-  {
-    console.log(currentRoom);
-  }
+
 
   return (
     <div className="flex flex-col w-full gap-4">
