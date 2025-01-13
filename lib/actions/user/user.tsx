@@ -13,6 +13,7 @@ import { redirect } from "next/navigation";
 
 export async function createUser(data: {
   clerkId: string;
+  stripeId: string;
   phone: string;
   email: string;
   firstName: string;
@@ -22,6 +23,7 @@ export async function createUser(data: {
   const user = await prisma.user.create({
     data: {
       clerkId: data.clerkId,
+      stripeId: data.stripeId,
       email: data.email,
       phoneNo: data.phone,
       firstName: data.firstName,

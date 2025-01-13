@@ -52,10 +52,9 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { NavMain } from "./nav-main";
 import { useUser } from "@clerk/nextjs";
 import { getUser } from "@/lib/actions/user/user";
+import { string } from "zod";
 
-export function AppSidebar({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
   const userDB_id = (user?.publicMetadata as PublicMetadataType)?.userDB_id;
 
@@ -225,6 +224,7 @@ export function AppSidebar({
             name: user?.fullName!,
             email: user?.emailAddresses[0]!.emailAddress!,
             avatar: user?.imageUrl!,
+            userDB_id: userDB_id as string,
           }}
         />
       </SidebarHeader>

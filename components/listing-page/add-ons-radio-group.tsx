@@ -44,9 +44,7 @@ export function Extras({ roomExtras }: AddOns) {
               checked={extras.some((e) => e.name === extra.name)}
               onCheckedChange={(checked) => {
                 if (checked) {
-                  dispatch(
-                    addExtra({ name: extra.name, cost: extra.cost * guests })
-                  );
+                  dispatch(addExtra({ name: extra.name, cost: extra.cost }));
                 } else {
                   dispatch(removeExtra(extra.name));
                 }

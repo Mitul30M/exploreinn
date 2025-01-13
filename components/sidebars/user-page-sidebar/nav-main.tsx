@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,7 +16,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -40,10 +40,9 @@ export function NavMain({
   label: string;
   className?: string;
   props?: React.ComponentProps<typeof SidebarGroup>;
-  }) {
-  
+}) {
   const pathname = usePathname();
-  
+
   return (
     <SidebarGroup {...props} className={className}>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>

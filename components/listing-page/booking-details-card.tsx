@@ -56,11 +56,11 @@ const BookingDetails = ({
   const dispatch: AppDispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log("room,extras,nights");
+    console.log("guests,room,extras,nights");
     dispatch(calculateTotal());
     dispatch(calculateTax());
     dispatch(calculateTotalPayable());
-  }, [rooms, extras, nights]);
+  }, [rooms, extras, nights, guests]);
 
   if (checkIn && checkOut && nights && rooms.length > 0)
     return (
@@ -88,7 +88,9 @@ const BookingDetails = ({
           />
           <GuestCounterInput
             guestCount={guests}
-            onIncrement={() => dispatch(incGuests())}
+            onIncrement={() => {
+              dispatch(incGuests())
+            }}
             onDecrement={() => dispatch(decGuests())}
           />
         </div>
@@ -265,9 +267,11 @@ const BookingDetails = ({
           </Link>
         </p>
 
+        <Link href={`/listings/${listing.id}/confirm-booking`}>
         <Button className="w-full">
           <Handshake /> Confirm Booking
         </Button>
+        </Link>
       </div>
     );
   else

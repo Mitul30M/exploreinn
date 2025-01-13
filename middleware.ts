@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
@@ -10,10 +10,13 @@ const isPublicRoute = createRouteMatcher([
   "/listings(.*)",
 ]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
+const isStripeRoute = createRouteMatcher([
+  "/api/stripe(.*)",
+  "/users/(.*)/billing(.*)",
+]);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
-
   // For users visiting /onboarding, don't try to redirect
   if (userId && isOnboardingRoute(req)) {
     return NextResponse.next();

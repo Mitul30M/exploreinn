@@ -22,6 +22,7 @@ import {
   Bus,
   BusFront,
   Check,
+  ChevronLeft,
   DoorOpen,
   Earth,
   HandPlatter,
@@ -45,7 +46,7 @@ import React, { cloneElement } from "react";
 
 const ListingPage = async ({ params }: { params: Params }) => {
   // get the listingId from the url and then fetch data using api or server action
-  const listingID = (await params).slug;
+  const listingID = (await params).listingId;
   const listing = await getListingById(listingID);
 
   if (!listing) {
@@ -75,6 +76,12 @@ const ListingPage = async ({ params }: { params: Params }) => {
           {/* share and wishlist buttons */}
           <TooltipProvider>
             <div className="flex items-center gap-2">
+              <Link
+                href={`/discover`}
+                className="flex items-center me-2 hover:text-primary hover:underline hover:underline-offset-2"
+              >
+                <ChevronLeft className="w-5 h-5" /> Back
+              </Link>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -349,7 +356,11 @@ const ListingPage = async ({ params }: { params: Params }) => {
           ) : (
             <div className="flex flex-col items-center m-4 justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
               <p className="">
-                <MessageCircleHeart size={40} className="text-primary" strokeWidth={1.6} />
+                <MessageCircleHeart
+                  size={40}
+                  className="text-primary"
+                  strokeWidth={1.6}
+                />
               </p>
               <p className="font-semibold text-primary">
                 No Reviews for this listing yet. Be the first to review

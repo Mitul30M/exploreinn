@@ -8,6 +8,11 @@ declare global {
   export type PublicMetadataType = {
     userDB_id?: string;
     onboardingComplete?: boolean;
+    stripeOnboardingComplete?: boolean;
+  };
+
+  export type PrivateMetadataType = {
+    stripeId?: string;
   };
 
   export type MessageType = {
@@ -20,6 +25,22 @@ declare global {
   }>;
 
   export type Params = Promise<{
-    slug: string;
+    listingId: string;
   }>;
+
+  export type StripeCheckoutSessionMetaData = {
+    userID: string;
+    listingID: string;
+    bookingDate: string;
+    checkIn: string;
+    checkOut: string;
+    guests: string;
+    nights: string;
+    rooms: string;
+    extras: string;
+    taxes: string;
+    totalWithoutTaxes: string;
+    tax: string;
+    totalPayable: string;
+  };
 }

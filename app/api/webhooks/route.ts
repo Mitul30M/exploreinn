@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user/user";
 import { User } from "@prisma/client";
+import { generateStripeId } from "@/lib/actions/stripe/stripe";
 
 /**
  * Handles incoming Clerk webhooks and processes user-related events.
@@ -70,9 +71,11 @@ export async function POST(req: Request) {
       const phone = phone_numbers[0]?.phone_number ?? "";
       const firstName = first_name || ""; // Default to an empty string if null
       const lastName = last_name || ""; // Default to an empty string if null
+      const stripeId = await generateStripeId(email);
 
       const { user }: { user: User } = await createUser({
         clerkId,
+        stripeId,
         email,
         phone,
         firstName,
@@ -88,7 +91,16 @@ export async function POST(req: Request) {
           //   privateMetadata: { secret, userDB_id: user.id },
           // });
           await client.users.updateUser(clerkId, {
-            publicMetadata: { userDB_id: user.id, onboardingComplete: false },
+            publicMetadata: {
+              userDB_id: user.id,
+              onboardingComplete: false,
+              stripeOnboardingComplete: false,
+            },
+          });
+          await client.users.updateUserMetadata(clerkId, {
+            privateMetadata: {
+              stripeId: stripeId,
+            },
           });
         } catch (err) {
           console.error("Error updating Clerk metadata:", err);

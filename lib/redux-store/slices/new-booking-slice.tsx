@@ -106,7 +106,10 @@ export const newBookingSlice = createSlice({
         (extra) => extra.name !== action.payload
       );
     },
-
+    // reset extras
+    resetExtras: (state) => {
+      state.extras = [{ name: "No Extras", cost: 0 }];
+    },
     // total without taxes
     calculateTotal: (state) => {
       const roomsTotal = state.rooms.reduce((total, room) => {
@@ -114,7 +117,7 @@ export const newBookingSlice = createSlice({
       }, 0);
 
       const extrasTotal = state.extras.reduce((total, extra) => {
-        return total + extra.cost * state.nights;
+        return total + (state.guests*extra.cost * state.nights);
       }, 0);
 
       state.totalWithoutTaxes = roomsTotal + extrasTotal;
@@ -125,7 +128,7 @@ export const newBookingSlice = createSlice({
       const tax = state.taxes.reduce((total, tax) => {
         return total + tax.rate;
       }, 0);
-      state.tax = (tax * state.totalWithoutTaxes)/100;
+      state.tax = (tax * state.totalWithoutTaxes) / 100;
     },
     // calculate total payable
     calculateTotalPayable: (state) => {
