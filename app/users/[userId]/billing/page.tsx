@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { currentUser } from "@clerk/nextjs/server";
+import { createStripeAccountLink } from "@/lib/actions/stripe/stripe";
+import { getUser } from "@/lib/actions/user/user";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import {
   ChartLine,
   CreditCard,
@@ -10,11 +12,23 @@ import {
 } from "lucide-react";
 import { notFound } from "next/navigation";
 
-const BillingPage = async () => {
-  const user = await currentUser();
+const BillingPage = async ({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) => {
+  const { userId } = await auth();
+  const clerkUser = await currentUser();
+
+  const userID = (await params).userId;
+  if (
+    userID != (clerkUser?.publicMetadata as PublicMetadataType).userDB_id ||
+    !userId
+  ) {
+    notFound();
+  }
+  const user = await getUser(userID);
   if (!user) return notFound();
-  if (!(user.privateMetadata as PrivateMetadataType).stripeId)
-    return notFound();
 
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
@@ -39,13 +53,16 @@ const BillingPage = async () => {
             your Stripe dashboard.
           </p>
 
-          {(user.publicMetadata as PublicMetadataType)
-            .stripeOnboardingComplete ? (
+          {user.isStripeConnectedAccount ? (
             <Button className="mx-4 mt-4 rounded" size={"sm"}>
               <ExternalLink /> Open Stripe Dashboard
             </Button>
           ) : (
-            <Button className="mx-4 mt-4 rounded" size={"sm"}>
+            <Button
+              className="mx-4 mt-4 rounded"
+              size={"sm"}
+              onClick={createStripeAccountLink}
+            >
               <ExternalLink /> Connect Stripe Account
             </Button>
           )}

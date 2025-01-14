@@ -8,7 +8,6 @@ declare global {
   export type PublicMetadataType = {
     userDB_id?: string;
     onboardingComplete?: boolean;
-    stripeOnboardingComplete?: boolean;
   };
 
   export type PrivateMetadataType = {

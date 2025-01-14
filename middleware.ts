@@ -1,4 +1,8 @@
-import { clerkMiddleware, createRouteMatcher, currentUser } from "@clerk/nextjs/server";
+import {
+  clerkMiddleware,
+  createRouteMatcher,
+  currentUser,
+} from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
@@ -7,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/webhooks(.*)",
+  "/api/webhook/stripe(.*)",
   "/listings(.*)",
 ]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);

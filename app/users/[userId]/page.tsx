@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import ResidentialInfo from "@/components/user-page/info/residential-info";
 import { EditPersonalInfoModal } from "@/components/user-page/info/edit-modals/edit-personal-info";
 import { EditResidentialInfoModal } from "@/components/user-page/info/edit-modals/edit-residential-info";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { getUser } from "@/lib/actions/user/user";
 import { notFound } from "next/navigation";
 import { User } from "@prisma/client";
@@ -28,11 +28,13 @@ export default async function ProfilePage({
 }: {
   params: Promise<{ userId: string }>;
 }) {
-  const { userId, sessionClaims } = await auth();
+  const { userId } = await auth();
+  const clerkUser = await currentUser();
   // this has been implemented so tht no one other than the one authorized can see their profile. to safeguard the user's data
   const userID = (await params).userId;
   if (
-    userID != (sessionClaims?.public_metadata as PublicMetadataType).userDB_id
+    userID != (clerkUser?.publicMetadata as PublicMetadataType).userDB_id ||
+    !userId
   ) {
     notFound();
   }

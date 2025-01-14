@@ -1,10 +1,11 @@
 // Import statements
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
+import { clerkClient, currentUser, WebhookEvent } from "@clerk/nextjs/server";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user/user";
 import { User } from "@prisma/client";
 import { generateStripeId } from "@/lib/actions/stripe/stripe";
+import { stripe } from "@/lib/stripe";
 
 /**
  * Handles incoming Clerk webhooks and processes user-related events.
@@ -94,7 +95,6 @@ export async function POST(req: Request) {
             publicMetadata: {
               userDB_id: user.id,
               onboardingComplete: false,
-              stripeOnboardingComplete: false,
             },
           });
           await client.users.updateUserMetadata(clerkId, {
@@ -142,6 +142,8 @@ export async function POST(req: Request) {
       const { id: clerkId } = evt.data;
       const deletedUser = await deleteUser(clerkId);
       console.log(`User deleted: ${deletedUser.id}`);
+      console.log("Deleting stripe account: ", deletedUser.stripeId);
+      await stripe.accounts.del(deletedUser.stripeId);
       break;
     }
 

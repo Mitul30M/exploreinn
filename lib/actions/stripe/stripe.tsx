@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma-client";
 import { stripe } from "@/lib/stripe";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 const bookingFormSchema = z.object({
@@ -198,6 +198,13 @@ export async function generateStripeId(email: string) {
   return account.id;
 }
 
+/**
+ * Retrieves the Stripe customer ID for the authenticated user.
+ *
+ * @returns {Promise<string | null>} The Stripe customer ID if it exists, or null if it does not.
+ *
+ * @throws {Error} If the user is not authenticated.
+ */
 export async function getCustomerStripeID() {
   const { userId, sessionClaims } = await auth();
 
@@ -218,4 +225,36 @@ export async function getCustomerStripeID() {
   }
 
   return null;
+}
+
+/**
+ * Redirects user to Stripe account onboarding.
+ *
+ * If the user doesn't have a Stripe account, creates one and redirects to the
+ * onboarding page. If the user already has a Stripe account, redirects to the
+ * dashboard.
+ *
+ * @returns A redirect to the Stripe onboarding page or dashboard
+ * @throws {Error} If the user is not authenticated or authorized
+ */
+export async function createStripeAccountLink() {
+  const stripeId = await getCustomerStripeID();
+
+  const { sessionClaims } = await auth();
+  const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
+    .userDB_id;
+
+  if (!stripeId || !userDbId) {
+    return null;
+  }
+
+  const accountLink = await stripe.accountLinks.create({
+    account: stripeId,
+    refresh_url: `${
+      process.env.NEXT_PUBLIC_ORIGIN as string
+    }/users/${userDbId}/billing`,
+    return_url: `${process.env.NEXT_PUBLIC_ORIGIN as string}/stripe/return`,
+    type: "account_onboarding",
+  });
+  return redirect(accountLink.url as string);
 }
