@@ -20,13 +20,13 @@ enum Role {
 
 // User
 model User {
-  id                       String    @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId                  String    @unique
-  stripeId                 String    @unique
-  isStripeConnectedAccount Boolean   @default(false)
-  role                     Role      @default(User)
-  email                    String    @unique
-  phoneNo                  String    @unique
+  id                       String        @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId                  String        @unique
+  stripeId                 String        @unique
+  isStripeConnectedAccount Boolean       @default(false)
+  role                     Role          @default(User)
+  email                    String        @unique
+  phoneNo                  String        @unique
   firstName                String
   lastName                 String
   profileImg               String
@@ -34,13 +34,15 @@ model User {
   gender                   Gender?
   country                  String?
   address                  Address? // Grouped address fields
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
   // Relationships
-  ownedListings            Listing[] @relation("OwnedListings")
-  managedListingIds        String[]  @default([]) @db.ObjectId
-  managedListings          Listing[] @relation("ManagedListings", fields: [managedListingIds], references: [id])
+  ownedListings            Listing[]     @relation("OwnedListings")
+  managedListingIds        String[]      @default([]) @db.ObjectId
+  managedListings          Listing[]     @relation("ManagedListings", fields: [managedListingIds], references: [id])
   reviews                  Review[]
+  Booking                  Booking[]
+  Transaction              Transaction[]
 }
 
 enum Gender {
@@ -60,52 +62,130 @@ type Address {
 
 // Listing
 model Listing {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  type         String
-  email        String
-  phoneNo      String
-  description  String
-  checkInTime  String
-  checkOutTime String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
+  id                          String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                        String
+  type                        String
+  email                       String
+  phoneNo                     String
+  description                 String
+  checkInTime                 String
+  checkOutTime                String
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
   // Geometry & address
-  geometry     GeoJSON
-  address      ListingAddress
-  distanceFrom DistanceFrom
-
+  geometry                    GeoJSON
+  address                     ListingAddress
+  distanceFrom                DistanceFrom
   // Images, Legal Docs, Policies, Rules & Regulations
   images                      String[]
   legalDocs                   String[]
   coverImage                  String
   taxIN                       String
   taxRates                    TaxRates[]
-  isBookNowPayLaterAllowed    Boolean    @default(true)
+  isBookNowPayLaterAllowed    Boolean            @default(true)
   checkInRulesAndRestrictions String
   groundRulesAndRestrictions  String
   cancellationPolicy          String
-
   // Relationships
-  owner      User     @relation("OwnedListings", fields: [ownerId], references: [id])
-  ownerId    String   @db.ObjectId
-  managers   User[]   @relation("ManagedListings", fields: [managerIds], references: [id])
-  managerIds String[] @default([]) @db.ObjectId
-  rooms      Room[]
-
+  owner                       User               @relation("OwnedListings", fields: [ownerId], references: [id])
+  ownerId                     String             @db.ObjectId
+  managers                    User[]             @relation("ManagedListings", fields: [managerIds], references: [id])
+  managerIds                  String[]           @default([]) @db.ObjectId
+  rooms                       Room[]
   // Amenities
-  amenities String[]
-
+  amenities                   String[]
   // Reviews & Ratings
-  reviews         Review[]
-  starRating      Float // Out of 5, avg of stars for all reviews
-  overallRating   Float           @default(7) // Out of 10, 10 being best and 0 being poorest, avg of overallRatings of the same by all reviews
-  exploreinnGrade ExploreinnGrade @default(Good) //given based on overallRating
-
+  reviews                     Review[]
+  starRating                  Float // Out of 5, avg of stars for all reviews
+  overallRating               Float              @default(7) // Out of 10, 10 being best and 0 being poorest, avg of overallRatings of the same by all reviews
+  exploreinnGrade             ExploreinnGrade    @default(Good) //given based on overallRating
   // socials
-  socialMediaLinks SocialMediaLinks[]
-  tags             String[]
+  socialMediaLinks            SocialMediaLinks[]
+  tags                        String[]
+  Booking                     Booking[]
+  Transaction                 Transaction[]
+}
+
+// Transaction
+model Transaction {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId     String        @unique
+  listing       Listing       @relation(fields: [listingId], references: [id])
+  listingId     String        @db.ObjectId
+  guest         User          @relation(fields: [guestId], references: [id])
+  guestId       String        @db.ObjectId
+  booking       Booking       @relation(fields: [bookingId], references: [id])
+  bookingId     String        @unique @db.ObjectId
+  bookingType   BookingType   @default(ONLINE_PAYMENT)
+  paymentStatus PaymentStatus
+  taxRates      TaxRates[]
+  tax           Float
+  totalCost     Float
+  receiptURL    String?
+  paymentMethod PaymentMethod
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+type PaymentMethod {
+  cardBrand    String
+  last4        String
+  expMonth     Int
+  expYear      Int
+  billingName  String
+  billingEmail String
+  billingPhone String?
+}
+
+// Booking
+model Booking {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  listing       Listing       @relation(fields: [listingId], references: [id])
+  listingId     String        @db.ObjectId
+  guest         User          @relation(fields: [guestId], references: [id])
+  guestId       String        @db.ObjectId
+  checkInDate   DateTime
+  checkOutDate  DateTime
+  guests        Int
+  rooms         BookedRooms[]
+  extras        RoomExtra[]
+  bookingType   BookingType
+  transactionId String        @db.ObjectId
+  transaction   Transaction?
+  paymentStatus PaymentStatus
+  taxRates      TaxRates[]
+  tax           Float
+  totalCost     Float
+  bookingStatus BookingStatus
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  specialNote   String?       @default("")
+}
+
+type BookedRooms {
+  roomId    String
+  name      String
+  rate      Float
+  noOfRooms Int
+}
+
+enum BookingStatus {
+  upcoming
+  ongoing
+  completed
+  cancelled
+}
+
+enum BookingType {
+  BOOK_NOW_PAY_LATER
+  ONLINE_PAYMENT
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  cancelled
+  refunded
 }
 
 type GeoJSON {
@@ -168,12 +248,11 @@ model Review {
   overallRating Float    @default(0) //avg of above 6 fields
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
   // Relationships
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  String  @db.ObjectId
-  listing   Listing @relation(fields: [listingId], references: [id])
-  listingId String  @db.ObjectId
+  author        User     @relation(fields: [authorId], references: [id])
+  authorId      String   @db.ObjectId
+  listing       Listing  @relation(fields: [listingId], references: [id])
+  listingId     String   @db.ObjectId
 }
 
 // Room
@@ -200,10 +279,9 @@ model Room {
   coverImage              String
   createdAt               DateTime    @default(now())
   updatedAt               DateTime    @updatedAt
-
   // Relationships
-  listing   Listing @relation(fields: [listingId], references: [id])
-  listingId String  @db.ObjectId
+  listing                 Listing     @relation(fields: [listingId], references: [id])
+  listingId               String      @db.ObjectId
 }
 
 type RoomBed {
