@@ -150,8 +150,9 @@ model Booking {
   rooms         BookedRooms[]
   extras        RoomExtra[]
   bookingType   BookingType
-  transactionId String        @db.ObjectId
+  transactionId String?       @db.ObjectId
   transaction   Transaction?
+  paymentId     String?       @unique
   paymentStatus PaymentStatus
   taxRates      TaxRates[]
   tax           Float
