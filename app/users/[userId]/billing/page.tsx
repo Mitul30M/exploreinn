@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { createStripeAccountLink } from "@/lib/actions/stripe/stripe";
+import {
+  createStripeAccountLink,
+  getStripeDashboardLink,
+} from "@/lib/actions/stripe/stripe";
 import { getUser } from "@/lib/actions/user/user";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import {
@@ -54,7 +57,11 @@ const BillingPage = async ({
           </p>
 
           {user.isStripeConnectedAccount ? (
-            <Button className="mx-4 mt-4 rounded" size={"sm"}>
+            <Button
+              className="mx-4 mt-4 rounded"
+              size={"sm"}
+              onClick={getStripeDashboardLink}
+            >
               <ExternalLink /> Open Stripe Dashboard
             </Button>
           ) : (

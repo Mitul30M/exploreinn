@@ -79,6 +79,19 @@ export async function createStripeCheckoutSession(
     redirect("/sign-up");
   }
 
+  const sellerStripeConnectID = await prisma.listing.findUnique({
+    where: {
+      id: bookingDetails.listingID,
+    },
+    include: {
+      owner: {
+        select: {
+          stripeId: true,
+        },
+      },
+    },
+  });
+
   const rooms = await prisma.room.findMany({
     where: {
       id: {
@@ -149,7 +162,15 @@ export async function createStripeCheckoutSession(
   // Create Stripe Checkout Session
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card", "amazon_pay"],
+    payment_method_types: ["card"],
+    payment_intent_data: {
+      application_fee_amount: Math.round(
+        bookingDetails.totalPayable * 0.05 * 100
+      ),
+      transfer_data: {
+        destination: sellerStripeConnectID?.owner.stripeId as string,
+      },
+    },
     line_items: [...roomCart, ...extrasCart],
     expires_at: Math.floor(Date.now() / 1000) + 1800, // 30 minutes (stripe checkout minimum expiration time)
     success_url: `${process.env.NEXT_PUBLIC_ORIGIN as string}/stripe/success`,
@@ -259,6 +280,12 @@ export async function createStripeAccountLink() {
   return redirect(accountLink.url as string);
 }
 
+/**
+ * Checks if the user has a Stripe connected account.
+ *
+ * @param {object} - User ID
+ * @returns {boolean} - true if the user has a Stripe connected account, false otherwise
+ */
 export async function isStripeConnectedAccount({ userId }: { userId: string }) {
   const user = await prisma.user.findUnique({
     where: {
@@ -273,4 +300,19 @@ export async function isStripeConnectedAccount({ userId }: { userId: string }) {
   console.log(user);
   if (!user) return false;
   return user.isStripeConnectedAccount;
+}
+
+/**
+ * Retrieves a login link to the Stripe dashboard for the authenticated user's account.
+ *
+ * @returns {Promise<void | null>} - Redirects to the Stripe dashboard if the user has a Stripe account,
+ *                                   otherwise returns null.
+ *
+ * @throws {Error} - If there is an issue creating the login link.
+ */
+export async function getStripeDashboardLink() {
+  const stripeId = await getCustomerStripeID();
+  if (!stripeId) return null;
+  const dashboardLink = await stripe.accounts.createLoginLink(stripeId);
+  redirect(dashboardLink.url as string);
 }
