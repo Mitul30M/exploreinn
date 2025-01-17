@@ -4,6 +4,8 @@ import {
   currentUser,
 } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "./lib/prisma-client";
+import { isStripeConnectedAccount } from "./lib/actions/stripe/stripe";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -19,6 +21,8 @@ const isStripeRoute = createRouteMatcher([
   "/api/stripe(.*)",
   "/users/(.*)/billing(.*)",
 ]);
+
+const isRegisterNewListingRoute = createRouteMatcher(["/listings/register"]);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
@@ -41,10 +45,24 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(onboardingUrl);
   }
 
+  // comment out when testing locally since prisma client cant run on edge middleware & runtime
+  // if (userId && isRegisterNewListingRoute(req)) {
+  //   if (await isStripeConnectedAccount({ userId })) {
+  //     return NextResponse.next();
+  //   } else {
+  //     const billingUrl = new URL(
+  //       `/users/${
+  //         (sessionClaims.public_metadata as PublicMetadataType).userDB_id
+  //       }/billing`,
+  //       req.url
+  //     );
+  //     return NextResponse.redirect(billingUrl);
+  //   }
+  // }
+
   // If the user is logged in and the route is protected, let them view.
   if (userId && !isPublicRoute(req)) return NextResponse.next();
 });
-
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params

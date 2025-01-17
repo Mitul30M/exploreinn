@@ -1,6 +1,5 @@
 "use client";
-import { format } from "date-fns";
-import { Bookings } from "@/lib/utils/seed/bookings";
+import { differenceInDays, format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   BedDouble,
@@ -48,9 +47,13 @@ import {
 } from "@/lib/utils/types/status/booking-status";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { cn } from "@/lib/utils";
+import { BookedRooms, Booking } from "@prisma/client";
+import { prisma } from "@/lib/prisma-client";
+import { UserBookings } from "@/app/users/[userId]/bookings/page";
+import Link from "next/link";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export const bookingTableColumns: ColumnDef<Bookings>[] = [
+export const bookingTableColumns: ColumnDef<UserBookings>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -74,24 +77,24 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "hotelName",
+    accessorKey: "listingName",
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Hotel"
+        title="Listing Name"
         icon={Hotel}
         className="flex items-center gap-2 ms-4"
       />
     ),
     // the cell data format should be Hotel Name, Hotel City
     cell: ({ row }) => {
-      const hotelName = row.getValue("hotelName") as string;
-      const hotelCoverImg = row.original.hotelCoverImg;
-      const hotelCity = row.original.hotelCity; // Access the hotelCity field from the original row data
+      const hotelName = row.original.listing.name;
+      const hotelCoverImg = row.original.listing.coverImage;
+      const hotelCity = row.original.listing.address.city as string; // Access the hotelCity field from the original row data
       return (
         <div className="flex ms-2 items-center gap-2 px-1 py-1.5 text-left text-sm">
-          <Avatar className="h-8 w-8 rounded-lg">
-            {/* <AvatarImage src={hotelCoverImg} alt={hotelName} /> */}
+          <Avatar className="h-8 w-8 rounded-lg border-2">
+            <AvatarImage src={hotelCoverImg} alt={hotelName} />
             <AvatarFallback className="rounded-lg">
               {hotelCity.charAt(0).toUpperCase() +
                 hotelCity.charAt(1).toUpperCase()}
@@ -115,6 +118,10 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => {
+      const bookingId = row.original.id;
+      return bookingId;
+    },
   },
   {
     accessorKey: "bookingDate",
@@ -127,7 +134,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       />
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("bookingDate"));
+      const date = new Date(row.original.createdAt);
       const formatted = format(date, "dd MMM yyyy");
       return formatted;
     },
@@ -144,7 +151,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       />
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("checkInDate"));
+      const date = new Date(row.original.checkInDate);
       const formatted = format(date, "dd MMM yyyy");
       return formatted;
     },
@@ -160,7 +167,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       />
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("checkOutDate"));
+      const date = new Date(row.original.checkOutDate);
       const formatted = format(date, "dd MMM yyyy");
       return formatted;
     },
@@ -175,6 +182,15 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => {
+      const checkInDate = row.original.checkInDate;
+      const checkOutDate = row.original.checkOutDate;
+      const nights = differenceInDays(
+        new Date(checkOutDate),
+        new Date(checkInDate)
+      );
+      return nights;
+    },
   },
   {
     accessorKey: "guests",
@@ -186,21 +202,41 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => {
+      const guests = row.getValue("guests");
+      return guests;
+    },
   },
   // {
   //   accessorKey: "roomId",
   //   header: "Room ID",
   // },
   {
-    accessorKey: "roomName",
+    accessorKey: "rooms",
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Room"
+        title="Rooms"
         icon={DoorOpen}
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => {
+      const rooms = row.original.rooms;
+      return (
+        <div className="w-full flex items-center justify-center">
+          <Badge
+            variant="outline"
+            className={
+              "border-none rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max"
+            }
+          >
+            {rooms[0].noOfRooms}x {rooms[0].name}
+            {rooms.length > 1 && `, +${rooms.length - 1}`}
+          </Badge>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "roomsBooked",
@@ -213,6 +249,10 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => {
+      const rooms = row.original.rooms;
+      return rooms.reduce((total, room) => total + room.noOfRooms, 0);
+    },
   },
   {
     accessorKey: "bookingAmount",
@@ -225,7 +265,7 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
       />
     ),
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("bookingAmount"));
+      const amount = row.original.totalCost;
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -239,11 +279,19 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="BookingID"
+        title="TransactionID"
         icon={ClipboardList}
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => {
+      const transactionId = row.original.transactionId;
+      return transactionId ? (
+        transactionId
+      ) : (
+        <p className="text-primary">N/A</p>
+      );
+    },
   },
   {
     accessorKey: "paymentStatus",
@@ -326,30 +374,29 @@ export const bookingTableColumns: ColumnDef<Bookings>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-56">
             <DropdownMenuLabel className="font-medium ">
-              {booking.hotelName}, {booking.hotelCity}
+              {booking.listing?.name}, {booking.listing.address.city}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="flex items-center gap-2"
-              onClick={() => navigator.clipboard.writeText(booking.bookingId)}
+              onClick={() => navigator.clipboard.writeText(booking.id)}
             >
               <Clipboard />
               Copy BookingID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <Link href={`/listings/${booking.listingId}`}>
+              <DropdownMenuItem className="flex items-center gap-2">
+                <Hotel />
+                Visit Listing's Page
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem
               className="flex items-center gap-2"
-              onClick={() => navigator.clipboard.writeText(booking.hotelId)}
-            >
-              <Hotel />
-              Visit Hotel's Page
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="flex items-center gap-2"
-              onClick={() => navigator.clipboard.writeText(booking.hotelId)}
+              onClick={() => navigator.clipboard.writeText(booking.listingId)}
             >
               <Clipboard />
-              Copy HotelID
+              Copy ListingID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex items-center gap-2">

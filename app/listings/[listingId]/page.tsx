@@ -300,6 +300,7 @@ const ListingPage = async ({ params }: { params: Params }) => {
                 <div className="p-4 grid grid-cols-2 md:grid-cols-2  gap-2">
                   {listingAmenities.map((amenity, index) => (
                     <Badge
+                      key={index}
                       variant="outline"
                       className="border-none rounded-md cursor-pointer flex items-center justify-center gap-2 w-max  text-card-foreground/80 "
                     >

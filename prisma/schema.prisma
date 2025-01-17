@@ -152,7 +152,7 @@ model Booking {
   bookingType   BookingType
   transactionId String?       @db.ObjectId
   transaction   Transaction?
-  paymentId     String?       @unique
+  paymentId     String?
   paymentStatus PaymentStatus
   taxRates      TaxRates[]
   tax           Float

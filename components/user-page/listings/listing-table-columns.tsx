@@ -236,7 +236,7 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="OnGoing Bookings"
+        title="Upcoming Bookings"
         icon={CalendarClock}
         className="flex items-center gap-2 ms-4"
       />

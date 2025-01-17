@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAppSelector } from "@/hooks/redux-hooks";
 import { RootState } from "@/lib/redux-store/store";
 import { Listing } from "@prisma/client";
-import { BadgeDollarSign, Handshake, ListCheck } from "lucide-react";
+import { BadgeDollarSign, Handshake, ListCheck, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +31,7 @@ import { toast } from "@/hooks/use-toast";
 import { startTransition, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { createStripeCheckoutSession } from "@/lib/actions/stripe/stripe";
+import { createBookNowPayLaterBooking } from "@/lib/actions/bookings/bookings";
 
 interface PaymentConfirmationCardProps {
   className?: string;
@@ -102,7 +103,7 @@ const PaymentConfirmationCard = ({
       totalWithoutTaxes: totalWithoutTaxes,
       tax: tax,
       totalPayable: totalPayable,
-      paymentMethod: "book-now-pay-later",
+      paymentMethod: "online-payment",
     },
   });
 
@@ -276,11 +277,8 @@ const PaymentConfirmationCard = ({
                   console.log("online-payment");
                   createStripeCheckoutSession(validatedData);
                 } else if (paymentMethod === "book-now-pay-later") {
-                  toast({
-                    title: "Booking Confirmed",
-                    description:
-                      "Your booking has been confirmed with the pay-later option",
-                  });
+                  console.log("book-now-pay-later");
+                  createBookNowPayLaterBooking(validatedData);
                 }
               });
             } catch (error) {
@@ -324,8 +322,19 @@ const PaymentConfirmationCard = ({
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
-            <Handshake /> Confirm Booking
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Handshake />
+            )}
+            {form.formState.isSubmitting
+              ? "Confirming Booking..."
+              : "Confirm Booking"}
           </Button>
         </form>
       </Form>

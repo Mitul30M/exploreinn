@@ -3,21 +3,42 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { bookingTableColumns } from "@/components/user-page/bookings/booking-table-columns";
 import { UserBookingsDataTable } from "@/components/user-page/bookings/bookings-data-table";
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
+import { getUserBookings } from "@/lib/actions/bookings/bookings";
 import { bookings } from "@/lib/utils/seed/bookings";
 import { currentUser } from "@clerk/nextjs/server";
 import { TicketsPlane } from "lucide-react";
 import React from "react";
 
-const UserBookingsPage =async ({
+import { Booking } from "@prisma/client";
+
+export type UserBookings = Booking & {
+  listing: {
+    id: string;
+    name: string;
+    coverImage: string;
+    address: {
+      street: string;
+      neighborhood: string;
+      city: string;
+      state: string;
+      country: string;
+      zipCode: string;
+      fullAddress: string;
+      landmark: string;
+    };
+  };
+};
+
+const UserBookingsPage = async ({
   params,
   searchParams,
 }: {
   params: { userId: string };
   searchParams?: { [key: string]: string | string[] | undefined };
-  }) => {
-  
+}) => {
   const user = await currentUser();
-  
+  const userBookings = await getUserBookings();
+
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       {/* Personal Info */}
@@ -30,7 +51,14 @@ const UserBookingsPage =async ({
         {/* User's Booking History */}
         <UserBookingsDataTable
           columns={bookingTableColumns}
-          data={bookings}
+          data={
+            userBookings.map((booking) => ({
+              ...booking,
+              listing: {
+                ...booking.listing,
+              },
+            })) as UserBookings[]
+          }
           className="mx-4"
         />
       </div>

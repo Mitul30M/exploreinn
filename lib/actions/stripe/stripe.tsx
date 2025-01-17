@@ -258,3 +258,19 @@ export async function createStripeAccountLink() {
   });
   return redirect(accountLink.url as string);
 }
+
+export async function isStripeConnectedAccount({ userId }: { userId: string }) {
+  const user = await prisma.user.findUnique({
+    where: {
+      clerkId: userId,
+    },
+    select: {
+      id: true,
+      isStripeConnectedAccount: true,
+      stripeId: true,
+    },
+  });
+  console.log(user);
+  if (!user) return false;
+  return user.isStripeConnectedAccount;
+}

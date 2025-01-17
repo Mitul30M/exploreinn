@@ -6,6 +6,7 @@ import { createUser, deleteUser, updateUser } from "@/lib/actions/user/user";
 import { User } from "@prisma/client";
 import { generateStripeId } from "@/lib/actions/stripe/stripe";
 import { stripe } from "@/lib/stripe";
+import prisma from "@/lib/prisma-client";
 
 /**
  * Handles incoming Clerk webhooks and processes user-related events.
@@ -60,6 +61,18 @@ export async function POST(req: Request) {
 
   switch (eventType) {
     case "user.created": {
+      const existingUser = await prisma.user.findUnique({
+        where: { email: evt.data.email_addresses[0].email_address },
+        select: {
+          id: true,
+        },
+      });
+
+      if (existingUser) {
+        console.log(`User already exists: ${existingUser.id}`);
+        return new Response("", { status: 200 });
+      }
+
       const {
         email_addresses,
         phone_numbers,

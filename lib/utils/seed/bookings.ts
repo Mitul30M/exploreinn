@@ -1,6 +1,6 @@
 import { getRandomDateInRange } from "@/lib/utils";
 
-export type Bookings = {
+type Bookings = {
   bookingId: string;
   bookingDate: string;
   checkInDate: string;
@@ -66,6 +66,4 @@ export const bookings: Bookings[] = Array.from({ length: 20 }, () => ({
   ][Math.floor(Math.random() * 7)],
 }));
 
-
 // A function to generate random date from 1 Jan 2022 to 31 Dec 2024 and return it
-

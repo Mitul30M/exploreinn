@@ -156,7 +156,7 @@ export function UserBookingsDataTable<TData, TValue>({
 
       <DataTablePagination table={table} />
       {/* for user hotel bookings data table */}
-      {table.getColumn("hotelName") &&
+      {table.getColumn("listingName") &&
         table.getColumn("bookingStatus") &&
         table.getColumn("paymentStatus") &&
         table.getFilteredSelectedRowModel().rows.length > 0 && (
