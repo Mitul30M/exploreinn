@@ -10,6 +10,8 @@ import {
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { resend } from "@/lib/resend";
+import OnboardCompleteEmail from "@/components/emails/onboarding";
 
 export async function createUser(data: {
   clerkId: string;
@@ -104,9 +106,18 @@ export async function onboardUser(
           onboardingComplete: true,
         },
       });
+
+      const { data, error } = await resend.emails.send({
+        from: "exploreinn <onboarding@mitul30m.in>",
+        to: [user.email],
+        subject: "Account Onboarding Complete",
+        react: OnboardCompleteEmail(user),
+        scheduledAt: "in 2 minutes",
+      });
     }
     revalidatePath("/");
     // Success
+
     return {
       message: "User Onboarding Completed successfully",
       type: "success",

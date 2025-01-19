@@ -25,6 +25,8 @@ import {
   Star,
   Sparkles,
   DoorClosed,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -224,7 +226,12 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
             variant="outline"
             className="border-none rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max bg-emerald-100/50 text-emerald-950 dark:bg-emerald-950/50 dark:text-emerald-100 "
           >
-            {25} <BedDouble size={16} />
+            {
+              row.original.Booking.filter(
+                (booking) => booking.bookingStatus === "ongoing"
+              ).length
+            }{" "}
+            <BedDouble size={16} />{" "}
           </Badge>
         </div>
       );
@@ -251,7 +258,12 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
             variant="outline"
             className="border-none rounded-md flex items-center justify-center gap-2 p-1 px-3 w-max bg-amber-100/50 text-amber-950 dark:bg-amber-900/50 dark:text-amber-100 "
           >
-            {5} <CalendarClock size={16} />
+            {
+              row.original.Booking.filter(
+                (booking) => booking.bookingStatus === "upcoming"
+              ).length
+            }
+            <CalendarClock size={16} />
           </Badge>
         </div>
       );
@@ -263,21 +275,41 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Payment Status"
+        title="Today's Revenue"
         icon={HandCoins}
         className="flex items-center gap-2 ms-4"
       />
     ),
     cell: ({ row }) => {
       // fetch all today's bookings with payment status completed and then sum up the amount;
-      const amount = 2850;
       // show in $ only, later inside dashboard can the user see the amount in his preferred currency
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
+      // Reduce the totalCost by deducting a 5% from each totalCost.
+      const formattedToday = row.original.Booking.filter(
+        (booking) =>
+          new Date(booking.createdAt).toDateString() ===
+            new Date().toDateString() && booking.paymentStatus === "completed"
+      ).reduce((total, booking) => total + booking.totalCost * 0.95, 0);
 
-      return <p className="">{formatted}</p>;
+      const formattedYesterday = row.original.Booking.filter(
+        (booking) =>
+          new Date(booking.createdAt).toDateString() ===
+            new Date(Date.now() - 86400000).toDateString() &&
+          booking.paymentStatus === "completed"
+      ).reduce((total, booking) => total + booking.totalCost * 0.95, 0);
+
+      return (
+        <p className=" flex gap-2 items-center justify-center">
+          {formattedToday > formattedYesterday ? (
+            <TrendingUp size={16} className="text-green-500" />
+          ) : (
+            <TrendingDown size={16} className="text-red-500" />
+          )}{" "}
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(formattedToday)}
+        </p>
+      );
     },
   },
   {
@@ -292,12 +324,17 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
     ),
     cell: ({ row }) => {
       // fetch all today's bookings with payment status completed and then sum up the amount;
-      const amount = 1003125.5;
       // show in $ only, later inside dashboard can the user see the amount in his preferred currency
+      // Reduce the totalCost by deducting a 5% from each totalCost.
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(amount);
+      }).format(
+        row.original.Booking.reduce(
+          (total, booking) => total + booking.totalCost * 0.95,
+          0
+        )
+      );
 
       return <p className="">{formatted}</p>;
     },

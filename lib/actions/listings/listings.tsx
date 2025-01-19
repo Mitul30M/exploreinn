@@ -7,7 +7,7 @@ import {
 } from "@/lib/redux-store/slices/register-listing-slice";
 import { FormState } from "@/lib/types/forms/form-state";
 import { auth } from "@clerk/nextjs/server";
-import { Listing } from "@prisma/client";
+import { Booking, Listing, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -286,7 +286,10 @@ export type TOwnedListing = {
     totalRoomsAllocated: number;
     currentlyAvailableRooms: number;
   }[];
+  Booking: Booking[];
+  Transaction: Transaction[];
 };
+
 export async function getOwnedListings(): Promise<TOwnedListing[]> {
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
@@ -310,7 +313,8 @@ export async function getOwnedListings(): Promise<TOwnedListing[]> {
           currentlyAvailableRooms: true,
         },
       },
-      // also select ongoing bookings, upcoming bookings, revenue today,  overall revenue
+      Booking: true,
+      Transaction: true,
     },
     where: { ownerId: userDbId },
   });
