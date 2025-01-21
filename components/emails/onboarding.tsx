@@ -29,7 +29,7 @@ export const OnboardCompleteEmail = (user: User) => {
       <Head />
       <Preview>{previewText}</Preview>
       <Tailwind>
-        <Body className=" my-auto mx-auto font-sans   ">
+        <Body className=" my-auto mx-auto font-sans  p-0  bg-rose-600">
           <Container className="mx-auto border  mb-0 max-w-[465px] bg-black text-white ">
             <Section className="mb-0  ">
               <Row className="justify-between p-2 bg-black ">
@@ -112,7 +112,7 @@ export const OnboardCompleteEmail = (user: User) => {
 
             <Section className="text-center mt-[32px] mb-[32px] ">
               <Button
-                className="bg-black rounded-3xl border-[#e11d48] border-2 border-solid  text-white text-[14px] font-semibold no-underline text-center px-7 py-3 "
+                className="bg-rose-600 rounded   text-white text-[14px] font-semibold no-underline text-center px-7 py-3 "
                 href={`${baseURL}/users/${user.id}`}
               >
                 Account
