@@ -5,7 +5,10 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Booking } from "@prisma/client";
+import { Booking, Listing } from "@prisma/client";
+import OnboardCompleteEmail from "@/components/emails/onboarding";
+import { resend } from "@/lib/resend";
+import BookingConfirmationMail from "@/components/emails/booking-confirmation";
 
 const bookingFormSchema = z.object({
   listingID: z.string(),
@@ -66,18 +69,6 @@ export async function createBookNowPayLaterBooking(
     where: {
       id: userDbId,
     },
-    select: {
-      id: true,
-      clerkId: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      phoneNo: true,
-      profileImg: true,
-      address: true,
-      dob: true,
-      gender: true,
-    },
   });
 
   if (!user) {
@@ -107,9 +98,25 @@ export async function createBookNowPayLaterBooking(
       bookingStatus: "upcoming",
     },
   });
+  const listing = await prisma.listing.findUnique({
+    where: {
+      id: bookingDetails.listingID,
+    },
+  });
 
   console.log("New Booking created successfully: ", newBooking);
-  revalidatePath(`/users/${newBooking.guestId}/bookings`);
+  await revalidatePath(`/users/${newBooking.guestId}/bookings`);
+  const { data, error } = await resend.emails.send({
+    from: "exploreinn <no-reply@mitul30m.in>",
+    to: [user.email],
+    subject: "Booking Successful",
+    react: BookingConfirmationMail({
+      user,
+      booking: newBooking as Booking,
+      listing: listing as Listing,
+    }),
+    scheduledAt: "in 1 minute",
+  });
   redirect(`/users/${newBooking.guestId}/bookings`);
 }
 

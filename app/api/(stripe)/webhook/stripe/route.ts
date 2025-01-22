@@ -4,6 +4,10 @@ import Stripe from "stripe";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma-client";
 import { revalidatePath } from "next/cache";
+import BookingConfirmationMail from "@/components/emails/booking-confirmation";
+import { resend } from "@/lib/resend";
+import { Booking, Listing } from "@prisma/client";
+import OnlinePaymentBookingComplete from "@/components/emails/online-payment-booking-complete";
 
 export async function POST(req: Request) {
   console.log("Webhook received");
@@ -207,7 +211,7 @@ export async function POST(req: Request) {
 
         console.log("New Transaction created successfully: ", newTransaction);
 
-        await prisma.booking.update({
+        const updatedBooking = await prisma.booking.update({
           where: {
             id: booking.id,
           },
@@ -215,7 +219,31 @@ export async function POST(req: Request) {
             transactionId: newTransaction.id,
           },
         });
+
+        const user = await prisma.user.findUnique({
+          where: {
+            id: booking.guestId,
+          },
+        });
+
+        const listing = await prisma.listing.findUnique({
+          where: {
+            id: booking.listingId,
+          },
+        });
         console.log("Updated Booking to include the transactionId");
+        const { data, error } = await resend.emails.send({
+          from: "exploreinn <no-reply@mitul30m.in>",
+          to: [user!.email],
+          subject: "Booking & Payment Successful",
+          react: OnlinePaymentBookingComplete({
+            user: user!,
+            listing: listing!,
+            transaction: newTransaction,
+            booking: updatedBooking,
+          }),
+          scheduledAt: "in 1 minute",
+        });
         revalidatePath(`/users/${newTransaction.guestId}/bookings`);
         revalidatePath(`/users/${newTransaction.guestId}/billing`);
         break;
