@@ -43,6 +43,7 @@ import { UserBookingsTableFloatingActionBar } from "@/components/user-page/booki
 import { ListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

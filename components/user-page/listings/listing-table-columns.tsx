@@ -96,7 +96,14 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className=" font-medium">{hotelName}</span>
+            <span className=" font-medium">
+              <Link
+                className="hover:underline hover:text-primary hover:underline-offset-2"
+                href={`/listings/${row.original.id}/overview`}
+              >
+                {hotelName}
+              </Link>
+            </span>
             <span className="text-xs text-muted-foreground">{hotelCity}</span>
           </div>
         </div>

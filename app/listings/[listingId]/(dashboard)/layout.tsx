@@ -1,0 +1,28 @@
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import Navbar from "@/components/discover-page/navbar/home-page-navbar";
+import { AppSidebar } from "@/components/sidebars/user-listing-dashboard-sidebar/listing-dashboard-app-sidebar";
+
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Params;
+}) {
+  const listingID = (await params).listingId;
+  console.log("Dashboard for listing with ID: ", listingID);
+
+  return (
+    <SidebarProvider className="m-auto max-w-7xl relative">
+      <AppSidebar
+        listingID={listingID}
+        collapsible="offcanvas"
+        className="border-r-[1px] mt-1 border-t-[1px] border-border/90 z-20 shadow-sm shadow-foreground/5 "
+      />
+      <main className="min-h-screen bg-background border-border/90  absolute top-0 left-0 w-full shrink-0">
+        <SidebarTrigger className="mx-4 my-2" />
+        {children}
+      </main>
+    </SidebarProvider>
+  );
+}

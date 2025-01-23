@@ -39,8 +39,8 @@ const TransactionInvoice = ({
       <Head />
       <Preview>{previewText}</Preview>
       <Tailwind>
-        <Body className=" my-auto mx-auto font-sans  p-0 bg-rose-600">
-          <Container className="mx-auto border  mb-0 max-w-[600px] bg-black text-white ">
+        <Body className=" my-auto mx-auto font-sans  p-0 ">
+          <Container className="mx-auto border  mb-0 max-w-[600px]  ">
             <Section className="mb-0  ">
               <Row className="justify-between p-2 bg-black ">
                 <Column align="left">
