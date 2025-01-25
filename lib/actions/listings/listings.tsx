@@ -289,7 +289,6 @@ export type TOwnedListing = {
   Booking: Booking[];
   Transaction: Transaction[];
 };
-
 export async function getOwnedListings(): Promise<TOwnedListing[]> {
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
@@ -320,4 +319,38 @@ export async function getOwnedListings(): Promise<TOwnedListing[]> {
   });
 
   return listings as TOwnedListing[];
+}
+
+/**
+ * Checks if a given user is the owner of a given listing.
+ * @param userID - The id of the user to be checked.
+ * @param listingId - The id of the listing to be checked.
+ * @returns A promise that resolves to a boolean indicating if the given user is the owner of the given listing.
+ * If the listing does not exist, the function returns false.
+ */
+export async function isListingOwner(userID: string, listingId: string) {
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id: listingId,
+    },
+  });
+  if (!listing) return false;
+  return listing.ownerId === userID;
+}
+
+/**
+ * Checks if a given user is a manager of a given listing.
+ * @param userID - The id of the user to be checked.
+ * @param listingId - The id of the listing to be checked.
+ * @returns A promise that resolves to a boolean indicating if the given user is a manager of the given listing.
+ * If the listing does not exist, the function returns false.
+ */
+export async function isListingManager(userID: string, listingId: string) {
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id: listingId,
+    },
+  });
+  if (!listing) return false;
+  return listing.managerIds.includes(userID);
 }

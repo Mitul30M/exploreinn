@@ -1,6 +1,13 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 import { AppSidebar } from "@/components/sidebars/user-listing-dashboard-sidebar/listing-dashboard-app-sidebar";
+import {
+  getListingById,
+  isListingManager,
+  isListingOwner,
+} from "@/lib/actions/listings/listings";
+import { notFound } from "next/navigation";
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Layout({
   children,
@@ -10,6 +17,19 @@ export default async function Layout({
   params: Params;
 }) {
   const listingID = (await params).listingId;
+  const listing = await getListingById(listingID);
+  if (!listing) {
+    return notFound();
+  }
+  const clerkUser = await currentUser();
+  const userDbID = (clerkUser?.publicMetadata as PublicMetadataType).userDB_id;
+  if (
+    !userDbID ||
+    !isListingOwner(userDbID, listingID) ||
+    !isListingManager(userDbID, listingID)
+  ) {
+    return notFound();
+  }
   console.log("Dashboard for listing with ID: ", listingID);
 
   return (

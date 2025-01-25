@@ -1,6 +1,21 @@
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { UserListingsDataTable } from "@/components/user-page/listings/listings-data-table";
-
-import { HandCoins, Hotel } from "lucide-react";
+import {
+  getListingById,
+  isListingOwner,
+  isListingManager,
+} from "@/lib/actions/listings/listings";
+import { getUser } from "@/lib/actions/user/user";
+import { currentUser } from "@clerk/nextjs/server";
+import { format } from "date-fns";
+import { Suspense } from "react";
+import { ChartLine, HandCoins, Hotel, Mail, Phone, Star } from "lucide-react";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { ListingMonthWiseRevenueGraph } from "@/components/listing-dashoard/overview/revenue-graph";
+import { getMonthlyRevenue } from "@/lib/actions/transactions/transactions";
 
 const ListingOverviewPage = async ({
   params,
@@ -9,14 +24,153 @@ const ListingOverviewPage = async ({
   params: Promise<{ listingId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
+  const listing = await getListingById((await params).listingId);
+  if (!listing) {
+    return notFound();
+  }
+  const clerkUser = await currentUser();
+  const userDbID = (clerkUser?.publicMetadata as PublicMetadataType).userDB_id;
+  const user = await getUser(userDbID);
+  if (!user) {
+    return notFound();
+  }
+
+  // fetch latest  booking
+
+  // fetch monthly revenue
+  const monthlyRevenue = await getMonthlyRevenue(listing.id);
+
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       {/* Personal Info */}
       <div id="hotel-owner" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <Hotel size={22} className="text-primary" />
-          Overview {(await params).listingId}
+          {listing.name}
         </h1>
+
+        <div className="w-full px-4 h-max gap-4 flex flex-wrap  ">
+          {/* hotel preview card */}
+
+          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[300px] h-max">
+            <h1 className="ext-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+              {listing.name}
+            </h1>
+
+            <p className="leading-6 text-[15px]">
+              {listing.address.fullAddress}
+            </p>
+
+            <Image
+              alt={listing.name}
+              src={listing.coverImage}
+              width={250}
+              height={250}
+              className="aspect-video w-full object-cover rounded-md"
+            />
+            <Separator className="border-border/90" />
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-1">
+                <Phone size={16} /> {listing.phoneNo}
+              </p>
+              <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-1">
+                <Mail size={16} /> {listing.email}
+              </p>
+            </div>
+          </section>
+
+          {/* owner/manager info card*/}
+          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[400px] h-max">
+            <Badge className="text-md rounded shadow-none px-3 flex items-center gap-1 justify-center w-max  font-semibold tracking-tight">
+              <ChartLine size={16} strokeWidth={2.5} />
+              {(await isListingOwner(user.id, listing.id))
+                ? "Owner"
+                : (await isListingManager(user.id, listing.id))
+                  ? "Manager"
+                  : ""}
+            </Badge>
+
+            <Separator className="border-border/90" />
+
+            <div className="flex gap-4 items-center">
+              <Avatar className="w-12 h-12 rounded-xl">
+                <AvatarImage src={user.profileImg} alt={user.firstName} />
+                <AvatarFallback>
+                  {user.firstName[0].toUpperCase()}
+                  {user.lastName[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+
+              <p className="text-md rounded-2xl">
+                {user.firstName} {user.lastName}
+                <br />
+                <small className="text-[12px] font-medium text-accent-foreground/60">
+                  {user.dob
+                    ? format(new Date(user.dob), "dd MMM yyyy")
+                    : "Not provided"}{" "}
+                </small>
+              </p>
+            </div>
+
+            <Separator className="border-border/90" />
+
+            <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-1">
+              <Phone size={16} /> {user.phoneNo}
+            </p>
+            <p className="text-sm font-medium text-accent-foreground line-clamp-1 flex flex-row items-center gap-1">
+              <Mail size={16} /> {user.email}
+            </p>
+          </section>
+
+          {/* listing rating stats card*/}
+          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-[300px] h-max">
+            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
+              Star Rating
+              <Badge
+                variant={"secondary"}
+                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
+              >
+                {listing.starRating} <Star size={14} strokeWidth={2.5} />
+              </Badge>
+            </div>
+            <Separator className="border-border/90" />
+
+            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
+              Reviews
+              <Badge
+                variant={"secondary"}
+                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
+              >
+                {listing.reviews.length} reviews
+              </Badge>
+            </div>
+            <Separator className="border-border/90" />
+
+            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
+              exploreinn grade
+              <Badge
+                variant={"secondary"}
+                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
+              >
+                {listing.exploreinnGrade}{" "}
+                {listing.exploreinnGrade === "Excellent" && (
+                  <Star size={14} strokeWidth={2.5} />
+                )}
+              </Badge>
+            </div>
+          </section>
+        </div>
+
+        <Separator className="border-border/90" />
+
+        <div className="w-full px-4 h-max gap-4 flex flex-wrap  ">
+          {/* hotel revenue bar graph card */}
+
+          <ListingMonthWiseRevenueGraph
+            chartData={monthlyRevenue}
+            className="rounded-md border-border/90 border-[1px] shadow-none  w-1/3 h-max"
+          />
+        </div>
       </div>
     </section>
   );

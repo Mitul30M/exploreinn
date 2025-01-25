@@ -62,15 +62,13 @@ const ListingReviewsSection = ({ reviews }: ListingReviewsSectionProps) => {
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
-  
-
   return (
     <div className="w-full space-y-4 px-4 ">
       <div className="flex items-center gap-4">
         <Button
           variant={"outline"}
           size={"sm"}
-          className="rounded-full shadow-none"
+          className="rounded shadow-none"
         >
           View All
         </Button>
