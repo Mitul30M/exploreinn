@@ -11,11 +11,38 @@ import { getUser } from "@/lib/actions/user/user";
 import { currentUser } from "@clerk/nextjs/server";
 import { format } from "date-fns";
 import { Suspense } from "react";
-import { ChartLine, HandCoins, Hotel, Mail, Phone, Star } from "lucide-react";
+import {
+  BedDouble,
+  Calendar,
+  CalendarClock,
+  ChartLine,
+  HandCoins,
+  Hotel,
+  Mail,
+  Phone,
+  Star,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ListingMonthWiseRevenueGraph } from "@/components/listing-dashoard/overview/revenue-graph";
 import { getMonthlyRevenue } from "@/lib/actions/transactions/transactions";
+import {
+  getListingCurrentWeekBookings,
+  getListingLatestBooking,
+} from "@/lib/actions/bookings/bookings";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { late } from "zod";
+import {
+  PaymentStatusConfig,
+  paymentStatus,
+} from "@/lib/utils/types/status/payement-status";
+import {
+  bookingStatus,
+  BookingStatusConfig,
+} from "@/lib/utils/types/status/booking-status";
+import Link from "next/link";
+import { ListingWeekWiseBookingsGraph } from "@/components/listing-dashoard/overview/bookings-graph";
 
 const ListingOverviewPage = async ({
   params,
@@ -35,10 +62,20 @@ const ListingOverviewPage = async ({
     return notFound();
   }
 
+  const isOwner = await isListingOwner(user.id, listing.id);
+  const isManager = await isListingManager(user.id, listing.id);
+  console.log(user.id, ": Owner: ", isOwner, " ; Manager:", isManager);
+  if (!(isOwner || isManager)) {
+    return notFound();
+  }
   // fetch latest  booking
+  const latestBooking = await getListingLatestBooking(listing.id);
 
   // fetch monthly revenue
   const monthlyRevenue = await getMonthlyRevenue(listing.id);
+
+  // fetch weekly bookings
+  const weeklyBookings = await getListingCurrentWeekBookings(listing.id);
 
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
@@ -70,10 +107,10 @@ const ListingOverviewPage = async ({
             />
             <Separator className="border-border/90" />
             <div className="space-y-2">
-              <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-1">
+              <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-2">
                 <Phone size={16} /> {listing.phoneNo}
               </p>
-              <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-1">
+              <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-2">
                 <Mail size={16} /> {listing.email}
               </p>
             </div>
@@ -93,7 +130,7 @@ const ListingOverviewPage = async ({
             <Separator className="border-border/90" />
 
             <div className="flex gap-4 items-center">
-              <Avatar className="w-12 h-12 rounded-xl">
+              <Avatar className="w-12 h-12 rounded-xl border-border/90">
                 <AvatarImage src={user.profileImg} alt={user.firstName} />
                 <AvatarFallback>
                   {user.firstName[0].toUpperCase()}
@@ -159,16 +196,204 @@ const ListingOverviewPage = async ({
               </Badge>
             </div>
           </section>
+
+          {/* latest booking card*/}
+          {latestBooking && (
+            <ScrollArea className="rounded-md border-border/90 border-[1px] p-4  w-[320px] h-[370px] ">
+              <div className="!flex !flex-col gap-4">
+                <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+                  <BedDouble size={20} className="text-primary" /> Recent
+                  Booking
+                </h1>
+                <Separator className="border-border/90" />
+                {/* booking by */}
+                <div className="flex gap-3 items-center  ">
+                  <Avatar className="w-8 h-8 rounded-xl border-border/90">
+                    <AvatarImage
+                      src={latestBooking.guest.profileImg}
+                      alt={latestBooking.guest.firstName}
+                    />
+                    <AvatarFallback>
+                      {latestBooking.guest.firstName[0].toUpperCase()}
+                      {latestBooking.guest.lastName[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="font-medium text-sm rounded-xl flex flex-col gap-1">
+                    <p>
+                      {latestBooking.guest.firstName}{" "}
+                      {latestBooking.guest.lastName}
+                    </p>
+                    <small className="text-[12px] font-medium text-accent-foreground/60">
+                      Booked on{" "}
+                      {format(
+                        new Date(latestBooking.createdAt),
+                        "HH:mm dd MMM yyyy"
+                      )}
+                    </small>
+                  </div>
+                </div>
+                <Separator className="border-border/90" />
+                <div className="space-y-2">
+                  <p className="font-medium text-sm  text-accent-foreground  flex flex-row items-center gap-3">
+                    <Phone size={16} /> {latestBooking.guest.phoneNo}
+                  </p>
+                  <p className="font-medium text-sm  text-accent-foreground  flex flex-row items-center gap-3">
+                    <Mail size={16} /> {latestBooking.guest.email}
+                  </p>
+                </div>
+                <Separator className="border-border/90" />
+                <div className="w-full flex items-center justify-between">
+                  <p className="font-medium text-sm w-max flex gap-2 items-center">
+                    <Users size={16} />
+                    {latestBooking.guests === 1
+                      ? `${latestBooking.guests} Guest`
+                      : `${latestBooking.guests} Guests`}
+                  </p>
+                </div>
+                {/* checkin-checkout */}
+                <div className="w-full flex items-center ">
+                  <p className="font-medium text-sm flex w-max items-center gap-3">
+                    <CalendarClock size={16} />
+                    {format(
+                      new Date(latestBooking.checkInDate),
+                      "dd MMM yyyy"
+                    )}{" "}
+                    -{" "}
+                    {format(
+                      new Date(latestBooking.checkOutDate),
+                      "dd MMM yyyy"
+                    )}
+                  </p>
+                </div>
+                <Separator className="border-border/90" />
+                {/* booking & payment status'*/}
+                <div className=" flex items-center justify-between">
+                  <p className="text-sm w-[150px]">Payment Status</p>
+                  <div>
+                    {(() => {
+                      const status: PaymentStatusConfig =
+                        paymentStatus[
+                          latestBooking.paymentStatus as keyof typeof paymentStatus
+                        ];
+                      if (status) {
+                        return (
+                          <Badge variant="outline" className={status.className}>
+                            {status.icon && <status.icon size={16} />}{" "}
+                            {status.label}
+                          </Badge>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+                <div className=" flex items-center justify-between">
+                  <p className="text-sm">Booking Status</p>
+                  <div>
+                    {(() => {
+                      const status: BookingStatusConfig =
+                        bookingStatus[
+                          latestBooking.bookingStatus as keyof typeof bookingStatus
+                        ];
+                      if (status) {
+                        return (
+                          <Badge variant="outline" className={status.className}>
+                            {status.icon && <status.icon size={16} />}{" "}
+                            {status.label}
+                          </Badge>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+                <Separator className="border-border/90" />
+                {/* rooms and extras */}
+                <div className="space-y-2">
+                  <p className="text-sm  flex justify-start rounded-none items-center gap-2 font-medium ">
+                    Rooms Booked
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {latestBooking.rooms.map((room) => (
+                      <p key={room.roomId} className="w-max text-sm">
+                        {room.noOfRooms}x {room.name} [at{" "}
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(room.rate)}
+                        /night]
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <Separator className="border-border/90" />
+                <div className="space-y-2">
+                  <p className="text-sm flex justify-start rounded-none items-center gap-2 font-medium ">
+                    Extras
+                  </p>
+                  <div className="space-y-2">
+                    {latestBooking.extras?.length > 0 ? (
+                      latestBooking.extras.map((extra) => (
+                        <p key={extra.name} className="w-max text-sm">
+                          {latestBooking.guests}x {extra.name}
+                        </p>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        No extras selected
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <Separator className="border-border/90" />
+                {/* booking & Transaction ID */}
+                <div className="space-y-2">
+                  <p className="text-sm  flex justify-start rounded-none items-center gap-2 font-medium tracking-tight text-primary">
+                    Booking ID
+                  </p>
+                  <p className="text-sm   font-medium ">
+                    <Link
+                      className="hover:text-primary hover:underline hover:underline-offset-2"
+                      href={`/listings/${listing.id}/bookings/${latestBooking.id}`}
+                    >
+                      {latestBooking.id}
+                    </Link>
+                  </p>
+                </div>
+                {latestBooking.transaction && (
+                  <div className="space-y-2">
+                    <p className="text-sm  flex justify-start rounded-none items-center gap-2 font-medium tracking-tight text-primary">
+                      Transaction ID
+                    </p>
+                    <p className="text-sm  font-medium">
+                      <Link
+                        className="hover:text-primary hover:underline hover:underline-offset-2"
+                        href={`/listings/${listing.id}/transactions/${latestBooking.transaction?.id}`}
+                      >
+                        {latestBooking.transaction?.id}
+                      </Link>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          )}
         </div>
 
         <Separator className="border-border/90" />
 
         <div className="w-full px-4 h-max gap-4 flex flex-wrap  ">
           {/* hotel revenue bar graph card */}
-
           <ListingMonthWiseRevenueGraph
             chartData={monthlyRevenue}
-            className="rounded-md border-border/90 border-[1px] shadow-none  w-1/3 h-max"
+            className="rounded-md border-border/90 border-[1px] shadow-none  w-[450px] h-max"
+          />
+
+          {/* hotel weekly bookings bar graph card */}
+          <ListingWeekWiseBookingsGraph
+            chartData={weeklyBookings}
+            className="rounded-md border-border/90 border-[1px] shadow-none  w-[380px] h-max"
           />
         </div>
       </div>

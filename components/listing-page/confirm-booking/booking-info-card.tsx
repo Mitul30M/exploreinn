@@ -31,8 +31,6 @@ const BookingInfoCard = ({ className, listing }: BookingInfoCardProps) => {
 
   const router = useRouter();
 
-
-
   return (
     <div className={className}>
       <h1 className="text-lg font-semibold tracking-tight flex gap-2 items-center h-max w-max">

@@ -8,6 +8,7 @@ import {
 } from "@/lib/actions/listings/listings";
 import { notFound } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/actions/user/user";
 
 export default async function Layout({
   children,
@@ -23,11 +24,14 @@ export default async function Layout({
   }
   const clerkUser = await currentUser();
   const userDbID = (clerkUser?.publicMetadata as PublicMetadataType).userDB_id;
-  if (
-    !userDbID ||
-    !isListingOwner(userDbID, listingID) ||
-    !isListingManager(userDbID, listingID)
-  ) {
+  const user = await getUser(userDbID);
+  if (!user) {
+    return notFound();
+  }
+
+  const isOwner = await isListingOwner(user.id, listing.id);
+  const isManager = await isListingManager(user.id, listing.id);
+  if (!(isOwner || isManager)) {
     return notFound();
   }
   console.log("Dashboard for listing with ID: ", listingID);

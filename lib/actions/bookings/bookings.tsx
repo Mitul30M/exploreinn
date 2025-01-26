@@ -9,6 +9,7 @@ import { Booking, Listing } from "@prisma/client";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
+import { startOfWeek, endOfWeek, getDay, format } from "date-fns";
 
 const bookingFormSchema = z.object({
   listingID: z.string(),
@@ -120,6 +121,11 @@ export async function createBookNowPayLaterBooking(
   redirect(`/users/${newBooking.guestId}/bookings`);
 }
 
+/**
+ * Retrieves all bookings made by the currently authenticated user.
+ * @returns A promise that resolves to an array of bookings with their respective details.
+ * @throws {Error} If the user is not authenticated.
+ */
 export async function getUserBookings() {
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
@@ -146,4 +152,112 @@ export async function getUserBookings() {
     },
   });
   return userBookings;
+}
+
+/**
+ * Retrieves the latest booking for a given listing.
+ * The function returns a promise that resolves to the latest booking object
+ * with the booking's transaction and guest details.
+ * @param listingId - The id of the listing whose latest booking is to be retrieved.
+ * @returns A promise that resolves to the latest booking object with the booking's transaction and guest details.
+ */
+export async function getListingLatestBooking(listingId: string) {
+  const latestBooking = await prisma.booking.findFirst({
+    where: {
+      listingId: listingId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      transaction: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+        },
+      },
+    },
+  });
+  return latestBooking;
+}
+
+/**
+ * Retrieves all bookings for a given listing.
+ * The function returns a promise that resolves to an array of bookings,
+ * including the transaction details and guest information for each booking.
+ * @param listingId - The id of the listing whose bookings are to be retrieved.
+ * @returns A promise that resolves to an array of bookings with their respective transaction and guest details.
+ */
+
+export async function getListingBookings(listingId: string) {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      listingId: listingId,
+    },
+    include: {
+      transaction: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+        },
+      },
+    },
+  });
+  return bookings;
+}
+
+
+/**
+ * Retrieves the bookings for a given listing within the current week.
+ * The function returns a promise that resolves to an array of objects
+ * containing the day of the week and the number of bookings for that day.
+ * @param listingId - The id of the listing whose bookings are to be retrieved.
+ * @returns A promise that resolves to an array of objects with the day of the week and the number of bookings for that day.
+ */
+export async function getListingCurrentWeekBookings(listingId: string) {
+  const bookings = await getListingBookings(listingId);
+
+  // Get the start and end of the current week
+  const now = new Date();
+  const startDate = startOfWeek(now, { weekStartsOn: 1 }); // Monday as the first day of the week
+  const endDate = endOfWeek(now, { weekStartsOn: 1 }); // Sunday as the last day of the week
+
+  // Initialize an object to store daily bookings
+  const dailyBookings = {
+    Mon: 0,
+    Tue: 0,
+    Wed: 0,
+    Thu: 0,
+    Fri: 0,
+    Sat: 0,
+    Sun: 0,
+  };
+
+  // Filter bookings within the current week and count them by day
+  bookings.forEach((booking) => {
+    const bookingDate = new Date(booking.createdAt);
+
+    // Ensure the booking falls within the current week
+    if (bookingDate >= startDate && bookingDate <= endDate) {
+      const dayOfWeek = format(bookingDate, "EEE"); // Get the 3-letter day format
+      // Explicitly cast dayOfWeek to ensure it matches the type of dailyBookings keys
+      const day: keyof typeof dailyBookings =
+        dayOfWeek as keyof typeof dailyBookings;
+      dailyBookings[day] += 1; // Increment the count for that day
+    }
+  });
+
+  // Format the data for the chart or further usage
+  return Object.entries(dailyBookings).map(([day, count]) => ({
+    day,
+    bookings: count,
+  }));
 }

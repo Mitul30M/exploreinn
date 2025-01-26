@@ -111,7 +111,7 @@ export function ListingMonthWiseRevenueGraph({
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
-              }).format(chartData[10].revenue)}
+              }).format(chartData[0].revenue)}
             </>
           ) : (
             <>
