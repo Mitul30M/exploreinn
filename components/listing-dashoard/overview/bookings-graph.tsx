@@ -36,10 +36,18 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ListingWeekWiseBookingsGraph({
-  chartData,
+  chartData = [
+    { day: "Mon", bookings: 5 },
+    { day: "Tue", bookings: 3 },
+    { day: "Wed", bookings: 7 },
+    { day: "Thu", bookings: 4 },
+    { day: "Fri", bookings: 8 },
+    { day: "Sat", bookings: 2 },
+    { day: "Sun", bookings: 1 },
+  ],
   className,
 }: {
-  chartData: {
+  chartData?: {
     day: string;
     bookings: number;
   }[];
@@ -49,7 +57,19 @@ export function ListingWeekWiseBookingsGraph({
     <Card className={className}>
       <CardHeader>
         <CardTitle>This Week's Bookings</CardTitle>
-        <CardDescription>Monday - Friday</CardDescription>
+        <CardDescription>
+          {new Date().toLocaleDateString("en-US", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}{" "}
+          (Mon) to{" "}
+          {new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString(
+            "en-US",
+            { day: "2-digit", month: "short", year: "numeric" }
+          )}{" "}
+          (Sun)
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -74,7 +94,7 @@ export function ListingWeekWiseBookingsGraph({
             <XAxis dataKey="bookings" type="number" hide />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+              content={<ChartTooltipContent hideLabel />}
             />
             <Bar
               dataKey="bookings"
@@ -104,7 +124,7 @@ export function ListingWeekWiseBookingsGraph({
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           {new Date().getDay() === 1 ? ( // Check if today is Monday
-            <>Today's Total Bookings: {chartData[1]?.bookings || 0}</>
+            <>Today's Total Bookings: {chartData[0]?.bookings || 0}</>
           ) : (
             (() => {
               const todayIndex = new Date().getDay(); // Get the index for today

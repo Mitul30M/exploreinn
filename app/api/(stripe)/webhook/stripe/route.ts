@@ -196,7 +196,8 @@ export async function POST(req: Request) {
             tax: booking.tax,
             totalCost: booking.totalCost,
             receiptURL: charge.receipt_url as string,
-            paymentMethod: {
+            paymentMethod: "ONLINE_PAYMENT",
+            card: {
               billingEmail: charge.billing_details.email as string,
               billingPhone: charge.billing_details.phone as string,
               billingName: charge.billing_details.name as string,

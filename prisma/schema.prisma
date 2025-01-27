@@ -108,23 +108,24 @@ model Listing {
 
 // Transaction
 model Transaction {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  paymentId     String        @unique
-  listing       Listing       @relation(fields: [listingId], references: [id])
-  listingId     String        @db.ObjectId
-  guest         User          @relation(fields: [guestId], references: [id])
-  guestId       String        @db.ObjectId
-  booking       Booking       @relation(fields: [bookingId], references: [id])
-  bookingId     String        @unique @db.ObjectId
-  bookingType   BookingType   @default(ONLINE_PAYMENT)
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId     String         @unique
+  listing       Listing        @relation(fields: [listingId], references: [id])
+  listingId     String         @db.ObjectId
+  guest         User           @relation(fields: [guestId], references: [id])
+  guestId       String         @db.ObjectId
+  booking       Booking        @relation(fields: [bookingId], references: [id])
+  bookingId     String         @unique @db.ObjectId
+  bookingType   BookingType    @default(ONLINE_PAYMENT)
   paymentStatus PaymentStatus
   taxRates      TaxRates[]
   tax           Float
   totalCost     Float
   receiptURL    String?
-  paymentMethod PaymentMethod
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  paymentMethod BookingType
+  card          PaymentMethod?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 type PaymentMethod {

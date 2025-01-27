@@ -12,6 +12,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { format } from "date-fns";
 import { Suspense } from "react";
 import {
+  BadgeDollarSign,
   BedDouble,
   Calendar,
   CalendarClock,
@@ -27,7 +28,10 @@ import {
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ListingMonthWiseRevenueGraph } from "@/components/listing-dashoard/overview/revenue-graph";
-import { getMonthlyRevenue } from "@/lib/actions/transactions/transactions";
+import {
+  getMonthlyRevenue,
+  getRecentListingTransaction,
+} from "@/lib/actions/transactions/transactions";
 import {
   getAllBookingsStatusOverview,
   getListingCurrentWeekBookings,
@@ -64,14 +68,16 @@ const ListingOverviewPage = async ({
     return notFound();
   }
 
-  const isOwner = await isListingOwner(user.id, listing.id);
-  const isManager = await isListingManager(user.id, listing.id);
-  console.log(user.id, ": Owner: ", isOwner, " ; Manager:", isManager);
-  if (!(isOwner || isManager)) {
-    return notFound();
-  }
-  // fetch latest  booking
+  // const isOwner = await isListingOwner(user.id, listing.id);
+  // const isManager = await isListingManager(user.id, listing.id);
+  // console.log(user.id, ": Owner: ", isOwner, " ; Manager:", isManager);
+  // if (!(isOwner || isManager)) {
+  //   return notFound();
+  // }
+
+  // fetch latest  booking & transaction
   const latestBooking = await getListingLatestBooking(listing.id);
+  const latestTransaction = await getRecentListingTransaction(listing.id);
 
   // fetch monthly revenue
   const monthlyRevenue = await getMonthlyRevenue(listing.id);
@@ -90,10 +96,9 @@ const ListingOverviewPage = async ({
           <Hotel size={22} className="text-primary" />
           {listing.name}
         </h1>
-
-        <div className="w-full px-4 h-max gap-4 flex flex-wrap  ">
+        <div className="w-full px-4 columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4">
           {/* hotel preview card */}
-          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[300px] h-max">
+          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[300px] h-max mb-4 break-inside-avoid">
             <h1 className="ext-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
               {listing.name}
             </h1>
@@ -120,8 +125,46 @@ const ListingOverviewPage = async ({
             </div>
           </section>
 
+          {/* listing rating stats card*/}
+          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-[300px] h-max mb-4 break-inside-avoid">
+            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
+              Star Rating
+              <Badge
+                variant={"secondary"}
+                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
+              >
+                {listing.starRating} <Star size={14} strokeWidth={2.5} />
+              </Badge>
+            </div>
+            <Separator className="border-border/90" />
+
+            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
+              Reviews
+              <Badge
+                variant={"secondary"}
+                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
+              >
+                {listing.reviews.length} reviews
+              </Badge>
+            </div>
+            <Separator className="border-border/90" />
+
+            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
+              exploreinn grade
+              <Badge
+                variant={"secondary"}
+                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
+              >
+                {listing.exploreinnGrade}{" "}
+                {listing.exploreinnGrade === "Excellent" && (
+                  <Star size={14} strokeWidth={2.5} />
+                )}
+              </Badge>
+            </div>
+          </section>
+
           {/* owner/manager info card*/}
-          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[400px] h-max">
+          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[400px] h-max mb-4 break-inside-avoid">
             <Badge className="text-md rounded shadow-none px-3 flex items-center gap-1 justify-center w-max  font-semibold tracking-tight">
               <ChartLine size={16} strokeWidth={2.5} />
               {(await isListingOwner(user.id, listing.id))
@@ -163,47 +206,9 @@ const ListingOverviewPage = async ({
             </p>
           </section>
 
-          {/* listing rating stats card*/}
-          <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-[300px] h-max">
-            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
-              Star Rating
-              <Badge
-                variant={"secondary"}
-                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
-              >
-                {listing.starRating} <Star size={14} strokeWidth={2.5} />
-              </Badge>
-            </div>
-            <Separator className="border-border/90" />
-
-            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
-              Reviews
-              <Badge
-                variant={"secondary"}
-                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
-              >
-                {listing.reviews.length} reviews
-              </Badge>
-            </div>
-            <Separator className="border-border/90" />
-
-            <div className="text-sm font-medium text-accent-foreground  flex flex-row items-center justify-between gap-1">
-              exploreinn grade
-              <Badge
-                variant={"secondary"}
-                className="flex justify-center text-[14px]  items-center gap-1 shadow-none"
-              >
-                {listing.exploreinnGrade}{" "}
-                {listing.exploreinnGrade === "Excellent" && (
-                  <Star size={14} strokeWidth={2.5} />
-                )}
-              </Badge>
-            </div>
-          </section>
-
           {/* latest booking card*/}
           {latestBooking && (
-            <ScrollArea className="rounded-md border-border/90 border-[1px] p-4  w-[320px] h-[370px] ">
+            <ScrollArea className="rounded-md border-border/90 border-[1px] p-4  h-[370px] mb-4 break-inside-avoid">
               <div className="!flex !flex-col gap-4">
                 <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
                   <BedDouble size={20} className="text-primary" /> Recent
@@ -383,25 +388,63 @@ const ListingOverviewPage = async ({
               </div>
             </ScrollArea>
           )}
-        </div>
 
-        <Separator className="border-border/90" />
-
-        <div className="w-full px-4 h-max gap-4 flex flex-wrap  ">
           {/* hotel revenue bar graph card */}
-          <ListingMonthWiseRevenueGraph
-            chartData={monthlyRevenue}
-            className="rounded-md border-border/90 border-[1px] shadow-none  w-[450px] h-max"
-          />
+          <div className=" mb-4 break-inside-avoid">
+            <ListingMonthWiseRevenueGraph
+              chartData={monthlyRevenue}
+              className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
+            />
+          </div>
+
+          {/* recent transactions */}
+          {latestTransaction && (
+            <ScrollArea className="rounded-md border-border/90 border-[1px] p-4  h-[370px] space-y-4 mb-4 break-inside-avoid">
+              <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+                <BadgeDollarSign size={20} className="text-primary" /> Recent
+                Transaction
+              </h1>
+              <Separator className="border-border/90" />
+              <div className="flex gap-3 items-center  ">
+                <Avatar className="w-8 h-8 rounded-xl border-border/90">
+                  <AvatarImage
+                    src={latestTransaction.guest.profileImg}
+                    alt={latestTransaction.guest.firstName}
+                  />
+                  <AvatarFallback>
+                    {latestTransaction.guest.firstName[0].toUpperCase()}
+                    {latestTransaction.guest.lastName[0].toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="font-medium text-sm rounded-xl flex flex-col gap-1">
+                  <p>
+                    {latestTransaction.guest.firstName}{" "}
+                    {latestTransaction.guest.lastName}
+                  </p>
+                  <small className="text-[12px] font-medium text-accent-foreground/60">
+                    Transaction on{" "}
+                    {format(
+                      new Date(latestTransaction.createdAt),
+                      "HH:mm dd MMM yyyy"
+                    )}
+                  </small>
+                </div>
+              </div>
+              <Separator className="border-border/90" />
+            </ScrollArea>
+          )}
 
           {/* hotel weekly bookings bar graph card */}
-          <ListingWeekWiseBookingsGraph
-            chartData={weeklyBookings}
-            className="rounded-md border-border/90 border-[1px] shadow-none  w-[380px] h-max"
-          />
+          <div className=" mb-4 break-inside-avoid">
+            <ListingWeekWiseBookingsGraph
+              // chartData={weeklyBookings}
+              className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
+            />
+          </div>
 
           {/* overview of bookings according to booking status */}
-          <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-[320px] !h-max">
+          <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4  !h-max mb-4 break-inside-avoid">
             <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
               <DoorOpen size={20} className="text-primary" /> Bookings Overview
             </h1>

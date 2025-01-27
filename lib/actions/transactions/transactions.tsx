@@ -20,7 +20,6 @@ export async function getListingTransactions(listingId: string) {
   return transactions;
 }
 
-
 /**
  * Retrieves the monthly revenue for a given listing for the current year.
  * The function returns a promise that resolves to an array of objects containing the month and revenue.
@@ -44,7 +43,10 @@ export async function getMonthlyRevenue(listingId: string) {
     // Ensure the transaction falls within the current year
     if (transactionDate >= startDate && transactionDate <= endDate) {
       const month = getMonth(transactionDate); // 0 = January, 11 = December
-      const netRevenue = transaction.totalCost * 0.95; // Deduct 5% application fee
+      const netRevenue =
+        transaction.paymentMethod === "ONLINE_PAYMENT"
+          ? transaction.totalCost * 0.95
+          : transaction.totalCost; // Deduct 5% application fee if payment method is online
       monthlyRevenue[month] += netRevenue;
     }
   });
@@ -69,4 +71,33 @@ export async function getMonthlyRevenue(listingId: string) {
     month: months[index],
     revenue: parseFloat(revenue.toFixed(2)), // Round to 2 decimal places
   }));
+}
+
+/**
+ * Retrieves the most recent transaction for a given listing.
+ * The function returns a promise that resolves to the most recent transaction.
+ * @param listingId - The id of the listing whose most recent transaction is to be retrieved.
+ * @returns A promise that resolves to the most recent transaction.
+ */
+export async function getRecentListingTransaction(listingId: string) {
+  const transactions = await prisma.transaction.findFirst({
+    where: {
+      listingId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+        },
+      },
+    },
+  });
+  return transactions;
 }

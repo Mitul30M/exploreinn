@@ -256,7 +256,8 @@ OnlinePaymentBookingComplete.PreviewProps = {
         rate: 4,
       },
     ],
-    paymentMethod: {
+    paymentMethod: "ONLINE_PAYMENT",
+    card: {
       billingEmail: "jessie+clerk_test@example.com",
       billingPhone: null,
       billingName: "Jessie Doe",

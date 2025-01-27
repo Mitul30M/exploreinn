@@ -413,66 +413,92 @@ const TransactionInvoice = ({
               </Row>
               {/* billing by */}
               <Hr className="my-4" />
-              <Row className="mb-0  p-0 " cellSpacing={0} cellPadding={0}>
-                <Column className="h-[20px] w-max  font-semibold text-[16px]">
-                  Billing By
-                </Column>
-                <Column
-                  align="right"
-                  className="h-[20px] w-max  font-semibold text-[16px]"
-                >
-                  {transaction.paymentMethod.billingName}
-                </Column>
-              </Row>
-              <Row className="mb-0  p-0 mt-4 " cellSpacing={0} cellPadding={0}>
-                <Column className="h-[20px] w-max  font-semibold text-[16px]">
-                  Billing Email
-                </Column>
-                <Column
-                  align="right"
-                  className="h-[20px] w-max  font-semibold text-[16px]"
-                >
-                  {transaction.paymentMethod.billingEmail}
-                </Column>
-              </Row>
+              {transaction.card &&
+                transaction.paymentMethod === "ONLINE_PAYMENT" && (
+                  <>
+                    <Row className="mb-0  p-0 " cellSpacing={0} cellPadding={0}>
+                      <Column className="h-[20px] w-max  font-semibold text-[16px]">
+                        Billing By
+                      </Column>
+                      <Column
+                        align="right"
+                        className="h-[20px] w-max  font-semibold text-[16px]"
+                      >
+                        {transaction.card.billingName}
+                      </Column>
+                    </Row>
+                    <Row
+                      className="mb-0  p-0 mt-4 "
+                      cellSpacing={0}
+                      cellPadding={0}
+                    >
+                      <Column className="h-[20px] w-max  font-semibold text-[16px]">
+                        Billing Email
+                      </Column>
+                      <Column
+                        align="right"
+                        className="h-[20px] w-max  font-semibold text-[16px]"
+                      >
+                        {transaction.card.billingEmail}
+                      </Column>
+                    </Row>
+                  </>
+                )}
+
               {/* card details */}
-              <Row className="mb-0  p-0 mt-4 " cellSpacing={0} cellPadding={0}>
-                <Column className="h-[20px] w-max  font-semibold text-[16px]">
-                  Card Brand
-                </Column>
-                <Column
-                  align="right"
-                  className="h-[20px] w-max  font-semibold text-[16px]"
-                >
-                  {transaction.paymentMethod.cardBrand.charAt(0).toUpperCase() +
-                    transaction.paymentMethod.cardBrand
-                      .slice(1)
-                      .toLowerCase()}{" "}
-                </Column>
-              </Row>
-              <Row className="mb-0  p-0 mt-4 " cellSpacing={0} cellPadding={0}>
-                <Column className="h-[20px] w-max  font-semibold text-[16px]">
-                  Last 4 Digits of Card
-                </Column>
-                <Column
-                  align="right"
-                  className="h-[20px] w-max  font-semibold text-[16px]"
-                >
-                  {transaction.paymentMethod.last4}
-                </Column>
-              </Row>
-              <Row className="mb-0  p-0 mt-4 " cellSpacing={0} cellPadding={0}>
-                <Column className="h-[20px] w-max  font-semibold text-[16px]">
-                  Card Expiry
-                </Column>
-                <Column
-                  align="right"
-                  className="h-[20px] w-max  font-semibold text-[16px]"
-                >
-                  {transaction.paymentMethod.expMonth}/
-                  {transaction.paymentMethod.expYear}
-                </Column>
-              </Row>
+              {transaction.card &&
+                transaction.paymentMethod === "ONLINE_PAYMENT" && (
+                  <>
+                    <Row
+                      className="mb-0  p-0 mt-4 "
+                      cellSpacing={0}
+                      cellPadding={0}
+                    >
+                      <Column className="h-[20px] w-max  font-semibold text-[16px]">
+                        Card Brand
+                      </Column>
+                      <Column
+                        align="right"
+                        className="h-[20px] w-max  font-semibold text-[16px]"
+                      >
+                        {transaction.card.cardBrand.charAt(0).toUpperCase() +
+                          transaction.card.cardBrand
+                            .slice(1)
+                            .toLowerCase()}{" "}
+                      </Column>
+                    </Row>
+                    <Row
+                      className="mb-0  p-0 mt-4 "
+                      cellSpacing={0}
+                      cellPadding={0}
+                    >
+                      <Column className="h-[20px] w-max  font-semibold text-[16px]">
+                        Last 4 Digits of Card
+                      </Column>
+                      <Column
+                        align="right"
+                        className="h-[20px] w-max  font-semibold text-[16px]"
+                      >
+                        {transaction.card.last4}
+                      </Column>
+                    </Row>
+                    <Row
+                      className="mb-0  p-0 mt-4 "
+                      cellSpacing={0}
+                      cellPadding={0}
+                    >
+                      <Column className="h-[20px] w-max  font-semibold text-[16px]">
+                        Card Expiry
+                      </Column>
+                      <Column
+                        align="right"
+                        className="h-[20px] w-max  font-semibold text-[16px]"
+                      >
+                        {transaction.card.expMonth}/{transaction.card.expYear}
+                      </Column>
+                    </Row>
+                  </>
+                )}
               <Hr className="mt-4" />
             </Section>
 
@@ -587,7 +613,8 @@ TransactionInvoice.PreviewProps = {
         rate: 4,
       },
     ],
-    paymentMethod: {
+    paymentMethod: "ONLINE_PAYMENT",
+    card: {
       billingEmail: "jessie+clerk_test@example.com",
       billingPhone: null,
       billingName: "Jessie Doe",

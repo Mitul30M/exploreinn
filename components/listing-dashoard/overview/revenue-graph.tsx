@@ -5,7 +5,8 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  LabelList,
+  Line,
+  LineChart,
   XAxis,
   YAxis,
 } from "recharts";
@@ -24,6 +25,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const chartConfig = {
   revenue: {
@@ -36,10 +38,23 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ListingMonthWiseRevenueGraph({
-  chartData,
+  chartData = [
+    { month: "January", revenue: 1250.5 },
+    { month: "February", revenue: 980.75 },
+    { month: "March", revenue: 1575.25 },
+    { month: "April", revenue: 2100.0 },
+    { month: "May", revenue: 1890.5 },
+    { month: "June", revenue: 2450.75 },
+    { month: "July", revenue: 3100.25 },
+    { month: "August", revenue: 2875.5 },
+    { month: "September", revenue: 2200.0 },
+    { month: "October", revenue: 1950.75 },
+    { month: "November", revenue: 1725.25 },
+    { month: "December", revenue: 2950.5 },
+  ],
   className,
 }: {
-  chartData: {
+  chartData?: {
     month: string;
     revenue: number;
   }[];
@@ -53,56 +68,46 @@ export function ListingMonthWiseRevenueGraph({
           January - December {new Date().getFullYear()}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            layout="vertical"
-            margin={{
-              right: 16,
-            }}
-          >
-            <CartesianGrid horizontal={false} />
-            <YAxis
-              dataKey="month"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              hide
-            />
-            <XAxis dataKey="revenue" type="number" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Bar
-              dataKey="revenue"
-              layout="vertical"
-              fill="hsl(var(--chart-1))"
-              radius={4}
-              barSize={50}
+      <ScrollArea>
+        <CardContent>
+          <ChartContainer config={chartConfig}>
+            <LineChart
+              accessibilityLayer
+              data={chartData}
+              margin={{
+                left: 12,
+                right: 12,
+              }}
             >
-              <LabelList
+              <CartesianGrid vertical={false} />
+              <XAxis
                 dataKey="month"
-                position="insideLeft"
-                offset={8}
-                className="fill-[--color-label] "
-                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 3)}
               />
-              <LabelList
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Line
                 dataKey="revenue"
-                position="right"
-                offset={8}
-                className="fill-foreground"
-                fontSize={12}
+                type="natural"
+                stroke="hsl(var(--chart-1))"
+                strokeWidth={2}
+                dot={{
+                  fill: "hsl(var(--background))",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
               />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
+            </LineChart>
+          </ChartContainer>
+        </CardContent>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           {new Date().getMonth() === 0 ? (

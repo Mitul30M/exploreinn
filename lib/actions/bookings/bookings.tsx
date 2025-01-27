@@ -192,7 +192,6 @@ export async function getListingLatestBooking(listingId: string) {
  * @param listingId - The id of the listing whose bookings are to be retrieved.
  * @returns A promise that resolves to an array of bookings with their respective transaction and guest details.
  */
-
 export async function getListingBookings(listingId: string) {
   const bookings = await prisma.booking.findMany({
     where: {
@@ -213,7 +212,6 @@ export async function getListingBookings(listingId: string) {
   });
   return bookings;
 }
-
 
 /**
  * Retrieves the bookings for a given listing within the current week.
@@ -260,4 +258,38 @@ export async function getListingCurrentWeekBookings(listingId: string) {
     day,
     bookings: count,
   }));
+}
+
+/**
+ * Retrieves an overview of all bookings for a given listing, grouped by booking status.
+ * The function returns a promise that resolves to an object with the following keys:
+ * - upcoming: The number of bookings that are upcoming.
+ * - ongoing: The number of bookings that are ongoing.
+ * - completed: The number of bookings that are completed.
+ * - cancelled: The number of bookings that are cancelled.
+ * @param listingId - The id of the listing whose bookings are to be retrieved.
+ * @returns A promise that resolves to an object with the booking status overview.
+ */
+export async function getAllBookingsStatusOverview(listingId: string) {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      listingId: listingId,
+    },
+    select: {
+      bookingStatus: true,
+    },
+  });
+
+  const statusOverview = {
+    upcoming: 0,
+    ongoing: 0,
+    completed: 0,
+    cancelled: 0,
+  };
+
+  bookings.forEach((booking) => {
+    statusOverview[booking.bookingStatus] += 1;
+  });
+
+  return statusOverview;
 }

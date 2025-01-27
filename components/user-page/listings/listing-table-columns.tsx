@@ -288,21 +288,36 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
       />
     ),
     cell: ({ row }) => {
-      // fetch all today's bookings with payment status completed and then sum up the amount;
+      // fetch all today's transaction with payment status completed and then sum up the amount;
       // show in $ only, later inside dashboard can the user see the amount in his preferred currency
-      // Reduce the totalCost by deducting a 5% from each totalCost.
-      const formattedToday = row.original.Booking.filter(
-        (booking) =>
-          new Date(booking.createdAt).toDateString() ===
-            new Date().toDateString() && booking.paymentStatus === "completed"
-      ).reduce((total, booking) => total + booking.totalCost * 0.95, 0);
+      // Reduce the totalCost by deducting a 5% from each totalCost with payment method ONLINE_PAYMENT.
+      const formattedToday = row.original.Transaction.filter(
+        (transaction) =>
+          new Date(transaction.createdAt).toDateString() ===
+            new Date().toDateString() &&
+          transaction.paymentStatus === "completed"
+      ).reduce(
+        (total, transaction) =>
+          total +
+          (transaction.paymentMethod === "ONLINE_PAYMENT"
+            ? transaction.totalCost * 0.95
+            : transaction.totalCost),
+        0
+      );
 
-      const formattedYesterday = row.original.Booking.filter(
-        (booking) =>
-          new Date(booking.createdAt).toDateString() ===
+      const formattedYesterday = row.original.Transaction.filter(
+        (transaction) =>
+          new Date(transaction.createdAt).toDateString() ===
             new Date(Date.now() - 86400000).toDateString() &&
-          booking.paymentStatus === "completed"
-      ).reduce((total, booking) => total + booking.totalCost * 0.95, 0);
+          transaction.paymentStatus === "completed"
+      ).reduce(
+        (total, transaction) =>
+          total +
+          (transaction.paymentMethod === "ONLINE_PAYMENT"
+            ? transaction.totalCost * 0.95
+            : transaction.totalCost),
+        0
+      );
 
       return (
         <p className=" flex gap-2 items-center justify-center">
@@ -337,8 +352,12 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
         style: "currency",
         currency: "USD",
       }).format(
-        row.original.Booking.reduce(
-          (total, booking) => total + booking.totalCost * 0.95,
+        row.original.Transaction.reduce(
+          (total, transaction) =>
+            total +
+            (transaction.paymentMethod === "ONLINE_PAYMENT"
+              ? transaction.totalCost * 0.95
+              : transaction.totalCost),
           0
         )
       );
