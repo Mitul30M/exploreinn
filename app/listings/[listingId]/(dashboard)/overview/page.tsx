@@ -16,6 +16,7 @@ import {
   Calendar,
   CalendarClock,
   ChartLine,
+  DoorOpen,
   HandCoins,
   Hotel,
   Mail,
@@ -28,6 +29,7 @@ import { notFound } from "next/navigation";
 import { ListingMonthWiseRevenueGraph } from "@/components/listing-dashoard/overview/revenue-graph";
 import { getMonthlyRevenue } from "@/lib/actions/transactions/transactions";
 import {
+  getAllBookingsStatusOverview,
   getListingCurrentWeekBookings,
   getListingLatestBooking,
 } from "@/lib/actions/bookings/bookings";
@@ -77,6 +79,9 @@ const ListingOverviewPage = async ({
   // fetch weekly bookings
   const weeklyBookings = await getListingCurrentWeekBookings(listing.id);
 
+  // get bookings overview (by booking status)
+  const bookingOverview = await getAllBookingsStatusOverview(listing.id);
+
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       {/* Personal Info */}
@@ -88,7 +93,6 @@ const ListingOverviewPage = async ({
 
         <div className="w-full px-4 h-max gap-4 flex flex-wrap  ">
           {/* hotel preview card */}
-
           <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4 max-w-[300px] h-max">
             <h1 className="ext-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
               {listing.name}
@@ -395,6 +399,33 @@ const ListingOverviewPage = async ({
             chartData={weeklyBookings}
             className="rounded-md border-border/90 border-[1px] shadow-none  w-[380px] h-max"
           />
+
+          {/* overview of bookings according to booking status */}
+          <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-[320px] !h-max">
+            <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+              <DoorOpen size={20} className="text-primary" /> Bookings Overview
+            </h1>
+
+            <Separator className="border-border/90" />
+
+            {Object.entries(bookingOverview).map(([key, value]) => {
+              const status: BookingStatusConfig =
+                bookingStatus[key as keyof typeof bookingStatus];
+              if (status) {
+                return (
+                  <div className="flex justify-between items-center" key={key}>
+                    <Badge variant="outline" className={status.className}>
+                      {status.icon && <status.icon size={16} />} {status.label}
+                    </Badge>
+                    <Badge variant="outline" className={status.className}>
+                      {value}
+                    </Badge>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
         </div>
       </div>
     </section>
