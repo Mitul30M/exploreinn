@@ -389,7 +389,9 @@ const TransactionInvoice = ({
                   align="right"
                   className="h-[20px] w-max  font-semibold text-[16px]"
                 >
-                  Card
+                  {transaction.paymentMethod === "ONLINE_PAYMENT"
+                    ? "Online Payment"
+                    : "During CheckIn"}
                 </Column>
               </Row>
               {/* stripe payment id */}
