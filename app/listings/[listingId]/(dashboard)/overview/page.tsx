@@ -17,6 +17,7 @@ import {
   Calendar,
   CalendarClock,
   ChartLine,
+  CreditCard,
   DoorOpen,
   HandCoins,
   Hotel,
@@ -24,6 +25,7 @@ import {
   Phone,
   Star,
   Users,
+  Wallet,
 } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -205,6 +207,184 @@ const ListingOverviewPage = async ({
               <Mail size={16} /> {user.email}
             </p>
           </section>
+
+          {/* overview of bookings according to booking status */}
+          <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4  !h-max mb-4 break-inside-avoid">
+            <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+              <DoorOpen size={20} className="text-primary" /> Bookings Overview
+            </h1>
+
+            <Separator className="border-border/90" />
+
+            {Object.entries(bookingOverview).map(([key, value]) => {
+              const status: BookingStatusConfig =
+                bookingStatus[key as keyof typeof bookingStatus];
+              if (status) {
+                return (
+                  <div className="flex justify-between items-center" key={key}>
+                    <Badge variant="outline" className={status.className}>
+                      {status.icon && <status.icon size={16} />} {status.label}
+                    </Badge>
+                    <Badge variant="outline" className={status.className}>
+                      {value}
+                    </Badge>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+
+          {/* hotel revenue bar graph card */}
+          <div className=" mb-4 break-inside-avoid">
+            <ListingMonthWiseRevenueGraph
+              chartData={monthlyRevenue}
+              className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
+            />
+          </div>
+
+          {/* recent transactions */}
+          {latestTransaction && (
+            <ScrollArea className="rounded-md border-border/90 border-[1px] p-4  h-[370px] mb-4 break-inside-avoid">
+              <div className="!flex !flex-col gap-4">
+                <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+                  <BadgeDollarSign size={20} className="text-primary" /> Recent
+                  Transaction
+                </h1>
+                <Separator className="border-border/90" />
+                <div className="flex gap-3 items-center  ">
+                  <Avatar className="w-8 h-8 rounded-xl border-border/90">
+                    <AvatarImage
+                      src={latestTransaction.guest.profileImg}
+                      alt={latestTransaction.guest.firstName}
+                    />
+                    <AvatarFallback>
+                      {latestTransaction.guest.firstName[0].toUpperCase()}
+                      {latestTransaction.guest.lastName[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="font-medium text-sm rounded-xl flex flex-col gap-1">
+                    <p>
+                      {latestTransaction.guest.firstName}{" "}
+                      {latestTransaction.guest.lastName}
+                    </p>
+                    <small className="text-[12px] font-medium text-accent-foreground/60">
+                      Transaction on{" "}
+                      {format(
+                        new Date(latestTransaction.createdAt),
+                        "HH:mm dd MMM yyyy"
+                      )}
+                    </small>
+                  </div>
+                </div>
+                <Separator className="border-border/90" />
+                <div className="text-sm font-medium ">
+                  Total Amount:{" "}
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(latestTransaction.totalCost)}
+                  <p className="text-foreground/75">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(
+                      latestTransaction.totalCost - latestTransaction.tax
+                    )}{" "}
+                    +{" "}
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(latestTransaction.tax)}{" "}
+                    (tax)
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm  flex justify-start rounded-none items-center gap-2 font-medium tracking-tight text-primary">
+                    Transaction ID
+                  </p>
+                  <p className="text-sm  font-medium">
+                    <Link
+                      className="hover:text-primary hover:underline hover:underline-offset-2"
+                      href={`/listings/${listing.id}/transactions/${latestTransaction.id}`}
+                    >
+                      {latestTransaction.id}
+                    </Link>
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm  flex justify-start rounded-none items-center gap-2 font-medium tracking-tight text-primary">
+                    Booking ID
+                  </p>
+                  <p className="text-sm   font-medium ">
+                    <Link
+                      className="hover:text-primary hover:underline hover:underline-offset-2"
+                      href={`/listings/${listing.id}/bookings/${latestTransaction.bookingId}`}
+                    >
+                      {latestTransaction.bookingId}
+                    </Link>
+                  </p>
+                </div>
+                <Separator className="border-border/90" />
+                <div className="space-y-2">
+                  {latestTransaction.paymentMethod === "ONLINE_PAYMENT" ? (
+                    <p className="font-medium text-sm  text-accent-foreground  flex flex-row items-center gap-3">
+                      <CreditCard size={16} />{" "}
+                      {latestTransaction.card?.cardBrand
+                        ? latestTransaction.card.cardBrand
+                            .charAt(0)
+                            .toUpperCase() +
+                          latestTransaction.card.cardBrand
+                            .slice(1)
+                            .toLowerCase()
+                        : ""}{" "}
+                      ending with {latestTransaction.card?.last4}
+                    </p>
+                  ) : (
+                    <p className="font-medium text-sm  text-accent-foreground  flex flex-row items-center gap-3">
+                      <Wallet size={16} /> During Check In
+                    </p>
+                  )}
+                  <p className="font-medium text-sm  text-accent-foreground  flex flex-row items-center gap-3">
+                    <Mail size={16} />{" "}
+                    {latestTransaction.paymentMethod === "ONLINE_PAYMENT"
+                      ? latestTransaction.card?.billingEmail
+                      : latestTransaction.guest.email}
+                  </p>
+                </div>
+                <Separator className="border-border/90" />
+                <div className=" flex items-center justify-between">
+                  <p className="text-sm w-[150px]">Payment Status</p>
+                  <div>
+                    {(() => {
+                      const status: PaymentStatusConfig =
+                        paymentStatus[
+                          latestTransaction.paymentStatus as keyof typeof paymentStatus
+                        ];
+                      if (status) {
+                        return (
+                          <Badge variant="outline" className={status.className}>
+                            {status.icon && <status.icon size={16} />}{" "}
+                            {status.label}
+                          </Badge>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+
+          {/* hotel weekly bookings bar graph card */}
+          <div className=" mb-4 break-inside-avoid">
+            <ListingWeekWiseBookingsGraph
+              chartData={weeklyBookings}
+              className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
+            />
+          </div>
 
           {/* latest booking card*/}
           {latestBooking && (
@@ -388,87 +568,6 @@ const ListingOverviewPage = async ({
               </div>
             </ScrollArea>
           )}
-
-          {/* hotel revenue bar graph card */}
-          <div className=" mb-4 break-inside-avoid">
-            <ListingMonthWiseRevenueGraph
-              chartData={monthlyRevenue}
-              className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
-            />
-          </div>
-
-          {/* recent transactions */}
-          {latestTransaction && (
-            <ScrollArea className="rounded-md border-border/90 border-[1px] p-4  h-[370px] space-y-4 mb-4 break-inside-avoid">
-              <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
-                <BadgeDollarSign size={20} className="text-primary" /> Recent
-                Transaction
-              </h1>
-              <Separator className="border-border/90" />
-              <div className="flex gap-3 items-center  ">
-                <Avatar className="w-8 h-8 rounded-xl border-border/90">
-                  <AvatarImage
-                    src={latestTransaction.guest.profileImg}
-                    alt={latestTransaction.guest.firstName}
-                  />
-                  <AvatarFallback>
-                    {latestTransaction.guest.firstName[0].toUpperCase()}
-                    {latestTransaction.guest.lastName[0].toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="font-medium text-sm rounded-xl flex flex-col gap-1">
-                  <p>
-                    {latestTransaction.guest.firstName}{" "}
-                    {latestTransaction.guest.lastName}
-                  </p>
-                  <small className="text-[12px] font-medium text-accent-foreground/60">
-                    Transaction on{" "}
-                    {format(
-                      new Date(latestTransaction.createdAt),
-                      "HH:mm dd MMM yyyy"
-                    )}
-                  </small>
-                </div>
-              </div>
-              <Separator className="border-border/90" />
-            </ScrollArea>
-          )}
-
-          {/* hotel weekly bookings bar graph card */}
-          <div className=" mb-4 break-inside-avoid">
-            <ListingWeekWiseBookingsGraph
-              // chartData={weeklyBookings}
-              className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
-            />
-          </div>
-
-          {/* overview of bookings according to booking status */}
-          <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4  !h-max mb-4 break-inside-avoid">
-            <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
-              <DoorOpen size={20} className="text-primary" /> Bookings Overview
-            </h1>
-
-            <Separator className="border-border/90" />
-
-            {Object.entries(bookingOverview).map(([key, value]) => {
-              const status: BookingStatusConfig =
-                bookingStatus[key as keyof typeof bookingStatus];
-              if (status) {
-                return (
-                  <div className="flex justify-between items-center" key={key}>
-                    <Badge variant="outline" className={status.className}>
-                      {status.icon && <status.icon size={16} />} {status.label}
-                    </Badge>
-                    <Badge variant="outline" className={status.className}>
-                      {value}
-                    </Badge>
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
         </div>
       </div>
     </section>
