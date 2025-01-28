@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Booking, Listing } from "@prisma/client";
+import { Booking, Listing, Transaction } from "@prisma/client";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";

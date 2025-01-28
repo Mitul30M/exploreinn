@@ -30,6 +30,7 @@ import {
 import { notFound } from "next/navigation";
 import {
   getAllBookingsStatusOverview,
+  getListingBookings,
   getListingCurrentWeekBookings,
   getListingLatestBooking,
   getMonthlyListingBookingsComparison,
@@ -47,6 +48,11 @@ import {
 import Link from "next/link";
 import { ListingWeekWiseBookingsGraph } from "@/components/listing-dashoard/overview/bookings-graph";
 import { ListingMonthWiseYearlyBookingsGraph } from "@/components/listing-dashoard/bookings/double-line-graph";
+import { ListingBookingsDataTable } from "@/components/listing-dashoard/bookings/bookings-dashboard-table";
+import {
+  dashboardBookingsTableColumns,
+  TDashboardBookingsColumns,
+} from "@/components/listing-dashoard/bookings/bookings-dashboard-table-colums";
 
 const ListingBookingsPage = async ({
   params,
@@ -59,6 +65,9 @@ const ListingBookingsPage = async ({
   if (!listing) {
     return notFound();
   }
+
+  // fetch all bookings
+  const bookings = await getListingBookings(listing.id);
 
   // fetch latest  booking & transaction
   const latestBooking = await getListingLatestBooking(listing.id);
@@ -78,7 +87,7 @@ const ListingBookingsPage = async ({
       <div id="hotel-owner" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <DoorOpen size={22} className="text-primary" />
-          {listing.name} Bookings
+          {listing.name}'s' Bookings
         </h1>
 
         <div className="rounded  !w-full px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -301,6 +310,19 @@ const ListingBookingsPage = async ({
             </ScrollArea>
           )}
         </div>
+
+        <Separator className="border-border/90" />
+
+        {/* bookings table */}
+        <ListingBookingsDataTable
+          columns={dashboardBookingsTableColumns}
+          data={bookings as TDashboardBookingsColumns[]}
+          floatingActionBar={
+            <p className="text-primary text-center text-sm font-semibold">
+              Bookings' Table Floating Action Bar
+            </p>
+          }
+        />
       </div>
     </section>
   );

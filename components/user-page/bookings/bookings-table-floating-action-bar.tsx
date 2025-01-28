@@ -110,7 +110,10 @@ export function UserBookingsTableFloatingActionBar<TData>({
                           description:
                             "Your data has been exported successfully",
                           action: (
-                            <ToastAction altText="Try again" className="flex items-center gap-1 text-primary">
+                            <ToastAction
+                              altText="Try again"
+                              className="flex items-center gap-1 text-primary"
+                            >
                               <CheckCircle2 className="size-4" />
                               Done
                             </ToastAction>
