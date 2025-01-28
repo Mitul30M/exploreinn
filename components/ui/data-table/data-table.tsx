@@ -44,7 +44,7 @@ import { Input } from "../input";
 import { Button } from "../button";
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
 import { UserBookingsTableFloatingActionBar } from "@/components/user-page/bookings/bookings-table-floating-action-bar";
-import { OwnedListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
+import { ListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

@@ -49,7 +49,13 @@ export function ListingsDataTableToolbar<TData>({
       <DataTableViewOptions table={table} className="ml-2 rounded" />
       {isOwnerTable && (
         <Link href="/listings/new">
-          <Button className="ml-2 rounded hover:text-primary font-semibold hover:underline hover:underline-offset-2" variant={"ghost"}  size={"sm"}>Register Listing</Button>
+          <Button
+            className="ml-2 rounded hover:text-primary font-semibold hover:underline hover:underline-offset-2"
+            variant={"ghost"}
+            size={"sm"}
+          >
+            Register Listing
+          </Button>
         </Link>
       )}
     </div>

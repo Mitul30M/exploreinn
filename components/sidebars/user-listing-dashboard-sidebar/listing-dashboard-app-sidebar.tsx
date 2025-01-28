@@ -17,6 +17,7 @@ import {
   Command,
   ConciergeBell,
   Contact,
+  DoorOpen,
   Frame,
   GalleryVerticalEnd,
   Gift,
@@ -67,6 +68,11 @@ export function AppSidebar({
         title: `Overview`,
         url: `/listings/${listingID}/overview`,
         icon: Hotel,
+      },
+      {
+        title: "Bookings",
+        url: `/listings/${listingID}/bookings`,
+        icon: DoorOpen,
       },
     ],
   };

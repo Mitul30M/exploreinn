@@ -9,7 +9,15 @@ import { Booking, Listing } from "@prisma/client";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
-import { startOfWeek, endOfWeek, getDay, format } from "date-fns";
+import {
+  startOfWeek,
+  endOfWeek,
+  getDay,
+  format,
+  endOfYear,
+  startOfYear,
+  getMonth,
+} from "date-fns";
 
 const bookingFormSchema = z.object({
   listingID: z.string(),
@@ -257,6 +265,74 @@ export async function getListingCurrentWeekBookings(listingId: string) {
   return Object.entries(dailyBookings).map(([day, count]) => ({
     day,
     bookings: count,
+  }));
+}
+
+/**
+ * Compares the monthly bookings for a given listing between the current year and the past year.
+ * The function returns a promise that resolves to an array of objects containing the month,
+ * the number of bookings in the past year, and the number of bookings in the current year.
+ * @param listingId - The id of the listing whose monthly bookings are to be compared.
+ * @returns A promise that resolves to an array of objects with the month, past year's bookings count, and current year's bookings count.
+ */
+
+export async function getMonthlyListingBookingsComparison(listingId: string) {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      listingId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const currentYear = new Date().getFullYear();
+  const pastYear = currentYear - 1;
+
+  // Get the year ranges
+  const pastYearStartDate = startOfYear(new Date(pastYear, 0, 1));
+  const pastYearEndDate = endOfYear(new Date(pastYear, 0, 1));
+  const currentYearStartDate = startOfYear(new Date(currentYear, 0, 1));
+  const currentYearEndDate = endOfYear(new Date(currentYear, 0, 1));
+
+  // Initialize arrays to store monthly bookings
+  const pastYearBookings = Array(12).fill(0);
+  const currentYearBookings = Array(12).fill(0);
+
+  // Count bookings for each month in both years
+  bookings.forEach((booking) => {
+    const bookingDate = new Date(booking.createdAt);
+    const month = getMonth(bookingDate);
+
+    if (bookingDate >= pastYearStartDate && bookingDate <= pastYearEndDate) {
+      pastYearBookings[month] += 1;
+    } else if (
+      bookingDate >= currentYearStartDate &&
+      bookingDate <= currentYearEndDate
+    ) {
+      currentYearBookings[month] += 1;
+    }
+  });
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  return months.map((month, index) => ({
+    month,
+    pastYear: pastYearBookings[index],
+    currentYear: currentYearBookings[index],
   }));
 }
 

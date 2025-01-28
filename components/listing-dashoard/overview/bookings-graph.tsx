@@ -26,11 +26,8 @@ import {
 } from "@/components/ui/chart";
 
 const chartConfig = {
-  revenue: {
+  bookings: {
     label: "Bookings",
-    color: "hsl(var(--chart-1))",
-  },
-  label: {
     color: "hsl(var(--background))",
   },
 } satisfies ChartConfig;
@@ -101,13 +98,13 @@ export function ListingWeekWiseBookingsGraph({
               layout="vertical"
               fill="hsl(var(--chart-1))"
               radius={4}
-              barSize={50}
+              barSize={40}
             >
               <LabelList
                 dataKey="day"
                 position="insideLeft"
                 offset={8}
-                className="fill-[--color-label] "
+                className="fill-background"
                 fontSize={12}
               />
               <LabelList
@@ -119,7 +116,7 @@ export function ListingWeekWiseBookingsGraph({
               />
             </Bar>
           </BarChart>
-        </ChartContainer>
+        </ChartContainer>{" "}
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
