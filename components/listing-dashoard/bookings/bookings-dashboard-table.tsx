@@ -42,6 +42,7 @@ import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookin
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import Link from "next/link";
+import { ListingDashboardFloatingActionBar } from "./bookings-dashboard-table-action-bar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -157,7 +158,9 @@ export function ListingBookingsDataTable<TData, TValue>({
 
       <DataTablePagination table={table} />
       {/* for user hotel bookings data table */}
-      {table.getFilteredSelectedRowModel().rows.length > 0 && floatingActionBar}
+      {table.getFilteredSelectedRowModel().rows.length > 0 && (
+        <ListingDashboardFloatingActionBar table={table} />
+      )}
 
       {/* for hotel management dashboard bookings data table  make it similar like above but instead of hotelName use guestName*/}
     </div>

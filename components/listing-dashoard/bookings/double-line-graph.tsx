@@ -122,9 +122,15 @@ export function ListingMonthWiseYearlyBookingsGraph({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+        <div className="flex flex-col gap-2 font-medium leading-none">
           {new Date().getMonth() === 0 ? (
-            <>Total Bookings this month: {chartData[0].currentYear}</>
+            <>
+              <p>Total Bookings this month: {chartData[0].currentYear}</p>
+              <p>
+                Total Bookings this year:{" "}
+                {chartData.reduce((sum, data) => sum + data.currentYear, 0)}
+              </p>
+            </>
           ) : (
             <>
               {chartData[chartData.length - 1].currentYear >
@@ -141,6 +147,10 @@ export function ListingMonthWiseYearlyBookingsGraph({
                     ).toFixed(1)}
                     % this month{" "}
                     <TrendingUp className="h-4 w-4 text-green-500" />
+                  </p>
+                  <p>
+                    Total Bookings this year:{" "}
+                    {chartData.reduce((sum, data) => sum + data.currentYear, 0)}
                   </p>
                 </div>
               ) : (
@@ -162,6 +172,10 @@ export function ListingMonthWiseYearlyBookingsGraph({
                     ).toFixed(1)}
                     % this month{" "}
                     <TrendingDown className="h-4 w-4 text-primary" />
+                  </p>
+                  <p>
+                    Total Bookings this year:{" "}
+                    {chartData.reduce((sum, data) => sum + data.currentYear, 0)}
                   </p>
                 </div>
               )}

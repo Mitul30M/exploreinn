@@ -317,11 +317,6 @@ const ListingBookingsPage = async ({
         <ListingBookingsDataTable
           columns={dashboardBookingsTableColumns}
           data={bookings as TDashboardBookingsColumns[]}
-          floatingActionBar={
-            <p className="text-primary text-center text-sm font-semibold">
-              Bookings' Table Floating Action Bar
-            </p>
-          }
         />
       </div>
     </section>

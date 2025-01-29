@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Booking, Listing, Transaction } from "@prisma/client";
+import { Booking, BookingStatus, Listing, Transaction } from "@prisma/client";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
@@ -275,7 +275,6 @@ export async function getListingCurrentWeekBookings(listingId: string) {
  * @param listingId - The id of the listing whose monthly bookings are to be compared.
  * @returns A promise that resolves to an array of objects with the month, past year's bookings count, and current year's bookings count.
  */
-
 export async function getMonthlyListingBookingsComparison(listingId: string) {
   const bookings = await prisma.booking.findMany({
     where: {
@@ -368,4 +367,44 @@ export async function getAllBookingsStatusOverview(listingId: string) {
   });
 
   return statusOverview;
+}
+
+export async function updateListingBookingStatus(
+  bookingId: string,
+  status: BookingStatus
+) {
+  const updatedBookings = await prisma.booking.updateMany({
+    where: {
+      id: bookingId,
+    },
+    data: {
+      bookingStatus: status,
+    },
+  });
+
+  if (!updatedBookings) {
+    throw new Error("Failed to update booking status");
+  }
+
+  switch (status) {
+    // skip "upcoming" status
+
+    case "ongoing":
+      // Handle ongoing status
+
+      break;
+
+    case "completed":
+      // Handle completed status
+
+      break;
+
+    case "cancelled":
+      // Handle cancelled status
+
+      break;
+
+    default:
+      throw new Error(`Invalid booking status: ${status}`);
+  }
 }
