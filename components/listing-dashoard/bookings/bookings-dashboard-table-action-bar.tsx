@@ -49,11 +49,6 @@ export function ListingDashboardFloatingActionBar<TData>({
   const [action, setAction] = React.useState<
     "update-booking-status" | "update-transaction-status" | "export" | "cancel"
   >();
-
-  // in future if you need add more actions, you can use this
-  //   const [action, setAction] = React.useState<
-  //     "update-status" | "update-priority" | "export" | "delete"
-  //   >();
   const { toast } = useToast();
 
   // Clear selection on Escape key press

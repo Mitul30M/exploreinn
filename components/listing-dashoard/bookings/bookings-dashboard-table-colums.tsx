@@ -114,7 +114,7 @@ export const dashboardBookingsTableColumns: ColumnDef<TDashboardBookingsColumns>
     },
     // booking id
     {
-      accessorKey: "bookingId",
+      accessorKey: "id",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
@@ -137,7 +137,7 @@ export const dashboardBookingsTableColumns: ColumnDef<TDashboardBookingsColumns>
     },
     //   booking date
     {
-      accessorKey: "bookingDate",
+      accessorKey: "createdAt",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
@@ -151,8 +151,7 @@ export const dashboardBookingsTableColumns: ColumnDef<TDashboardBookingsColumns>
         const formatted = format(date, "dd MMM yyyy");
         return formatted;
       },
-    },
-    // check in date
+    }, // check in date
     {
       accessorKey: "checkInDate",
       header: ({ column }) => (
