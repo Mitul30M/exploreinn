@@ -33,6 +33,8 @@ import { bookingStatus } from "@/lib/utils/types/status/booking-status";
 import { BookingStatusConfig } from "@/lib/utils/types/status/booking-status";
 import { Badge } from "@/components/ui/badge";
 import { TDashboardBookingsColumns } from "./bookings-dashboard-table-colums";
+import { updateListingBookingStatus } from "@/lib/actions/bookings/bookings";
+import { BookingStatus } from "@prisma/client";
 
 interface TableFloatingBarProps<TData> {
   table: Table<TData>;
@@ -103,10 +105,30 @@ export function ListingDashboardFloatingActionBar<TData>({
               <Select
                 onValueChange={(value) => {
                   startTransition(async () => {
-                    toast({
-                      title: "Booking Status Updated",
-                      description: `Updated Booking Status from ${(rows[0].original as TDashboardBookingsColumns).bookingStatus?.charAt(0).toUpperCase() + (rows[0].original as TDashboardBookingsColumns).bookingStatus?.slice(1)} to: ${value.charAt(0).toUpperCase() + value.slice(1)}`,
-                    });
+                    if (
+                      Object.values(BookingStatus).includes(
+                        value as BookingStatus
+                      )
+                    ) {
+                      const error = await updateListingBookingStatus(
+                        (rows[0].original as TDashboardBookingsColumns).id,
+                        value as BookingStatus
+                      );
+
+                      if (error) {
+                        toast({
+                          title: "Error",
+                          description: error.message,
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+
+                      toast({
+                        title: "Booking Status Updated",
+                        description: `Updated Booking Status from ${(rows[0].original as TDashboardBookingsColumns).bookingStatus?.charAt(0).toUpperCase() + (rows[0].original as TDashboardBookingsColumns).bookingStatus?.slice(1)} to: ${value.charAt(0).toUpperCase() + value.slice(1)}`,
+                      });
+                    }
                   });
                 }}
                 // defaultValue={

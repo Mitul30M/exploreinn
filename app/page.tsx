@@ -32,10 +32,10 @@ export default function HomePage() {
           /discover
         </Link>
         <Link
-          href="/listings/:listingId"
+          href="/listings/678a7c0c50c81a45fe6b4b70/overview"
           className="text-primary hover:text-foreground"
         >
-          /listings/:listingId
+          /listings/:listingId/overview
         </Link>
         <Link
           href="/listings/new"

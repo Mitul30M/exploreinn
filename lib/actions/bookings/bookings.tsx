@@ -114,7 +114,12 @@ export async function createBookNowPayLaterBooking(
   });
 
   console.log("New Booking created successfully: ", newBooking);
-  await revalidatePath(`/users/${newBooking.guestId}/bookings`);
+  // listing dashboard side revalidation
+  revalidatePath(`/listings/${newBooking.listingId}/bookings`);
+  revalidatePath(`/listings/${newBooking.listingId}/bookings/${newBooking.id}`);
+  // guest side revalidation
+  revalidatePath(`/users/${newBooking.guestId}/bookings`);
+  revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
   const { data, error } = await resend.emails.send({
     from: "exploreinn <no-reply@mitul30m.in>",
     to: [user.email],
@@ -369,21 +374,40 @@ export async function getAllBookingsStatusOverview(listingId: string) {
   return statusOverview;
 }
 
+/**
+ * Updates the booking status of a booking belonging to a given listing.
+ * The function returns a promise that resolves to the updated booking object with the booking's transaction and guest details.
+ * @param bookingId - The id of the booking whose status is to be updated.
+ * @param status - The new status of the booking.
+ * @returns A promise that resolves to the updated booking object with the booking's transaction and guest details.
+ */
 export async function updateListingBookingStatus(
   bookingId: string,
   status: BookingStatus
 ) {
-  const updatedBookings = await prisma.booking.updateMany({
+  const updatedBookings = await prisma.booking.update({
     where: {
       id: bookingId,
     },
     data: {
       bookingStatus: status,
     },
+    include: {
+      transaction: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+        },
+      },
+    },
   });
 
   if (!updatedBookings) {
-    throw new Error("Failed to update booking status");
+    return new Error("Failed to update booking status");
   }
 
   switch (status) {
@@ -391,20 +415,65 @@ export async function updateListingBookingStatus(
 
     case "ongoing":
       // Handle ongoing status
-
+      // Update the booking status in the database
+      const onGoingBooking = await prisma.booking.update({
+        where: {
+          id: bookingId,
+        },
+        data: {
+          bookingStatus: "ongoing",
+        },
+      });
+      // Send a notification & email to the guest
+      // Send a notification & email to the host
       break;
 
     case "completed":
       // Handle completed status
-
+      // Update the booking status in the database
+      const completedBooking = await prisma.booking.update({
+        where: {
+          id: bookingId,
+        },
+        data: {
+          bookingStatus: "completed",
+        },
+      });
+      // Send a notification & email to the guest
+      // Send a notification & email to the host
       break;
 
     case "cancelled":
       // Handle cancelled status
+      // check first if payment is paid or not
+      const paymentStatus = updatedBookings.paymentStatus;
+
+      // if payment is made,
+      if (paymentStatus === "completed") {
+        //     if booking is being cancelled withing 48hrs of createdAt date, refund the payment
+        //     if booking is being cancelled after 48hrs of createdAt date, send a refund whilst deducting 5% of the total amount as a penalty for late cancellation
+      }
+      // if payment is not made,
+      else if (paymentStatus === "pending") {
+        // if payment is not made,
+        //     if booking is being cancelled withing 48hrs of createdAt date, do nothing just cancel the booking,no charge
+        //     if booking is being cancelled after 48hrs of createdAt date, charge the guest 5% of the total amount as a penalty for late cancellation through a stripe invoice, then cancel the booking
+      }
 
       break;
 
     default:
-      throw new Error(`Invalid booking status: ${status}`);
+      return new Error(`Invalid booking status: ${status}`);
   }
+
+  // listing dashboard revalidation
+  revalidatePath(`/listings/${updatedBookings.listingId}/bookings`);
+  revalidatePath(
+    `/listings/${updatedBookings.listingId}/bookings/${updatedBookings.id}`
+  );
+  // guest side revalidation
+  revalidatePath(`/users/${updatedBookings.guestId}/bookings`);
+  revalidatePath(
+    `/user/${updatedBookings.guestId}/bookings/${updatedBookings.id}`
+  );
 }

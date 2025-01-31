@@ -151,7 +151,6 @@ export const dashboardBookingsTableColumns: ColumnDef<TDashboardBookingsColumns>
         const formatted = format(date, "dd MMM yyyy");
         return formatted;
       },
-      enableHiding: false,
     },
     // check in date
     {

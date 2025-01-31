@@ -187,6 +187,7 @@ enum PaymentStatus {
   pending
   completed
   cancelled
+  requested_refund
   refunded
 }
 

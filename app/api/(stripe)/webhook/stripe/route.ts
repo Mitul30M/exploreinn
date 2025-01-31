@@ -119,7 +119,7 @@ export async function POST(req: Request) {
             rate: number;
           }[],
           tax: parseFloat(checkoutSession.metadata.tax),
-          totalCost: parseInt(checkoutSession.metadata.totalPayable),
+          totalCost: parseFloat(checkoutSession.metadata.totalPayable),
         };
         console.log("creating new booking");
         console.log(bookingData);
@@ -144,7 +144,14 @@ export async function POST(req: Request) {
         });
 
         console.log("New Booking created successfully: ", newBooking);
+        // listing dashboard side revalidation
+        revalidatePath(`/listings/${newBooking.listingId}/bookings`);
+        revalidatePath(
+          `/listings/${newBooking.listingId}/bookings/${newBooking.id}`
+        );
+        // guest side revalidation
         revalidatePath(`/users/${newBooking.guestId}/bookings`);
+        revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
         break;
 
       case "charge.updated":
