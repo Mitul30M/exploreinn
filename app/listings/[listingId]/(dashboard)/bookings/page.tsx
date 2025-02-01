@@ -93,12 +93,12 @@ const ListingBookingsPage = async ({
         <div className="rounded  !w-full px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* weekly bookings graph */}
           <ListingWeekWiseBookingsGraph
-            // chartData={weeklyBookings}
+            chartData={weeklyBookings}
             className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
           />
           {/* month wise bookings compared to previous year */}
           <ListingMonthWiseYearlyBookingsGraph
-            // chartData={monthlyBookings}
+            chartData={monthlyBookings}
             className="rounded-md border-border/90 border-[1px] shadow-none w-full h-max"
           />
           {/* overview of bookings according to booking status */}

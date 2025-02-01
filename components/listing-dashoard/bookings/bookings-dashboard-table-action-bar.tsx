@@ -8,6 +8,7 @@ import {
   ConciergeBell,
   Download,
   Loader,
+  MessageSquareX,
   Trash2,
   X,
 } from "lucide-react";
@@ -191,6 +192,54 @@ export function ListingDashboardFloatingActionBar<TData>({
                   </SelectGroup>
                 </SelectContent>
               </Select>{" "}
+              {/* cancel a booking */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="size-7 border"
+                    onClick={() => {
+                      setAction("cancel");
+
+                      startTransition(async () => {
+                        const error = await updateListingBookingStatus(
+                          (rows[0].original as TDashboardBookingsColumns).id,
+                          "cancelled" as BookingStatus
+                        );
+
+                        if (error) {
+                          toast({
+                            title: "Error",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+
+                        toast({
+                          variant: "destructive",
+                          title: "Booking Status Updated",
+                          description: `Updated Booking Status from ${(rows[0].original as TDashboardBookingsColumns).bookingStatus?.charAt(0).toUpperCase() + (rows[0].original as TDashboardBookingsColumns).bookingStatus?.slice(1)} to: Cancelled`,
+                        });
+                      });
+                    }}
+                    disabled={isPending || rows.length !== 1}
+                  >
+                    {isPending && action === "cancel" ? (
+                      <Loader
+                        className="size-3.5 animate-spin"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <MessageSquareX className="size-3.5" aria-hidden="true" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+                  <p>Cancel Booking</p>
+                </TooltipContent>
+              </Tooltip>
               {/* to export mulitple rows or single row from a DataTable*/}
               <Tooltip>
                 <TooltipTrigger asChild>

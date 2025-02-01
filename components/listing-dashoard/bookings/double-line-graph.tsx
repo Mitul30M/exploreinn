@@ -133,16 +133,19 @@ export function ListingMonthWiseYearlyBookingsGraph({
             </>
           ) : (
             <>
-              {chartData[chartData.length - 1].currentYear >
-              chartData[chartData.length - 2].currentYear ? (
+              {chartData[new Date().getMonth()].currentYear >
+              chartData[new Date().getMonth() - 1].currentYear ? (
                 <div className="flex flex-col gap-2">
-                  <p>Total Bookings this month: {chartData[0].currentYear}</p>
-                  <p className="flex items-center gap-2">
+                  <p>
+                    Total Bookings this month:{" "}
+                    {chartData[new Date().getMonth()].currentYear}
+                  </p>
+                  <p className="flex items-center gap-2 ">
                     Trending up by{" "}
                     {(
-                      ((chartData[chartData.length - 1].currentYear -
-                        chartData[chartData.length - 2].currentYear) /
-                        chartData[chartData.length - 2].currentYear) *
+                      ((chartData[new Date().getMonth()].currentYear -
+                        chartData[new Date().getMonth() - 1].currentYear) /
+                        chartData[new Date().getMonth() - 1].currentYear) *
                       100
                     ).toFixed(1)}
                     % this month{" "}
@@ -157,21 +160,18 @@ export function ListingMonthWiseYearlyBookingsGraph({
                 <div className="flex flex-col gap-2">
                   <p>
                     Total Bookings this month:{" "}
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(chartData[new Date().getMonth()].currentYear)}
+                    {chartData[new Date().getMonth()].currentYear}
                   </p>
-                  <p className="flex items-center gap-2">
+                  <p className="">
                     Trending down by{" "}
                     {(
-                      ((chartData[chartData.length - 2].currentYear -
-                        chartData[chartData.length - 1].currentYear) /
-                        chartData[chartData.length - 2].currentYear) *
+                      ((chartData[new Date().getMonth() - 1].currentYear -
+                        chartData[new Date().getMonth()].currentYear) /
+                        chartData[new Date().getMonth() - 1].currentYear) *
                       100
                     ).toFixed(1)}
                     % this month{" "}
-                    <TrendingDown className="h-4 w-4 text-primary" />
+                    <TrendingDown className="h-4 w-4 text-primary inline" />
                   </p>
                   <p>
                     Total Bookings this year:{" "}
