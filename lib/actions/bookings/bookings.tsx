@@ -285,6 +285,9 @@ export async function getMonthlyListingBookingsComparison(listingId: string) {
   const bookings = await prisma.booking.findMany({
     where: {
       listingId,
+      bookingStatus: {
+        not: "cancelled",
+      },
     },
     orderBy: {
       createdAt: "desc",

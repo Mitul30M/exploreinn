@@ -74,6 +74,11 @@ export function AppSidebar({
         url: `/listings/${listingID}/bookings`,
         icon: DoorOpen,
       },
+      {
+        title: "Transactions",
+        url: `/listings/${listingID}/transactions`,
+        icon: HandCoins,
+      },
     ],
   };
 

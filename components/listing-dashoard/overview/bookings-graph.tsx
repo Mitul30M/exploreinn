@@ -143,16 +143,16 @@ export function ListingWeekWiseBookingsGraph({
                 <div className="flex flex-col gap-2">
                   <p>Today's bookings: {todayBookings}</p>
                   <p className="flex items-center gap-2">
-                    Trending up by {percentageChange}% today{" "}
-                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <TrendingUp className="h-4 w-4 text-green-500" /> by{" "}
+                    {percentageChange}% today
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
                   <p>Today's bookings: {todayBookings}</p>
                   <p className="flex items-center gap-2">
-                    Trending down by {percentageChange}% today{" "}
-                    <TrendingDown className="h-4 w-4 text-primary" />
+                    <TrendingDown className="h-4 w-4 text-primary" /> by{" "}
+                    {percentageChange}% today
                   </p>
                 </div>
               );

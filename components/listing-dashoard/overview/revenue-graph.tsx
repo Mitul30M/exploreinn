@@ -106,7 +106,6 @@ export function ListingMonthWiseRevenueGraph({
             </LineChart>
           </ChartContainer>
         </CardContent>
-        <ScrollBar orientation="horizontal" />
       </ScrollArea>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
@@ -120,8 +119,8 @@ export function ListingMonthWiseRevenueGraph({
             </>
           ) : (
             <>
-              {chartData[chartData.length - 1].revenue >
-              chartData[chartData.length - 2].revenue ? (
+              {chartData[new Date().getMonth()].revenue >
+              chartData[new Date().getMonth() - 1].revenue ? (
                 <div className="flex flex-col gap-2">
                   <p>
                     Total Revenue this month:{" "}
@@ -131,15 +130,14 @@ export function ListingMonthWiseRevenueGraph({
                     }).format(chartData[new Date().getMonth()].revenue)}
                   </p>
                   <p className="flex items-center gap-2">
-                    Trending up by{" "}
+                    <TrendingUp className="h-4 w-4 text-green-500" /> by
                     {(
-                      ((chartData[chartData.length - 1].revenue -
-                        chartData[chartData.length - 2].revenue) /
-                        chartData[chartData.length - 2].revenue) *
+                      ((chartData[new Date().getMonth()].revenue -
+                        chartData[new Date().getMonth() - 1].revenue) /
+                        chartData[new Date().getMonth() - 1].revenue) *
                       100
                     ).toFixed(1)}
-                    % this month{" "}
-                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    % this month
                   </p>
                 </div>
               ) : (
@@ -152,15 +150,14 @@ export function ListingMonthWiseRevenueGraph({
                     }).format(chartData[new Date().getMonth()].revenue)}
                   </p>
                   <p className="flex items-center gap-2">
-                    Trending down by{" "}
+                    <TrendingDown className="h-4 w-4 text-red-500" /> by{" "}
                     {(
-                      ((chartData[chartData.length - 2].revenue -
-                        chartData[chartData.length - 1].revenue) /
-                        chartData[chartData.length - 2].revenue) *
+                      ((chartData[new Date().getMonth() - 1].revenue -
+                        chartData[new Date().getMonth()].revenue) /
+                        chartData[new Date().getMonth() - 1].revenue) *
                       100
                     ).toFixed(1)}
-                    % this month{" "}
-                    <TrendingDown className="h-4 w-4 text-primary" />
+                    % this month
                   </p>
                 </div>
               )}

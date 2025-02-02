@@ -1,15 +1,7 @@
 "use client";
 
 import { TrendingDown, TrendingUp } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -25,7 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
 const chartConfig = {
   pastYear: {
     label: "Past Year",
@@ -40,20 +32,20 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ListingMonthWiseYearlyBookingsGraph({
+export function ListingYearlyRevenueCompare({
   chartData = [
-    { month: "January", pastYear: 3, currentYear: 5 },
-    { month: "February", pastYear: 2, currentYear: 4 },
-    { month: "March", pastYear: 4, currentYear: 6 },
-    { month: "April", pastYear: 1, currentYear: 3 },
-    { month: "May", pastYear: 5, currentYear: 7 },
-    { month: "June", pastYear: 2, currentYear: 4 },
-    { month: "July", pastYear: 3, currentYear: 5 },
-    { month: "August", pastYear: 4, currentYear: 6 },
-    { month: "September", pastYear: 2, currentYear: 4 },
-    { month: "October", pastYear: 3, currentYear: 5 },
-    { month: "November", pastYear: 1, currentYear: 3 },
-    { month: "December", pastYear: 5, currentYear: 7 },
+    { month: "January", pastYear: 2500, currentYear: 3200 },
+    { month: "February", pastYear: 3100, currentYear: 3800 },
+    { month: "March", pastYear: 2800, currentYear: 3500 },
+    { month: "April", pastYear: 3300, currentYear: 4100 },
+    { month: "May", pastYear: 3600, currentYear: 4300 },
+    { month: "June", pastYear: 3200, currentYear: 3900 },
+    { month: "July", pastYear: 3400, currentYear: 4200 },
+    { month: "August", pastYear: 3800, currentYear: 4600 },
+    { month: "September", pastYear: 3500, currentYear: 4400 },
+    { month: "October", pastYear: 3900, currentYear: 4800 },
+    { month: "November", pastYear: 3700, currentYear: 4500 },
+    { month: "December", pastYear: 4000, currentYear: 4900 },
   ],
   className,
 }: {
@@ -67,7 +59,7 @@ export function ListingMonthWiseYearlyBookingsGraph({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Monthly Bookings</CardTitle>
+        <CardTitle>Monthly Revenue</CardTitle>
         <CardDescription>
           January - December {new Date().getFullYear()}
         </CardDescription>
@@ -117,7 +109,7 @@ export function ListingMonthWiseYearlyBookingsGraph({
               activeDot={{
                 r: 6,
               }}
-            />{" "}
+            />
           </LineChart>
         </ChartContainer>
       </CardContent>
@@ -125,10 +117,9 @@ export function ListingMonthWiseYearlyBookingsGraph({
         <div className="flex flex-col gap-2 font-medium leading-none">
           {new Date().getMonth() === 0 ? (
             <>
-              <p>Total Bookings this month: {chartData[0].currentYear}</p>
+              <p>Revenue this month: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData[0].currentYear)}</p>
               <p>
-                Total Bookings this year:{" "}
-                {chartData.reduce((sum, data) => sum + data.currentYear, 0)}
+                Total Revenue this year: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData.reduce((sum, data) => sum + data.currentYear, 0))}
               </p>
             </>
           ) : (
@@ -137,8 +128,7 @@ export function ListingMonthWiseYearlyBookingsGraph({
               chartData[new Date().getMonth() - 1].currentYear ? (
                 <div className="flex flex-col gap-2">
                   <p>
-                    Total Bookings this month:{" "}
-                    {chartData[new Date().getMonth()].currentYear}
+                    Revenue this month: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData[new Date().getMonth()].currentYear)}
                   </p>
                   <p className="flex items-center gap-2 ">
                     <TrendingUp className="h-4 w-4 text-green-500" /> up by{" "}
@@ -151,18 +141,17 @@ export function ListingMonthWiseYearlyBookingsGraph({
                     % this month
                   </p>
                   <p>
-                    Total Bookings this year:{" "}
-                    {chartData.reduce((sum, data) => sum + data.currentYear, 0)}
+                    Total Revenue this year: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData.reduce((sum, data) => sum + data.currentYear, 0))}
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
                   <p>
-                    Total Bookings this month:{" "}
-                    {chartData[new Date().getMonth()].currentYear}
+                    Revenue this month: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData[new Date().getMonth()].currentYear)}
                   </p>
                   <p className="flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-primary inline" /> by{" "}
+                    <TrendingDown className="h-4 w-4 text-primary inline" />{" "}
+                    down by{" "}
                     {(
                       ((chartData[new Date().getMonth() - 1].currentYear -
                         chartData[new Date().getMonth()].currentYear) /
@@ -172,8 +161,7 @@ export function ListingMonthWiseYearlyBookingsGraph({
                     % this month
                   </p>
                   <p>
-                    Total Bookings this year:{" "}
-                    {chartData.reduce((sum, data) => sum + data.currentYear, 0)}
+                    Total Revenue this year: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData.reduce((sum, data) => sum + data.currentYear, 0))}
                   </p>
                 </div>
               )}
