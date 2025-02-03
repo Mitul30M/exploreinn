@@ -45,6 +45,7 @@ import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-col
 import { cn } from "@/lib/utils";
 import { TOwnedListing } from "@/lib/actions/listings/listings";
 import Link from "next/link";
+import { getRevenueFromTransaction } from "@/lib/actions/transactions/transactions";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
@@ -294,28 +295,18 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
       const formattedToday = row.original.Transaction.filter(
         (transaction) =>
           new Date(transaction.createdAt).toDateString() ===
-            new Date().toDateString() &&
-          transaction.paymentStatus === "completed"
+          new Date().toDateString()
       ).reduce(
-        (total, transaction) =>
-          total +
-          (transaction.paymentMethod === "ONLINE_PAYMENT"
-            ? transaction.totalCost * 0.95
-            : transaction.totalCost),
+        (total, transaction) => total + getRevenueFromTransaction(transaction),
         0
       );
 
       const formattedYesterday = row.original.Transaction.filter(
         (transaction) =>
           new Date(transaction.createdAt).toDateString() ===
-            new Date(Date.now() - 86400000).toDateString() &&
-          transaction.paymentStatus === "completed"
+          new Date(Date.now() - 86400000).toDateString()
       ).reduce(
-        (total, transaction) =>
-          total +
-          (transaction.paymentMethod === "ONLINE_PAYMENT"
-            ? transaction.totalCost * 0.95
-            : transaction.totalCost),
+        (total, transaction) => total + getRevenueFromTransaction(transaction),
         0
       );
 
@@ -354,10 +345,7 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
       }).format(
         row.original.Transaction.reduce(
           (total, transaction) =>
-            total +
-            (transaction.paymentMethod === "ONLINE_PAYMENT"
-              ? transaction.totalCost * 0.95
-              : transaction.totalCost),
+            total + getRevenueFromTransaction(transaction),
           0
         )
       );

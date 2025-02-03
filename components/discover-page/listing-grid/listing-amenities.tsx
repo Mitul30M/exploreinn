@@ -22,7 +22,7 @@ const ListingAmenities = ({ amenities }: ListingAmenitiesProps) => {
   return (
     <TooltipProvider>
       <div className="flex flex-wrap justify-start items-center content-center"></div>
-      {listingAmenities.slice(0, 6).map((amenity, index) => (
+      {listingAmenities.slice(0, 5).map((amenity, index) => (
         <Tooltip key={index}>
           <TooltipTrigger>
             <Badge
@@ -46,7 +46,7 @@ const ListingAmenities = ({ amenities }: ListingAmenitiesProps) => {
       {amenities.length > 5 && (
         <Badge
           variant="outline"
-          className="mr-2 -mt-2  text-xs py-1 text-muted-foreground rounded-full"
+          className="mr-2 -mt-2   text-xs py-1 text-muted-foreground rounded-full"
         >
           + More
         </Badge>

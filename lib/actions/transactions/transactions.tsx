@@ -21,6 +21,49 @@ export async function getListingTransactions(listingId: string) {
 }
 
 /**
+ * Calculates the revenue from a given transaction.
+ * The revenue calculation is based on the payment method and payment status of the transaction.
+ * For online payments, the revenue is the total cost minus 5% platform fee.
+ * For pay later bookings, the revenue is the total cost minus 5% late cancellation fee (if applicable),
+ * plus 5% platform fee.
+ * For normal offline payments, the revenue is the total cost.
+ * @param transaction - The transaction for which to calculate the revenue.
+ * @returns The revenue from the transaction.
+ */
+export function getRevenueFromTransaction(transaction: Transaction) {
+  if (transaction.paymentMethod === "ONLINE_PAYMENT") {
+    if (transaction.paymentStatus === "refunded") {
+      // If refunded within 48 hours of creation, no revenue (full refund)
+      if (
+        new Date(transaction.refundedAt!).getTime() -
+          new Date(transaction.createdAt).getTime() <=
+        48 * 60 * 60 * 1000
+      ) {
+        return 0;
+      }
+      // If refunded after 48 hours, keep 5% as late cancellation fee
+      return transaction.totalCost * 0.05;
+    }
+    // Normal online payment, 5% platform fee
+    return transaction.totalCost * 0.95;
+  } else {
+    // For pay later bookings
+    if (transaction.paymentStatus === "charged") {
+      // For late cancellations, charge 5% fee with 5% platform fee
+      return transaction.totalCost * 0.05 * 0.95;
+    } else if (
+      transaction.paymentStatus === "cancelled" ||
+      transaction.paymentStatus === "pending"
+    ) {
+      // For normal cancellations or pending payments, no revenue
+      return 0;
+    }
+    // For normal offline payments
+    return transaction.totalCost;
+  }
+}
+
+/**
  * Retrieves the monthly revenue for a given listing for the current year.
  * The function returns a promise that resolves to an array of objects containing the month and revenue.
  * @param listingId - The id of the listing whose monthly revenue is to be retrieved.
@@ -37,18 +80,13 @@ export async function getMonthlyRevenue(listingId: string) {
   const monthlyRevenue = Array(12).fill(0);
 
   // Filter transactions within the current year and calculate net revenue
-  transactions.forEach((transaction) => {
+  transactions.forEach(async (transaction) => {
     const transactionDate = new Date(transaction.createdAt);
 
     // Ensure the transaction falls within the current year
     if (transactionDate >= startDate && transactionDate <= endDate) {
       const month = getMonth(transactionDate); // 0 = January, 11 = December
-      const netRevenue =
-        transaction.paymentMethod === "ONLINE_PAYMENT"
-          ? transaction.paymentStatus === "refunded"
-            ? 0
-            : transaction.totalCost * 0.95
-          : transaction.totalCost; // Deduct 5% application fee if payment method is online
+      const netRevenue = getRevenueFromTransaction(transaction); // Deduct 5% application fee if payment method is online
       monthlyRevenue[month] += netRevenue;
     }
   });
@@ -99,16 +137,10 @@ export async function getMonthlyRevenueComparison(listingId: string) {
   const currentYearRevenue = Array(12).fill(0);
 
   // Calculate revenue for each month in both years
-  transactions.forEach((transaction) => {
+  transactions.forEach(async (transaction) => {
     const transactionDate = new Date(transaction.createdAt);
     const month = getMonth(transactionDate);
-    const netRevenue =
-      transaction.paymentMethod === "ONLINE_PAYMENT"
-        ? transaction.paymentStatus === "refunded"
-          ? 0
-          : transaction.totalCost * 0.95
-        : transaction.totalCost;
-
+    const netRevenue = getRevenueFromTransaction(transaction);
     if (
       transactionDate >= pastYearStartDate &&
       transactionDate <= pastYearEndDate
@@ -202,13 +234,8 @@ export async function getRevenueByTimePeriod(listingId: string) {
     month = 0,
     year = 0;
 
-  transactions.forEach((transaction) => {
-    const revenue =
-      transaction.bookingType === "ONLINE_PAYMENT"
-        ? transaction.paymentStatus === "refunded"
-          ? 0
-          : transaction.totalCost * 0.95
-        : transaction.totalCost;
+  transactions.forEach(async (transaction) => {
+    const revenue = getRevenueFromTransaction(transaction);
 
     const transactionDate = new Date(transaction.createdAt);
 
@@ -245,7 +272,6 @@ export async function getRevenueByTimePeriod(listingId: string) {
  * @param listingId - The id of the listing whose transaction payment statuses are to be retrieved.
  * @returns A promise that resolves to an object with the payment status overview.
  */
-
 export async function getPaymentStatusOverview(listingId: string) {
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -262,6 +288,7 @@ export async function getPaymentStatusOverview(listingId: string) {
     cancelled: 0,
     requested_refund: 0,
     refunded: 0,
+    charged: 0,
   };
 
   transactions.forEach((transaction) => {

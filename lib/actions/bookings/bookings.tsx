@@ -258,7 +258,11 @@ export async function getListingCurrentWeekBookings(listingId: string) {
     const bookingDate = new Date(booking.createdAt);
 
     // Ensure the booking falls within the current week
-    if (bookingDate >= startDate && bookingDate <= endDate) {
+    if (
+      bookingDate >= startDate &&
+      bookingDate <= endDate &&
+      ["upcoming", "completed", "ongoing"].includes(booking.bookingStatus)
+    ) {
       const dayOfWeek = format(bookingDate, "EEE"); // Get the 3-letter day format
       // Explicitly cast dayOfWeek to ensure it matches the type of dailyBookings keys
       const day: keyof typeof dailyBookings =
@@ -389,7 +393,7 @@ export async function updateListingBookingStatus(
   bookingId: string,
   status: BookingStatus
 ) {
-  const updatedBookings = await prisma.booking.findUnique({
+  const updateBooking = await prisma.booking.findUnique({
     where: {
       id: bookingId,
     },
@@ -417,7 +421,7 @@ export async function updateListingBookingStatus(
     },
   });
 
-  if (!updatedBookings) {
+  if (!updateBooking) {
     throw new Error("Failed to update booking status");
   }
 
@@ -457,31 +461,31 @@ export async function updateListingBookingStatus(
     case "cancelled":
       // Handle cancelled status
       // check first if payment is paid or not
-      const paymentStatus = updatedBookings.paymentStatus;
+      const paymentStatus = updateBooking.paymentStatus;
 
       // if payment is made, ie. ONLINE_BOOKING bookingType, also update respective payment status and booking status in transaction table as well
       if (paymentStatus === "completed") {
         //     if booking is being cancelled withing 48hrs of createdAt date, refund the full payment, but then also charge the host for the cancellation & refund
 
         if (
-          new Date(updatedBookings.createdAt).getTime() + 48 * 60 * 60 * 1000 >=
+          new Date(updateBooking.createdAt).getTime() + 48 * 60 * 60 * 1000 >=
           new Date().getTime()
         ) {
           console.log("in server action");
           // refund the payment
           const refund = await stripe.refunds.create({
-            payment_intent: updatedBookings.transaction?.paymentId as string,
+            payment_intent: updateBooking.transaction?.paymentId as string,
             refund_application_fee: true,
             reverse_transfer: true,
           });
           console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
 
           console.log(
-            `Booking ${updatedBookings.id} opted for cancellation. \nRefunding full amount: `,
+            `Booking ${updateBooking.id} opted for cancellation. \nRefunding full amount: `,
             new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-            }).format(updatedBookings.totalCost)
+            }).format(updateBooking.totalCost)
           );
         }
         //     if booking is being cancelled after 48hrs of createdAt date, send a refund whilst deducting 5% of the total amount as a penalty for late cancellation
@@ -489,12 +493,12 @@ export async function updateListingBookingStatus(
           // set a transfer for cancellation
           const transfer = await stripe.transfers.create(
             {
-              amount: Math.round(updatedBookings.totalCost * 0.95 * 100),
+              amount: Math.round(updateBooking.totalCost * 0.95 * 100),
               currency: "usd",
               destination: process.env.EXPLOREINN_STRIPE_ACCOUNT_ID as string,
             },
             {
-              stripeAccount: updatedBookings.listing.owner.stripeId as string,
+              stripeAccount: updateBooking.listing.owner.stripeId as string,
             }
           );
           console.log(
@@ -502,31 +506,32 @@ export async function updateListingBookingStatus(
           );
           // refund the payment
           const refund = await stripe.refunds.create({
-            payment_intent: updatedBookings.transaction?.paymentId as string,
-            amount: Math.round(updatedBookings.totalCost * 0.95 * 100),
+            payment_intent: updateBooking.transaction?.paymentId as string,
+            amount: Math.round(updateBooking.totalCost * 0.95 * 100),
           });
           console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
 
           console.log(
-            `Booking ${updatedBookings.id} opted for cancellation. \nRefunding amount with 5% late cancellation fee: `,
+            `Booking ${updateBooking.id} opted for cancellation. \nRefunding amount with 5% late cancellation fee: `,
             new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-            }).format(updatedBookings.totalCost)
+            }).format(updateBooking.totalCost)
           );
         }
         // update the payment status in the database
         await prisma.booking.update({
-          where: { id: updatedBookings.id },
+          where: { id: updateBooking.id },
           data: {
             paymentStatus: "refunded",
             bookingStatus: "cancelled",
           },
         });
         await prisma.transaction.update({
-          where: { id: updatedBookings.transaction?.id },
+          where: { id: updateBooking.transaction?.id },
           data: {
             paymentStatus: "refunded",
+            refundedAt: new Date(),
           },
         });
       }
@@ -535,45 +540,87 @@ export async function updateListingBookingStatus(
         // if payment is not made,
         //     if booking is being cancelled withing 48hrs of createdAt date, do nothing just cancel the booking,no charge
         if (
-          new Date(updatedBookings.createdAt).getTime() + 48 * 60 * 60 * 1000 >=
+          new Date(updateBooking.createdAt).getTime() + 48 * 60 * 60 * 1000 >=
           new Date().getTime()
         ) {
           console.log(
-            `Booking ${updatedBookings.id} opted for cancellation. \nNo refund issued.`
+            `Booking ${updateBooking.id} opted for cancellation. \nNo Charge issued.`
           );
+          await prisma.booking.update({
+            where: {
+              id: bookingId,
+            },
+            data: {
+              bookingStatus: "cancelled",
+              paymentStatus: "cancelled",
+            },
+          });
         }
         //     if booking is being cancelled after 48hrs of createdAt date, charge the guest 5% of the total amount as a penalty for late cancellation through a stripe invoice, then cancel the booking
         else {
           const customer = await stripe.customers.create({
-            email: updatedBookings.guest.email,
-            name: `${updatedBookings.guest.firstName} ${updatedBookings.guest.lastName}`,
+            email: updateBooking.guest.email,
+            name: `${updateBooking.guest.firstName} ${updateBooking.guest.lastName}`,
             metadata: {
-              bookingId: updatedBookings.id,
+              bookingId: updateBooking.id,
             },
           });
-          // create an Invoice Item for the Guest
+
           const invoice = await stripe.invoices.create({
-            on_behalf_of: updatedBookings.listing.owner.stripeId as string,
-            application_fee_amount:
-              updatedBookings.totalCost * 0.05 * 0.05 * 100,
-            transfer_data: {
-              destination: updatedBookings.listing.owner.stripeId as string,
-            },
             customer: customer.id,
+            collection_method: "send_invoice",
+            due_date: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // Set due date to tomorrow
+            application_fee_amount: Math.round(
+              updateBooking.totalCost * 0.05 * 0.05 * 100
+            ),
+            transfer_data: {
+              destination: updateBooking.listing.owner.stripeId as string,
+            },
+          });
+
+          // Create an invoice item for the late cancellation fee
+          const invoiceItem = await stripe.invoiceItems.create({
+            customer: customer.id,
+            amount: Math.round(updateBooking.totalCost * 0.05 * 100), // 5% of totalCost
+            currency: "usd", // Specify the currency
+            description: "Late cancellation fee. 5% of the total amount", // Description of the invoice item
+            invoice: invoice.id,
+          });
+
+          // Send the Invoice
+          await stripe.invoices.sendInvoice(invoice.id);
+          console.log(
+            `Booking ${updateBooking.id} opted for cancellation. \nInvoice created for late cancellation: ${invoice.id}. \nInvoice Amount: ${invoice.amount_due}`
+          );
+
+          await prisma.booking.update({
+            where: {
+              id: bookingId,
+            },
+            data: {
+              bookingStatus: "cancelled",
+              paymentStatus: "charged",
+            },
+          });
+          // create a new transaction for the charged transaction
+          const chargedTransaction = await prisma.transaction.create({
+            data: {
+              paymentId: invoice.id,
+              paymentMethod: "BOOK_NOW_PAY_LATER",
+              paymentStatus: "charged",
+              bookingId: updateBooking.id,
+              guestId: updateBooking.guestId,
+              listingId: updateBooking.listingId,
+              tax: 0,
+              totalCost: updateBooking.totalCost * 0.05,
+              bookingType: "BOOK_NOW_PAY_LATER",
+              chargedAt: new Date(),
+            },
           });
           console.log(
-            `Booking ${updatedBookings.id} opted for cancellation. \nInvoice created for late cancellation: ${invoice.id}. \nInvoice Amount: ${invoice.amount_due}`
+            `Booking ${updateBooking.id} opted for cancellation. \nCharged for late cancellation: ${chargedTransaction.id}`
           );
         }
-        await prisma.booking.update({
-          where: {
-            id: bookingId,
-          },
-          data: {
-            bookingStatus: "cancelled",
-            paymentStatus: "cancelled",
-          },
-        });
       }
 
       // Send a notification & email to the guest
@@ -585,32 +632,30 @@ export async function updateListingBookingStatus(
   }
 
   // listing dashboard revalidation
-  revalidatePath(`/listings/${updatedBookings.listingId}/bookings`);
+  revalidatePath(`/listings/${updateBooking.listingId}/bookings`);
   revalidatePath(
-    `/listings/${updatedBookings.listingId}/bookings/${updatedBookings.id}`
+    `/listings/${updateBooking.listingId}/bookings/${updateBooking.id}`
   );
   // guest side revalidation
-  revalidatePath(`/users/${updatedBookings.guestId}/bookings`);
-  revalidatePath(
-    `/user/${updatedBookings.guestId}/bookings/${updatedBookings.id}`
-  );
+  revalidatePath(`/users/${updateBooking.guestId}/bookings`);
+  revalidatePath(`/user/${updateBooking.guestId}/bookings/${updateBooking.id}`);
 }
 
 // to create invnvoice for late cancellation
 // await stripe.invoiceItems.create({
-//   customer: updatedBookings.guest.stripeId as string,
-//   amount: updatedBookings.totalCost * 0.05 * 100, // 5% penalty fee
+//   customer: updateBooking.guest.stripeId as string,
+//   amount: updateBooking.totalCost * 0.05 * 100, // 5% penalty fee
 //   currency: "usd",
-//   description: `Late cancellation fee for booking ${updatedBookings.id}. 5%  of the total amount.`,
+//   description: `Late cancellation fee for booking ${updateBooking.id}. 5%  of the total amount.`,
 // });
 
 // // generate Invoice for the Guest
 // const invoice = await stripe.invoices.create({
-//   customer: updatedBookings.guest.stripeId as string,
+//   customer: updateBooking.guest.stripeId as string,
 //   collection_method: "send_invoice",
 //   days_until_due: 3,
 //   transfer_data: {
-//     amount: updatedBookings.totalCost * 0.05 * 100, // Send penalty amount to host
-//     destination: updatedBookings.listing.owner.stripeId as string,
+//     amount: updateBooking.totalCost * 0.05 * 100, // Send penalty amount to host
+//     destination: updateBooking.listing.owner.stripeId as string,
 //   },
 // });
