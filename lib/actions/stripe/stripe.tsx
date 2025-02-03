@@ -171,6 +171,9 @@ export async function createStripeCheckoutSession(
         destination: sellerStripeConnectID?.owner.stripeId as string,
       },
     },
+    invoice_creation: {
+      enabled: true,
+    },
     line_items: [...roomCart, ...extrasCart],
     expires_at: Math.floor(Date.now() / 1000) + 1800, // 30 minutes (stripe checkout minimum expiration time)
     success_url: `${process.env.NEXT_PUBLIC_ORIGIN as string}/stripe/success`,

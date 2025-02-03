@@ -126,13 +126,6 @@ const BookingConfirmationMail = ({
                 <strong className="font-semibold">{booking.id}</strong>
                 <br />
               </Text>
-
-              <Text className=" text-[16px] leading-[24px] px-5 ">
-                We'll mail you the invoice & payment receipt as soon as it's
-                ready. Please ensure that you follow all the rules and
-                regulations of the listing to help us maintain a safe and
-                pleasant environment for everyone.
-              </Text>
             </Section>
 
             <Section className="text-center mt-6 ">

@@ -266,6 +266,8 @@ OnlinePaymentBookingComplete.PreviewProps = {
       expMonth: 1,
       expYear: 2030,
     },
+    chargedAt: null,
+    refundedAt: null,
   } satisfies Transaction,
   booking: {
     id: "678a7e8650c81a45fe6b4b73",

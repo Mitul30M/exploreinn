@@ -8,6 +8,7 @@ import BookingConfirmationMail from "@/components/emails/booking-confirmation";
 import { resend } from "@/lib/resend";
 import { Booking, Listing } from "@prisma/client";
 import OnlinePaymentBookingComplete from "@/components/emails/online-payment-booking-complete";
+import Invoice from "@/components/emails/invoice";
 
 export async function POST(req: Request) {
   console.log("Webhook received");
@@ -240,8 +241,9 @@ export async function POST(req: Request) {
           },
         });
         console.log("Updated Booking to include the transactionId");
-        const { data, error } = await resend.emails.send({
-          from: "exploreinn <no-reply@mitul30m.in>",
+
+        await resend.emails.send({
+          from: "exploreinn@mitul30m.in",
           to: [user!.email],
           subject: "Booking & Payment Successful",
           react: OnlinePaymentBookingComplete({
@@ -252,8 +254,23 @@ export async function POST(req: Request) {
           }),
           scheduledAt: "in 1 minute",
         });
+
+        await resend.emails.send({
+          from: "exploreinn@mitul30m.in",
+          to: [user!.email],
+          subject: "Invoice for Recent Transaction",
+          react: Invoice({
+            user: user!,
+            transaction: newTransaction,
+            booking: updatedBooking,
+          }),
+          scheduledAt: "in 1 minute",
+        });
+
         revalidatePath(`/users/${newTransaction.guestId}/bookings`);
         revalidatePath(`/users/${newTransaction.guestId}/billing`);
+        revalidatePath(`/listings/${newTransaction.listingId}/bookings`);
+        revalidatePath(`/listings/${newTransaction.listingId}/transactions`);
         break;
     }
   } catch (error) {

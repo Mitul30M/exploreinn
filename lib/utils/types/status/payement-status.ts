@@ -6,6 +6,7 @@ import {
   CalendarOff,
   LucideIcon,
   Wallet,
+  Nfc,
 } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -15,7 +16,13 @@ export interface PaymentStatusConfig {
   label: string;
 }
 
-type PaymentStatusKey = "completed" | "pending" | "refunded" | "cancelled";
+type PaymentStatusKey =
+  | "completed"
+  | "pending"
+  | "refunded"
+  | "cancelled"
+  | "requested_refund"
+  | "charged";
 
 export type PaymentStatus = {
   completed: PaymentStatusConfig;
@@ -23,6 +30,7 @@ export type PaymentStatus = {
   refunded: PaymentStatusConfig;
   requested_refund: PaymentStatusConfig;
   cancelled: PaymentStatusConfig;
+  charged: PaymentStatusConfig;
 };
 
 const baseClassName =
@@ -56,6 +64,11 @@ export const paymentStatus: PaymentStatus = {
     className: `${baseClassName} bg-red-100/50 text-red-950 dark:bg-red-900/50 dark:text-red-100`,
     label: "Cancelled",
   },
+  charged: {
+    icon: Nfc,
+    className: `${baseClassName} bg-red-100/50 text-red-950 dark:bg-red-900/50 dark:text-red-100`,
+    label: "Charged",
+  },
 };
 
 export const paymentStatusArray = [
@@ -88,6 +101,12 @@ export const paymentStatusArray = [
     label: "Cancelled",
     value: "cancelled",
     icon: CalendarOff,
+    className: `${baseClassName} bg-red-100/50 text-red-950 dark:bg-red-900/50 dark:text-red-100`,
+  },
+  {
+    label: "Charged",
+    value: "charged",
+    icon: Nfc,
     className: `${baseClassName} bg-red-100/50 text-red-950 dark:bg-red-900/50 dark:text-red-100`,
   },
 ];

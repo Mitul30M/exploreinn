@@ -50,7 +50,7 @@ export function getRevenueFromTransaction(transaction: Transaction) {
     // For pay later bookings
     if (transaction.paymentStatus === "charged") {
       // For late cancellations, charge 5% fee with 5% platform fee
-      return transaction.totalCost * 0.05 * 0.95;
+      return transaction.totalCost * 0.95;
     } else if (
       transaction.paymentStatus === "cancelled" ||
       transaction.paymentStatus === "pending"
@@ -219,7 +219,6 @@ export async function getRevenueByTimePeriod(listingId: string) {
   const transactions = await prisma.transaction.findMany({
     where: {
       listingId,
-      paymentStatus: { in: ["completed", "refunded"] },
     },
   });
 

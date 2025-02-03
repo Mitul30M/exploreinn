@@ -5,7 +5,13 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Booking, BookingStatus, Listing, Transaction } from "@prisma/client";
+import {
+  Booking,
+  BookingStatus,
+  Listing,
+  Transaction,
+  User,
+} from "@prisma/client";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
@@ -19,6 +25,7 @@ import {
   getMonth,
 } from "date-fns";
 import { stripe } from "@/lib/stripe";
+import Invoice from "@/components/emails/invoice";
 
 const bookingFormSchema = z.object({
   listingID: z.string(),
@@ -424,7 +431,11 @@ export async function updateListingBookingStatus(
   if (!updateBooking) {
     throw new Error("Failed to update booking status");
   }
-
+  const guest = await prisma.user.findUnique({
+    where: {
+      id: updateBooking.guestId,
+    },
+  });
   switch (status) {
     // skip "upcoming" status
 
@@ -620,6 +631,18 @@ export async function updateListingBookingStatus(
           console.log(
             `Booking ${updateBooking.id} opted for cancellation. \nCharged for late cancellation: ${chargedTransaction.id}`
           );
+
+          await resend.emails.send({
+            from: "exploreinn@mitul30m.in",
+            to: [updateBooking.guest.email],
+            subject: "Invoice for Recent Transaction",
+            react: Invoice({
+              user: guest as User,
+              transaction: chargedTransaction,
+              booking: updateBooking,
+            }),
+            scheduledAt: "in 1 minute",
+          });
         }
       }
 

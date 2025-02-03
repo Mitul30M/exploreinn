@@ -117,9 +117,21 @@ export function ListingYearlyRevenueCompare({
         <div className="flex flex-col gap-2 font-medium leading-none">
           {new Date().getMonth() === 0 ? (
             <>
-              <p>Revenue this month: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData[0].currentYear)}</p>
               <p>
-                Total Revenue this year: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData.reduce((sum, data) => sum + data.currentYear, 0))}
+                Revenue this month:{" "}
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(chartData[0].currentYear)}
+              </p>
+              <p>
+                Total Revenue this year:{" "}
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(
+                  chartData.reduce((sum, data) => sum + data.currentYear, 0)
+                )}
               </p>
             </>
           ) : (
@@ -128,7 +140,11 @@ export function ListingYearlyRevenueCompare({
               chartData[new Date().getMonth() - 1].currentYear ? (
                 <div className="flex flex-col gap-2">
                   <p>
-                    Revenue this month: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData[new Date().getMonth()].currentYear)}
+                    Revenue this month:{" "}
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(chartData[new Date().getMonth()].currentYear)}
                   </p>
                   <p className="flex items-center gap-2 ">
                     <TrendingUp className="h-4 w-4 text-green-500" /> up by{" "}
@@ -141,13 +157,26 @@ export function ListingYearlyRevenueCompare({
                     % this month
                   </p>
                   <p>
-                    Total Revenue this year: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData.reduce((sum, data) => sum + data.currentYear, 0))}
+                    Avg Revenue this year:{" "}
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(
+                      chartData.reduce(
+                        (sum, data) => sum + data.currentYear,
+                        0
+                      ) / 12
+                    )}
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
                   <p>
-                    Revenue this month: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData[new Date().getMonth()].currentYear)}
+                    Revenue this month:{" "}
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(chartData[new Date().getMonth()].currentYear)}
                   </p>
                   <p className="flex items-center gap-2">
                     <TrendingDown className="h-4 w-4 text-primary inline" />{" "}
@@ -161,7 +190,16 @@ export function ListingYearlyRevenueCompare({
                     % this month
                   </p>
                   <p>
-                    Total Revenue this year: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(chartData.reduce((sum, data) => sum + data.currentYear, 0))}
+                    Avg Revenue this year:{" "}
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(
+                      chartData.reduce(
+                        (sum, data) => sum + data.currentYear,
+                        0
+                      ) / 12
+                    )}
                   </p>
                 </div>
               )}
