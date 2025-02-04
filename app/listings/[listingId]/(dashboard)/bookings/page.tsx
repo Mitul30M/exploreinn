@@ -83,12 +83,19 @@ const ListingBookingsPage = async ({
 
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
-      {/* Personal Info */}
+      {/*  Info */}
       <div id="hotel-owner" className="space-y-4">
-        <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
-          <DoorOpen size={22} className="text-primary" />
-          {listing.name}'s' Bookings
-        </h1>
+        <div className="text-md  flex justify-between rounded-none items-center gap-2  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
+          <h1 className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
+            <DoorOpen size={22} className="text-primary" />
+            {listing.name}'s' Bookings
+          </h1>
+
+          <p className="font-medium tracking-tight text-sm">
+            Total Bookings: {"   "}
+            <strong className="text-primary text-lg">{bookings.length}</strong>
+          </p>
+        </div>
 
         <div className="rounded  !w-full px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* weekly bookings graph */}

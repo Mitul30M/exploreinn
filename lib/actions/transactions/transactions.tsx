@@ -16,6 +16,17 @@ export async function getListingTransactions(listingId: string) {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+        },
+      },
+    },
   });
   return transactions;
 }
@@ -231,7 +242,8 @@ export async function getRevenueByTimePeriod(listingId: string) {
   let today = 0,
     week = 0,
     month = 0,
-    year = 0;
+    year = 0,
+    overall = 0;
 
   transactions.forEach(async (transaction) => {
     const revenue = getRevenueFromTransaction(transaction);
@@ -250,6 +262,7 @@ export async function getRevenueByTimePeriod(listingId: string) {
     if (transactionDate >= startOfYear) {
       year += revenue;
     }
+    overall += revenue; // Calculate overall revenue
   });
 
   return {
@@ -257,6 +270,7 @@ export async function getRevenueByTimePeriod(listingId: string) {
     week: parseFloat(week.toFixed(2)),
     month: parseFloat(month.toFixed(2)),
     year: parseFloat(year.toFixed(2)),
+    overall: parseFloat(overall.toFixed(2)), // Added overall revenue field
   };
 }
 

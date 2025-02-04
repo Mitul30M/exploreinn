@@ -2,6 +2,7 @@ import { DoorOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { getListingById } from "@/lib/actions/listings/listings";
 import {
+  getListingTransactions,
   getMonthlyRevenue,
   getMonthlyRevenueComparison,
   getPaymentStatusOverview,
@@ -25,6 +26,11 @@ import { ListingYearlyRevenueCompare } from "@/components/listing-dashoard/trans
 import { PaymentStatusConfig } from "@/lib/utils/types/status/payement-status";
 import { paymentStatus } from "@/lib/utils/types/status/payement-status";
 import { Badge } from "@/components/ui/badge";
+import { ListingTransactionsDataTable } from "@/components/listing-dashoard/transactions/transactions-dashboard-table";
+import {
+  dashboardTransactionsTableColumns,
+  TDashboardTransactionsColumns,
+} from "@/components/listing-dashoard/transactions/transactions-dashboard-table-columns";
 
 const ListingTransactionsPage = async ({
   params,
@@ -38,6 +44,9 @@ const ListingTransactionsPage = async ({
     return notFound();
   }
 
+  // fetch all transactions
+  const transactions = await getListingTransactions(listing.id);
+
   // fetch payment status overview
   const overview = await getPaymentStatusOverview(listing.id);
   const revenue = await getRevenueByTimePeriod(listing.id);
@@ -46,12 +55,24 @@ const ListingTransactionsPage = async ({
 
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
-      {/* Personal Info */}
+      {/*  Info */}
       <div id="hotel-owner" className="space-y-4">
-        <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
-          <HandCoins size={22} className="text-primary" />
-          {listing.name}'s Transactions
-        </h1>
+        <div className="text-md  flex justify-between rounded-none items-center gap-2  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
+          <h1 className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
+            <HandCoins size={22} className="text-primary" />
+            {listing.name}'s Transactions
+          </h1>
+
+          <p className="font-medium tracking-tight text-sm">
+            Net Revenue: {"   "}
+            <strong className="text-primary text-lg">
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(revenue.overall)}
+            </strong>
+          </p>
+        </div>
 
         <div className="rounded  !w-full px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* hotel revenue bar graph card */}
@@ -109,6 +130,10 @@ const ListingTransactionsPage = async ({
         <Separator className="border-border/90" />
 
         {/* transactions table */}
+        <ListingTransactionsDataTable
+          columns={dashboardTransactionsTableColumns}
+          data={transactions as TDashboardTransactionsColumns[]}
+        />
       </div>
     </section>
   );
