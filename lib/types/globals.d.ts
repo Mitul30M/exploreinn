@@ -25,6 +25,7 @@ declare global {
 
   export type Params = Promise<{
     listingId: string;
+    bookingId: string;
   }>;
 
   export type StripeCheckoutSessionMetaData = {

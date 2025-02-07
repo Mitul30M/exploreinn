@@ -235,6 +235,43 @@ export async function getListingBookings(listingId: string) {
 }
 
 /**
+ * Retrieves a booking by its id.
+ * The function returns a promise that resolves to a booking object with its transaction and guest details.
+ * @param bookingId - The id of the booking to be retrieved.
+ * @returns A promise that resolves to a booking object with its transaction and guest details.
+ */
+export async function getUserBooking(bookingId: string) {
+  const booking = await prisma.booking.findUnique({
+    where: {
+      id: bookingId,
+    },
+    include: {
+      transaction: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+        },
+      },
+      listing: {
+        select: {
+          id: true,
+          name: true,
+          coverImage: true,
+          address: true,
+          email: true,
+          phoneNo: true,
+        },
+      },
+    },
+  });
+  return booking;
+}
+
+/**
  * Retrieves the bookings for a given listing within the current week.
  * The function returns a promise that resolves to an array of objects
  * containing the day of the week and the number of bookings for that day.
