@@ -34,9 +34,13 @@ interface FloatingBarProps {
   booking: Booking & {
     transaction: Transaction | null;
   };
+  isOwnerOrManager?: boolean;
 }
 
-export function BookingFloatingActionBar({ booking }: FloatingBarProps) {
+export function BookingFloatingActionBar({
+  booking,
+  isOwnerOrManager = false,
+}: FloatingBarProps) {
   const [isPending, startTransition] = React.useTransition();
   const [action, setAction] = React.useState<
     "update-booking-status" | "update-transaction-status" | "export" | "cancel"
@@ -50,91 +54,94 @@ export function BookingFloatingActionBar({ booking }: FloatingBarProps) {
           <div className="mx-auto flex w-fit items-center gap-2 rounded-md border bg-background p-2 text-foreground shadow">
             <div className="flex items-center gap-1.5">
               {/* to update booking status */}
-              <Select
-                onValueChange={(value) => {
-                  startTransition(async () => {
-                    if (
-                      Object.values(BookingStatus).includes(
-                        value as BookingStatus
-                      )
-                    ) {
-                      const error = await updateListingBookingStatus(
-                        booking.id,
-                        booking.bookingStatus
-                      );
+              {isOwnerOrManager && (
+                <Select
+                  onValueChange={(value) => {
+                    startTransition(async () => {
+                      if (
+                        Object.values(BookingStatus).includes(
+                          value as BookingStatus
+                        )
+                      ) {
+                        const error = await updateListingBookingStatus(
+                          booking.id,
+                          booking.bookingStatus
+                        );
 
-                      if (error) {
+                        if (error) {
+                          toast({
+                            title: "Error",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+
                         toast({
-                          title: "Error",
-                          description: error.message,
-                          variant: "destructive",
+                          title: "Booking Status Updated",
+                          description: `Updated Booking Status from ${booking.bookingStatus?.charAt(0).toUpperCase() + booking.bookingStatus?.slice(1)} to: ${value.charAt(0).toUpperCase() + value.slice(1)}`,
                         });
-                        return;
                       }
-
-                      toast({
-                        title: "Booking Status Updated",
-                        description: `Updated Booking Status from ${booking.bookingStatus?.charAt(0).toUpperCase() + booking.bookingStatus?.slice(1)} to: ${value.charAt(0).toUpperCase() + value.slice(1)}`,
-                      });
-                    }
-                  });
-                }}
-              >
-                <Tooltip>
-                  <SelectTrigger asChild>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                        disabled={isPending}
-                      >
-                        {isPending && action === "update-booking-status" ? (
-                          <Loader
-                            className="size-3.5 animate-spin text-primary"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <ConciergeBell
-                            className="size-3.5 text-primary"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </Button>
-                    </TooltipTrigger>
-                  </SelectTrigger>
-                  <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                    <p>Update Booking Status</p>
-                  </TooltipContent>
-                </Tooltip>
-                <SelectContent align="center">
-                  <SelectGroup>
-                    {["ongoing", "completed", "cancelled"].map((_status) => {
-                      if (_status === booking.bookingStatus) return null;
-
-                      const status: BookingStatusConfig =
-                        bookingStatus[_status as keyof typeof bookingStatus];
-                      return (
-                        <SelectItem
-                          key={_status}
-                          value={_status}
-                          className="capitalize"
+                    });
+                  }}
+                >
+                  <Tooltip>
+                    <SelectTrigger asChild>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+                          disabled={isPending}
                         >
-                          <div className="w-full flex items-center justify-center">
-                            <Badge
-                              variant="outline"
-                              className={status.className}
-                            >
-                              {status.icon && <status.icon size={16} />}{" "}
-                              {status.label}
-                            </Badge>
-                          </div>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>{" "}
+                          {isPending && action === "update-booking-status" ? (
+                            <Loader
+                              className="size-3.5 animate-spin text-primary"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <ConciergeBell
+                              className="size-3.5 text-primary"
+                              aria-hidden="true"
+                            />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                    </SelectTrigger>
+                    <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+                      <p>Update Booking Status</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <SelectContent align="center">
+                    <SelectGroup>
+                      {["ongoing", "completed", "cancelled"].map((_status) => {
+                        if (_status === booking.bookingStatus) return null;
+
+                        const status: BookingStatusConfig =
+                          bookingStatus[_status as keyof typeof bookingStatus];
+                        return (
+                          <SelectItem
+                            key={_status}
+                            value={_status}
+                            className="capitalize"
+                          >
+                            <div className="w-full flex items-center justify-center">
+                              <Badge
+                                variant="outline"
+                                className={status.className}
+                              >
+                                {status.icon && <status.icon size={16} />}{" "}
+                                {status.label}
+                              </Badge>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+
               {/* cancel a booking */}
               <Tooltip>
                 <TooltipTrigger asChild>

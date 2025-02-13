@@ -136,6 +136,7 @@ export function ListingBookingsDataTable<TData, TValue>({
                       `/listings/${(row.original as TDashboardBookingsColumns).listingId}/bookings/${(row.original as TDashboardBookingsColumns).id}`
                     )
                   }
+                  className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

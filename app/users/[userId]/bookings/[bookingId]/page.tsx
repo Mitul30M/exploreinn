@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getUserBooking } from "@/lib/actions/bookings/bookings";
-import { getRevenueFromTransaction } from "@/lib/actions/transactions/transactions";
 import {
   bookingStatus,
   BookingStatusConfig,
@@ -15,8 +14,6 @@ import {
 import { format } from "date-fns";
 import {
   BadgeDollarSign,
-  BedDouble,
-  CalendarCheck,
   CalendarClock,
   ChevronLeft,
   CreditCard,
@@ -25,30 +22,29 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import React from "react";
 
-const BookingInfoPage = async ({ params }: { params: Params }) => {
+const UserBookingDetailPage = async ({ params }: { params: Params }) => {
   const bookingId = (await params).bookingId;
   const booking = await getUserBooking(bookingId);
-
   if (!booking) {
     return notFound();
   }
-
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       <div className="text-md  flex justify-start rounded-none items-center gap-4  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
         <Link
-          href={`/listings/${booking.listingId}/bookings`}
+          href={`/users/${booking.guestId}/bookings`}
           className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight hover:text-primary hover:underline hover:underline-offset-2"
         >
           <ChevronLeft className="text-primary" size={22} />
           {booking.guest.firstName}'s Booking Details
         </Link>
       </div>
-
-      <div className="rounded !w-max px-4 mx-auto  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4 justify-items-center">
+      <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div className="!flex !flex-col gap-4 rounded-md border-border/90 border-[1px]  p-4 h-max ">
           {/* booking by */}
           <div className="flex gap-3 items-center  ">
@@ -249,11 +245,6 @@ const BookingInfoPage = async ({ params }: { params: Params }) => {
                 }).format(booking.transaction.tax)}{" "}
                 (tax)
               </p>
-              Net Revenue:{" "}
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(await getRevenueFromTransaction(booking.transaction))}
             </div>
             <div className="space-y-2">
               <p className="text-sm  flex justify-start rounded-none items-center gap-2 font-medium tracking-tight text-primary">
@@ -318,12 +309,41 @@ const BookingInfoPage = async ({ params }: { params: Params }) => {
             </div>
           </div>
         )}
-        {/* <div className="!flex !flex-col gap-4 rounded-md border-border/90 border-[1px]  p-4 h-max "></div> */}
-      </div>
 
-      <BookingFloatingActionBar isOwnerOrManager={true} booking={booking} />
+        {/* chat when bookingStatus === ongoing */}
+        {/* <div className="!flex !flex-col gap-4 rounded-md border-border/90 border-[1px]  p-4 h-max "></div> */}
+
+        {/* listing card */}
+        <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4  h-max ">
+          <h1 className="ext-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+            {booking.listing.name}
+          </h1>
+
+          <p className="leading-6 text-[15px]">
+            {booking.listing.address.fullAddress}
+          </p>
+
+          <Image
+            alt={booking.listing.name}
+            src={booking.listing.coverImage}
+            width={250}
+            height={250}
+            className="aspect-video w-full object-cover rounded-md"
+          />
+          <Separator className="border-border/90" />
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-2">
+              <Phone size={16} /> {booking.listing.phoneNo}
+            </p>
+            <p className="text-sm font-medium text-accent-foreground  flex flex-row items-center gap-2">
+              <Mail size={16} /> {booking.listing.email}
+            </p>
+          </div>
+        </div>
+      </div>
+      <BookingFloatingActionBar isOwnerOrManager={false} booking={booking} />
     </section>
   );
 };
 
-export default BookingInfoPage;
+export default UserBookingDetailPage;

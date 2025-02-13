@@ -14,8 +14,8 @@ const UserListingsPage = async ({
   params,
   searchParams,
 }: {
-  params: { userId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Params;
+  searchParams?: SearchParams;
 }) => {
   const user = await currentUser();
   const ownedListings = await getOwnedListings();

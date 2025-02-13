@@ -539,26 +539,18 @@ export async function updateListingBookingStatus(
         //     if booking is being cancelled after 48hrs of createdAt date, send a refund whilst deducting 5% of the total amount as a penalty for late cancellation
         else {
           // set a transfer for cancellation
-          const transfer = await stripe.transfers.create(
-            {
-              amount: Math.round(updateBooking.totalCost * 0.95 * 100),
-              currency: "usd",
-              destination: process.env.EXPLOREINN_STRIPE_ACCOUNT_ID as string,
-            },
-            {
-              stripeAccount: updateBooking.listing.owner.stripeId as string,
-            }
-          );
-          console.log(
-            `Transfer ID: ${transfer.id}\nTransfer Amount: ${transfer.amount}`
-          );
-          // refund the payment
           const refund = await stripe.refunds.create({
             payment_intent: updateBooking.transaction?.paymentId as string,
             amount: Math.round(updateBooking.totalCost * 0.95 * 100),
+            refund_application_fee: true, // This will refund the app's commission
           });
-          console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
 
+          const transfer = await stripe.transfers.create({
+            amount: Math.round(updateBooking.totalCost * 0.05 * 100),
+            currency: "usd",
+            destination: updateBooking.listing.owner.stripeId as string,
+            source_transaction: updateBooking.transaction?.paymentId,
+          });
           console.log(
             `Booking ${updateBooking.id} opted for cancellation. \nRefunding amount with 5% late cancellation fee: `,
             new Intl.NumberFormat("en-US", {
@@ -638,7 +630,7 @@ export async function updateListingBookingStatus(
           // Send the Invoice
           await stripe.invoices.sendInvoice(invoice.id);
           console.log(
-            `Booking ${updateBooking.id} opted for cancellation. \nInvoice created for late cancellation: ${invoice.id}. \nInvoice Amount: ${invoice.amount_due}`
+            `Booking ${updateBooking.id} opted for cancellation. \nInvoice created for late cancellation: ${invoice.id}. \nInvoice Amount: ${updateBooking.totalCost * 0.05}`
           );
 
           await prisma.booking.update({
@@ -663,6 +655,7 @@ export async function updateListingBookingStatus(
               totalCost: updateBooking.totalCost * 0.05,
               bookingType: "BOOK_NOW_PAY_LATER",
               chargedAt: new Date(),
+              receiptURL: invoice.hosted_invoice_url,
             },
           });
           console.log(

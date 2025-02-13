@@ -42,6 +42,8 @@ import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookin
 import { UserBookingsTableFloatingActionBar } from "@/components/user-page/bookings/bookings-table-floating-action-bar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
+import { UserBookings } from "@/app/users/[userId]/bookings/page";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -65,6 +67,7 @@ export function UserBookingsDataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const router = useRouter();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -127,6 +130,12 @@ export function UserBookingsDataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() =>
+                    router.push(
+                      `/users/${(row.original as UserBookings).guestId}/bookings/${(row.original as UserBookings).id}`
+                    )
+                  }
+                  className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

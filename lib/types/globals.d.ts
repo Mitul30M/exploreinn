@@ -24,6 +24,7 @@ declare global {
   }>;
 
   export type Params = Promise<{
+    userId: string;
     listingId: string;
     bookingId: string;
   }>;
