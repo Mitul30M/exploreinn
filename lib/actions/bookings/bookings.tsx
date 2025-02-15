@@ -513,52 +513,23 @@ export async function updateListingBookingStatus(
 
       // if payment is made, ie. ONLINE_BOOKING bookingType, also update respective payment status and booking status in transaction table as well
       if (paymentStatus === "completed") {
-        //     if booking is being cancelled withing 48hrs of createdAt date, refund the full payment, but then also charge the host for the cancellation & refund
+        console.log("Cancellation within 48 hours - Full refund");
+        // refund the payment
+        const refund = await stripe.refunds.create({
+          payment_intent: updateBooking.transaction?.paymentId as string,
+          refund_application_fee: true,
+          reverse_transfer: true,
+        });
+        console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
 
-        if (
-          new Date(updateBooking.createdAt).getTime() + 48 * 60 * 60 * 1000 >=
-          new Date().getTime()
-        ) {
-          console.log("in server action");
-          // refund the payment
-          const refund = await stripe.refunds.create({
-            payment_intent: updateBooking.transaction?.paymentId as string,
-            refund_application_fee: true,
-            reverse_transfer: true,
-          });
-          console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
+        console.log(
+          `Booking ${updateBooking.id} opted for cancellation. \nRefunding full amount: `,
+          new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(updateBooking.totalCost)
+        );
 
-          console.log(
-            `Booking ${updateBooking.id} opted for cancellation. \nRefunding full amount: `,
-            new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(updateBooking.totalCost)
-          );
-        }
-        //     if booking is being cancelled after 48hrs of createdAt date, send a refund whilst deducting 5% of the total amount as a penalty for late cancellation
-        else {
-          // set a transfer for cancellation
-          const refund = await stripe.refunds.create({
-            payment_intent: updateBooking.transaction?.paymentId as string,
-            amount: Math.round(updateBooking.totalCost * 0.95 * 100),
-            refund_application_fee: true, // This will refund the app's commission
-          });
-
-          const transfer = await stripe.transfers.create({
-            amount: Math.round(updateBooking.totalCost * 0.05 * 100),
-            currency: "usd",
-            destination: updateBooking.listing.owner.stripeId as string,
-            source_transaction: updateBooking.transaction?.paymentId,
-          });
-          console.log(
-            `Booking ${updateBooking.id} opted for cancellation. \nRefunding amount with 5% late cancellation fee: `,
-            new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(updateBooking.totalCost)
-          );
-        }
         // update the payment status in the database
         await prisma.booking.update({
           where: { id: updateBooking.id },
@@ -711,4 +682,28 @@ export async function updateListingBookingStatus(
 //     amount: updateBooking.totalCost * 0.05 * 100, // Send penalty amount to host
 //     destination: updateBooking.listing.owner.stripeId as string,
 //   },
+// });
+
+// First transfer 95% of the total amount from owner to app
+// const transferToApp = await stripe.transfers.create({
+//   amount: Math.round(updateBooking.totalCost * 0.95 * 100), // 95% of total amount
+//   currency: "usd",
+//   destination: updateBooking.listing.owner.stripeId as string,
+//   description: "Transfer back to app for refund processing",
+//   transfer_group: `group_${updateBooking.id}`,
+// });
+
+// // Secondly, refund 95% to customer
+// const refund = await stripe.refunds.create({
+//   payment_intent: updateBooking.transaction?.paymentId as string,
+//   amount: Math.round(updateBooking.totalCost * 0.95 * 100), // 95% refund
+//   refund_application_fee: false, // Don't refund app fee since we need it for the late fee
+// });
+
+// // Then transfer 95% of the 5% commission to owner as late fee
+// const transferToOwner = await stripe.transfers.create({
+//   amount: Math.round(updateBooking.totalCost * 0.05 * 0.95 * 100), // 95% of 5% commission
+//   currency: "usd",
+//   destination: updateBooking.listing.owner.stripeId as string,
+//   description: "Late cancellation fee",
 // });

@@ -44,16 +44,7 @@ export async function getListingTransactions(listingId: string) {
 export function getRevenueFromTransaction(transaction: Transaction) {
   if (transaction.paymentMethod === "ONLINE_PAYMENT") {
     if (transaction.paymentStatus === "refunded") {
-      // If refunded within 48 hours of creation, no revenue (full refund)
-      if (
-        new Date(transaction.refundedAt!).getTime() -
-          new Date(transaction.createdAt).getTime() <=
-        48 * 60 * 60 * 1000
-      ) {
-        return 0;
-      }
-      // If refunded after 48 hours, keep 5% as late cancellation fee
-      return transaction.totalCost * 0.05;
+      return 0;
     }
     // Normal online payment, 5% platform fee
     return transaction.totalCost * 0.95;
@@ -61,7 +52,7 @@ export function getRevenueFromTransaction(transaction: Transaction) {
     // For pay later bookings
     if (transaction.paymentStatus === "charged") {
       // For late cancellations, charge 5% fee with 5% platform fee
-      return transaction.totalCost * 0.95;
+      return transaction.totalCost * 0.05 * 0.095;
     } else if (
       transaction.paymentStatus === "cancelled" ||
       transaction.paymentStatus === "pending"

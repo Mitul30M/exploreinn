@@ -79,6 +79,11 @@ export function AppSidebar({
         url: `/listings/${listingID}/transactions`,
         icon: HandCoins,
       },
+      {
+        title: "Rooms",
+        url: `/listings/${listingID}/rooms`,
+        icon: BedDouble,
+      },
     ],
   };
 

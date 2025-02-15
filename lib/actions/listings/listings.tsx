@@ -220,6 +220,7 @@ export async function getListingById(listingId: string) {
           name: true,
           perks: true,
           totalRoomsAllocated: true,
+          isDynamicallyPriced: true,
           maxOccupancy: true,
           currentlyAvailableRooms: true,
           id: true,

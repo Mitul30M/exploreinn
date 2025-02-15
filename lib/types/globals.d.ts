@@ -27,6 +27,7 @@ declare global {
     userId: string;
     listingId: string;
     bookingId: string;
+    roomId: string;
   }>;
 
   export type StripeCheckoutSessionMetaData = {
