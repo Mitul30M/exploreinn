@@ -32,7 +32,7 @@ export default function HomePage() {
           /discover
         </Link>
         <Link
-          href="/listings/67a867b8563575904d678b83/overview"
+          href="/listings/67adfe9a1ba2f00891c216c8/overview"
           className="text-primary hover:text-foreground"
         >
           /listings/:listingId/overview

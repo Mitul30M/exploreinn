@@ -116,6 +116,7 @@ export async function onboardUser(
       });
     }
     revalidatePath("/");
+    redirect("/");
     // Success
 
     return {

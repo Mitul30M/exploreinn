@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { getListingById } from "@/lib/actions/listings/listings";
@@ -45,20 +46,18 @@ const ListingRoomsPage = async ({
         <div className="w-full px-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
           {/* new room dialog card */}
           <section className="w-full rounded-md border-border/90 border-[1px] p-4   h-max flex flex-col gap-4 justify-center items-center">
-            <DoorOpen size={60} className="text-primary" />
+            <Link href={`/listings/${listing.id}/rooms/new`} className="w-full rounded-md border-border/90 border-[1px] p-4   h-max flex flex-col gap-4 justify-center items-center">
+              <DoorOpen size={60} className="text-primary" />
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Add New Room</Button>
-              </DialogTrigger>
-              {/* dialog content (new room form) */}
-              <DialogContent className="sm:max-w-md"></DialogContent>
-            </Dialog>
+              <h1 className="text-md  text-center font-semibold tracking-tight text-primary">
+                Add New Room
+              </h1>
+            </Link>
           </section>
 
           {/* rooms cards */}
           {rooms.map((room) => (
-            <Link href={`/listings/${listing.id}/rooms/${room.id}`}>
+            <Link href={`/listings/${listing.id}/rooms/${room.id}`} key={room.id}>
               <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4  h-max mb-4 ">
                 <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
                   {room.name}
