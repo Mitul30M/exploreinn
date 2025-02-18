@@ -77,20 +77,41 @@ export async function getRoomById(roomId: string) {
   return room;
 }
 
-export async function setRoomImgs(roomId: string, images: string[]) {
+/**
+ * Adds new images to a room.
+ * The function takes the room ID and an array of image URLs as arguments.
+ * It returns a promise that resolves to the updated room object if successful.
+ * If there is an error, it logs the error and returns null.
+ * @param roomId - The id of the room to which the images are to be added.
+ * @param images - The array of image URLs to be added to the room.
+ * @returns A promise that resolves to the updated room object if successful, otherwise null.
+ */
+export async function addRoomImages(roomId: string, images: string[]) {
   const room = await prisma.room.update({
     where: {
       id: roomId,
     },
     data: {
-      images,
+      images: {
+        push: images,
+      },
     },
   });
   revalidatePath(`/listings/${room.listingId}/rooms`);
   revalidatePath(`/listings/${room.listingId}`);
   revalidatePath(`/listings/${room.listingId}/rooms/${roomId}`);
-  return !!room;
+  return room;
 }
+
+/**
+ * Deletes an image from a room.
+ * The function takes the room ID and the image URL to be removed from the room's images.
+ * It returns a promise that resolves to a boolean indicating whether the image was successfully deleted.
+ * If there is an error, it logs the error and returns false.
+ * @param roomId - The ID of the room from which the image is to be deleted.
+ * @param imageUrl - The URL of the image to be deleted from the room.
+ * @returns A promise that resolves to true if the image was successfully deleted, otherwise false.
+ */
 
 export async function deleteRoomImg(roomId: string, imageUrl: string) {
   const room = await prisma.room.update({
@@ -111,6 +132,31 @@ export async function deleteRoomImg(roomId: string, imageUrl: string) {
   return !!room;
 }
 
+/**
+ * Updates the cover image of a room.
+ * The function takes the room ID and a new cover image URL and updates the room's
+ * cover image in the database. It returns a promise that resolves to a boolean
+ * indicating whether the cover image was successfully updated.
+ * After updating, it revalidates the paths to ensure the changes are reflected.
+ * If the update is successful, the function returns true, otherwise false.
+ *
+ * @param roomId - The ID of the room whose cover image is to be updated.
+ * @param coverImage - The new URL for the cover image of the room.
+ * @returns A promise that resolves to true if the cover image was successfully updated, otherwise false.
+ */
+
+/**
+ * Updates the cover image of a room.
+ * The function takes the room ID and a new cover image URL and updates the room's
+ * cover image in the database. It returns a promise that resolves to a boolean
+ * indicating whether the cover image was successfully updated.
+ * After updating, it revalidates the paths to ensure the changes are reflected.
+ * If the update is successful, the function returns true, otherwise false.
+ *
+ * @param roomId - The ID of the room whose cover image is to be updated.
+ * @param coverImage - The new URL for the cover image of the room.
+ * @returns A promise that resolves to true if the cover image was successfully updated, otherwise false.
+ */
 export async function updateRoomCoverImage(
   roomId: string,
   coverImage: string
@@ -121,6 +167,42 @@ export async function updateRoomCoverImage(
     },
     data: {
       coverImage,
+    },
+  });
+  revalidatePath(`/listings/${room.listingId}/rooms`);
+  revalidatePath(`/listings/${room.listingId}`);
+  revalidatePath(`/listings/${room.listingId}/rooms/${roomId}`);
+  return !!room;
+}
+
+export async function updateIsAcceptingBooking(
+  roomId: string,
+  isAcceptingBookings: boolean
+) {
+  const room = await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      isAvailable: isAcceptingBookings,
+    },
+  });
+  revalidatePath(`/listings/${room.listingId}/rooms`);
+  revalidatePath(`/listings/${room.listingId}`);
+  revalidatePath(`/listings/${room.listingId}/rooms/${roomId}`);
+  return !!room;
+}
+
+export async function updateIsDynamicallyPriced(
+  roomId: string,
+  isDynamicallyPriced: boolean
+) {
+  const room = await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      isDynamicallyPriced,
     },
   });
   revalidatePath(`/listings/${room.listingId}/rooms`);

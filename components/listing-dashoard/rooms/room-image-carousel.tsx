@@ -27,7 +27,7 @@ export default function RoomImageCarousel({
   coverImg
 }: RoomImageCarouselProps) {
   return (
-    <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-full !h-max mb-4 break-inside-avoid">
+    <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-full !h-max break-inside-avoid">
       <div className="space-y-2">
         <h1 className="text-md flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
           {roomName} Images

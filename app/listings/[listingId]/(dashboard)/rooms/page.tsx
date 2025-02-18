@@ -46,7 +46,10 @@ const ListingRoomsPage = async ({
         <div className="w-full px-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
           {/* new room dialog card */}
           <section className="w-full rounded-md border-border/90 border-[1px] p-4   h-max flex flex-col gap-4 justify-center items-center">
-            <Link href={`/listings/${listing.id}/rooms/new`} className="w-full rounded-md border-border/90 border-[1px] p-4   h-max flex flex-col gap-4 justify-center items-center">
+            <Link
+              href={`/listings/${listing.id}/rooms/new`}
+              className="w-full rounded-md border-border/90 border-[1px] p-4   h-max flex flex-col gap-4 justify-center items-center"
+            >
               <DoorOpen size={60} className="text-primary" />
 
               <h1 className="text-md  text-center font-semibold tracking-tight text-primary">
@@ -57,7 +60,10 @@ const ListingRoomsPage = async ({
 
           {/* rooms cards */}
           {rooms.map((room) => (
-            <Link href={`/listings/${listing.id}/rooms/${room.id}`} key={room.id}>
+            <Link
+              href={`/listings/${listing.id}/rooms/${room.id}`}
+              key={room.id}
+            >
               <section className="rounded-md border-border/90 border-[1px] p-4 space-y-4  h-max mb-4 ">
                 <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
                   {room.name}
@@ -74,20 +80,34 @@ const ListingRoomsPage = async ({
                 />
                 <Separator className="border-border/90" />
 
-                <div className="text-sm  font-medium text-accent-foreground flex  !w-full items-center gap-3">
-                  <span className="w-5 h-3  rounded-full bg-primary animate-pulse "></span>
-                  <div>
-                    Accepting Bookings at{" "}
-                    <span className="font-semibold text-primary">
-                      {new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(room.price)}
-                    </span>{" "}
-                    per room per night
+                {room.isAvailable ? (
+                  <div className="text-sm  font-medium text-accent-foreground flex  !w-full items-center gap-3">
+                    <span className="w-5 h-3  rounded-full bg-primary animate-pulse "></span>
+                    <div>
+                      Accepting Bookings at{" "}
+                      <span className="font-semibold text-primary">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(room.price)}
+                      </span>{" "}
+                      per room per night
+                    </div>
                   </div>
-                </div>
-
+                ) : (
+                  <div className="text-sm  font-medium text-muted-foreground flex  !w-full items-center gap-3">
+                    <div>
+                      Not Accepting Bookings at{" "}
+                      <span className="font-semibold text-primary">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(room.price)}
+                      </span>{" "}
+                      per room per night
+                    </div>
+                  </div>
+                )}
                 <Separator className="border-border/90" />
 
                 <div className="flex items-center space-x-3">

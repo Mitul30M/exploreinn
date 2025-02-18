@@ -427,6 +427,45 @@ export async function getAllBookingsStatusOverview(listingId: string) {
 }
 
 /**
+ * Retrieves an overview of all bookings for a given room, grouped by booking status.
+ * The function returns a promise that resolves to an object with the following keys:
+ * - upcoming: The number of bookings that are upcoming.
+ * - ongoing: The number of bookings that are ongoing.
+ * @param roomId - The id of the room whose bookings are to be retrieved.
+ * @returns A promise that resolves to an object with the booking status overview.
+ */
+export async function getRoomsBookingStatusOverview(roomId: string) {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      rooms: {
+        some: {
+          roomId: roomId,
+        },
+      },
+    },
+    select: {
+      bookingStatus: true,
+    },
+  });
+
+  const statusOverview = {
+    upcoming: 0,
+    ongoing: 0,
+  };
+
+  bookings.forEach((booking) => {
+    if (
+      booking.bookingStatus === "upcoming" ||
+      booking.bookingStatus === "ongoing"
+    ) {
+      statusOverview[booking.bookingStatus] += 1;
+    }
+  });
+
+  return statusOverview;
+}
+
+/**
  * Updates the booking status of a booking belonging to a given listing.
  * The function returns a promise that resolves to the updated booking object with the booking's transaction and guest details.
  * @param bookingId - The id of the booking whose status is to be updated.
