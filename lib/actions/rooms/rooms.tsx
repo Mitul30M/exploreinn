@@ -2,7 +2,7 @@
 
 import { RoomType } from "@/app/listings/[listingId]/(dashboard)/rooms/new/page";
 import prisma from "@/lib/prisma-client";
-import { Room } from "@prisma/client";
+import { PriceChange, Room } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -41,6 +41,13 @@ export async function createListingRoom(
         listingId,
         area: data.area,
         basePrice: data.basePrice,
+        extras: data.extras,
+        dynamicPrice: [
+          {
+            date: new Date(),
+            price: data.basePrice,
+          },
+        ],
         beds: data.beds,
         coverImage: data.images[0],
         currentlyAvailableRooms: data.totalRoomsAllocated,
@@ -66,6 +73,183 @@ export async function createListingRoom(
     console.error("Error creating room:", error);
     return null;
   }
+}
+
+/**
+ * Dynamically set the price of a room based on occupancy rate, season, day of the week,
+ * and events like price changes and high demand. If the room is dynamically priced,
+ * the price will be updated based on the current date and time. If the room is not
+ * dynamically priced, the price will not be changed.
+ * @param {string} roomId The ID of the room to update.
+ * @returns {Promise<boolean>} True if the room is dynamically priced and the price was updated,
+ * false otherwise.
+ */
+export async function dynamicallySetRoomPrice(roomId: string) {
+  const room = await prisma.room.findUnique({
+    where: {
+      id: roomId,
+    },
+  });
+  if (!room) {
+    console.error("Room not found");
+    return !!room;
+  }
+
+  let finalPrice: number = room.basePrice;
+  const totalRooms = room.totalRoomsAllocated;
+  const bookedRooms = room.totalRoomsAllocated - room.currentlyAvailableRooms;
+  const occupancyRate = (bookedRooms / totalRooms) * 100;
+
+  const priceChangeEvent = await prisma.roomEvent.findFirst({
+    where: {
+      type: "PriceChange",
+      roomIds: {
+        hasSome: [roomId],
+      },
+      AND: {
+        startDate: {
+          lte: new Date(),
+        },
+        endDate: {
+          gte: new Date(),
+        },
+      },
+    },
+  });
+
+  const highDemandEvent = await prisma.roomEvent.findFirst({
+    where: {
+      type: "HighDemand",
+      roomIds: {
+        hasSome: [roomId],
+      },
+      AND: {
+        startDate: {
+          lte: new Date(),
+        },
+        endDate: {
+          gte: new Date(),
+        },
+      },
+    },
+  });
+
+  const roomPriceChangeEvent =
+    priceChangeEvent?.priceChange?.find((change) => change.roomId === roomId) ??
+    undefined;
+
+  const roomHighDemandEvent =
+    highDemandEvent?.highDemand?.find((change) => change.roomId === roomId) ??
+    undefined;
+
+  if (room.isDynamicallyPriced) {
+    // set base price to the new price in the price change event
+    finalPrice = roomPriceChangeEvent
+      ? roomPriceChangeEvent.newPrice
+      : finalPrice;
+
+    // add the percentage increase to the new price in the high demand event
+    finalPrice = roomHighDemandEvent
+      ? finalPrice * (1 + roomHighDemandEvent.priceIncrementPercentage)
+      : finalPrice;
+
+    // Adjust price based on occupancy rate
+    if (occupancyRate > 80) {
+      finalPrice += finalPrice * 0.2; // Increase by 20% if occupancy > 80%
+    } else if (occupancyRate > 50) {
+      finalPrice += finalPrice * 0.1; // Increase by 10% if occupancy > 50%
+    }
+
+    // Adjust price based on season (according to the summer in US)
+    const currentMonth = new Date().getMonth();
+    if (currentMonth >= 6 && currentMonth <= 8) {
+      finalPrice += finalPrice * 0.1; // Increase by 10% during summer months
+    }
+
+    // Adjust price based on day of the week
+    const currentDay = new Date().getDay();
+    if (currentDay === 5 || currentDay === 6 || currentDay === 0) {
+      finalPrice += finalPrice * 0.05; // Increase by 5% on Fri, Sat, Sun
+    } else if (currentDay === 1 || currentDay === 2 || currentDay === 3) {
+      finalPrice -= finalPrice * 0.05; // Decrease by 5% on Mon, Tue, Wed
+    }
+
+    // now set the finalPrice
+    const updatedPriceRoom = await prisma.$transaction(async (tx) => {
+      const updatedRoom = await tx.room.update({
+        where: {
+          id: roomId,
+        },
+        data: {
+          price: finalPrice,
+        },
+      });
+
+      // Get today's date without time
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Check if dynamicPrice array exists and has elements
+      if (updatedRoom.dynamicPrice.length > 0) {
+        const firstDynamicPrice = updatedRoom.dynamicPrice[0];
+
+        // Convert the date from the dynamic price to comparable format
+        const dynamicPriceDate = new Date(firstDynamicPrice.date);
+        dynamicPriceDate.setHours(0, 0, 0, 0);
+
+        // If dates match, update the price
+        if (dynamicPriceDate.toDateString() === today.toDateString()) {
+          return await tx.room.update({
+            where: {
+              id: roomId,
+            },
+            data: {
+              dynamicPrice: {
+                set: [
+                  { date: firstDynamicPrice.date, price: finalPrice },
+                  ...updatedRoom.dynamicPrice.slice(1),
+                ],
+              },
+              price: finalPrice,
+            },
+          });
+        } else {
+          return await tx.room.update({
+            where: {
+              id: roomId,
+            },
+            data: {
+              dynamicPrice: {
+                set: [
+                  { date: today, price: finalPrice },
+                  ...updatedRoom.dynamicPrice,
+                ],
+              },
+              price: finalPrice,
+            },
+          });
+        }
+      } else {
+        return await tx.room.update({
+          where: {
+            id: roomId,
+          },
+          data: {
+            dynamicPrice: {
+              set: [{ date: today, price: finalPrice }],
+            },
+            price: finalPrice,
+          },
+        });
+      }
+
+      return updatedRoom;
+    });
+  }
+
+  console.log(`Updated Booking Fee for ${room.name}: $${finalPrice}`);
+  revalidatePath(`/listings/${room.listingId}`, "layout");
+  return room.isDynamicallyPriced;
 }
 
 export async function getRoomById(roomId: string) {
@@ -112,7 +296,6 @@ export async function addRoomImages(roomId: string, images: string[]) {
  * @param imageUrl - The URL of the image to be deleted from the room.
  * @returns A promise that resolves to true if the image was successfully deleted, otherwise false.
  */
-
 export async function deleteRoomImg(roomId: string, imageUrl: string) {
   const room = await prisma.room.update({
     where: {
@@ -131,19 +314,6 @@ export async function deleteRoomImg(roomId: string, imageUrl: string) {
   revalidatePath(`/listings/${room.listingId}/rooms/${roomId}`);
   return !!room;
 }
-
-/**
- * Updates the cover image of a room.
- * The function takes the room ID and a new cover image URL and updates the room's
- * cover image in the database. It returns a promise that resolves to a boolean
- * indicating whether the cover image was successfully updated.
- * After updating, it revalidates the paths to ensure the changes are reflected.
- * If the update is successful, the function returns true, otherwise false.
- *
- * @param roomId - The ID of the room whose cover image is to be updated.
- * @param coverImage - The new URL for the cover image of the room.
- * @returns A promise that resolves to true if the cover image was successfully updated, otherwise false.
- */
 
 /**
  * Updates the cover image of a room.

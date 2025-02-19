@@ -18,7 +18,20 @@ import {
   BookingStatusConfig,
 } from "@/lib/utils/types/status/booking-status";
 import { format } from "date-fns";
-import { BedDouble, ChevronLeft, DoorClosed, DoorOpen } from "lucide-react";
+import {
+  AirVent,
+  BedDouble,
+  Building2,
+  CheckSquare,
+  ChevronLeft,
+  ConciergeBell,
+  DoorClosed,
+  DoorOpen,
+  Square,
+  SquareDashed,
+  Users,
+  Waves,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -135,6 +148,97 @@ const RoomInfoPage = async ({
           coverImg={room.coverImage}
           roomId={roomId}
         />
+
+        <div className="rounded-md border-border/90 border-[1px] p-4 space-y-4 w-full !h-max ">
+          <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight text-primary">
+            <ConciergeBell size={20} className="text-primary" /> {room.name}{" "}
+            Details
+          </h1>
+          <Separator className="border-border/90" />
+          <div className="space-y-3">
+            {/* Name */}
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <DoorOpen size={20} className="text-primary" />
+                Name
+              </p>
+              <p className=" text-sm font-semibold">{room.name}</p>
+            </div>
+
+            {/* Max Occupancy */}
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <Users size={20} className="text-primary" />
+                Max Occupancy
+              </p>
+              <p className=" text-sm font-semibold">{room.maxOccupancy}</p>
+            </div>
+
+            {/* area & beds*/}
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <SquareDashed size={20} className="text-primary" />
+                Room Area
+              </p>
+              <p className=" text-sm font-semibold">{room.area}sq.ft</p>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <BedDouble size={20} className="text-primary" />
+                Beds
+              </p>
+              <p className=" text-sm font-semibold">
+                {room.beds.count}x {room.beds.type}
+              </p>
+            </div>
+
+            {/* isAirConditioned */}
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <AirVent size={20} className="text-primary" />
+                Is Room Air Conditioned?
+              </p>
+              <p className=" text-sm font-semibold">
+                {room.isAirConditioned ? (
+                  <CheckSquare size={20} />
+                ) : (
+                  <Square size={20} />
+                )}
+              </p>
+            </div>
+
+            {/* hasCityView */}
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <Building2 size={20} className="text-primary" />
+                Room has City View?
+              </p>
+              <p className=" text-sm font-semibold">
+                {room.hasCityView ? (
+                  <CheckSquare size={20} />
+                ) : (
+                  <Square size={20} />
+                )}
+              </p>
+            </div>
+
+            {/* hasSeaView */}
+            <div className="flex justify-between items-center">
+              <p className="text-sm flex justify-start rounded-none items-center gap-2 w-max">
+                <Waves size={20} className="text-primary" />
+                Room has Sea/Beach View?
+              </p>
+              <p className=" text-sm font-semibold">
+                {room.hasSeaView ? (
+                  <CheckSquare size={20} />
+                ) : (
+                  <Square size={20} />
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

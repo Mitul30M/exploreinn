@@ -43,6 +43,7 @@ model User {
   reviews                  Review[]
   Booking                  Booking[]
   Transaction              Transaction[]
+  RoomEvent                RoomEvent[]
 }
 
 enum Gender {
@@ -92,6 +93,9 @@ model Listing {
   managers                    User[]             @relation("ManagedListings", fields: [managerIds], references: [id])
   managerIds                  String[]           @default([]) @db.ObjectId
   rooms                       Room[]
+  Booking                     Booking[]
+  Transaction                 Transaction[]
+  RoomEvent                   RoomEvent[]
   // Amenities
   amenities                   String[]
   // Reviews & Ratings
@@ -102,8 +106,6 @@ model Listing {
   // socials
   socialMediaLinks            SocialMediaLinks[]
   tags                        String[]
-  Booking                     Booking[]
-  Transaction                 Transaction[]
 }
 
 // Transaction
@@ -282,6 +284,8 @@ model Room {
   perks                   String[]
   extras                  RoomExtra[]
   images                  String[]
+  roomEventIds            String[]    @default([]) @db.ObjectId
+  roomEvents              RoomEvent[] @relation("RoomEvents", fields: [roomEventIds], references: [id])
   coverImage              String
   createdAt               DateTime    @default(now())
   updatedAt               DateTime    @updatedAt
@@ -298,4 +302,41 @@ type RoomBed {
 type RoomExtra {
   name String
   cost Float
+}
+
+// Room Event
+model RoomEvent {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  type      RoomEventType
+  listing   Listing       @relation(fields: [listingId], references: [id])
+  listingId String        @db.ObjectId
+
+  startDate   DateTime
+  endDate     DateTime
+  author      User          @relation(fields: [authorId], references: [id])
+  authorId    String        @db.ObjectId
+  priceChange PriceChange[]
+  highDemand  HighDemand[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  rooms       Room[]        @relation("RoomEvents", fields: [roomIds], references: [id])
+  roomIds     String[]      @default([]) @db.ObjectId
+}
+
+enum RoomEventType {
+  HighDemand
+  PriceChange
+  BookingClosed
+}
+
+type PriceChange {
+  newPrice Float
+  roomId   String
+  roomName String
+}
+
+type HighDemand {
+  priceIncrementPercentage Float
+  roomId                   String
+  roomName                 String
 }
