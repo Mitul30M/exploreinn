@@ -1,28 +1,12 @@
 "use client";
-import {
-  getCookie,
-  getCookies,
-  setCookie,
-  deleteCookie,
-  hasCookie,
-} from "cookies-next/client";
+
 import { Button } from "@/components/ui/button";
-import {
-  CircleArrowLeft,
-  CircleArrowRight,
-  DoorOpen,
-  SaveIcon,
-} from "lucide-react";
+import { CircleArrowLeft, CircleArrowRight, DoorOpen } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import React, { useEffect, useRef } from "react";
-import {
-  useAppDispatch,
-  useAppSelector,
-  useAppStore,
-} from "@/hooks/redux-hooks";
+import React from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
-  loadRegisterListingSlice,
   nextStep,
   prevStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
@@ -45,9 +29,6 @@ import ConfirmNewRegistration from "@/components/listing-page/register-listing-p
 const RegisterNewListingPage = () => {
   const progress = useAppSelector(
     (state: RootState) => state.registerListing.progress
-  );
-  const registerListingStore = useAppSelector(
-    (state: RootState) => state.registerListing
   );
   const dispatch: AppDispatch = useAppDispatch();
   const router = useRouter();

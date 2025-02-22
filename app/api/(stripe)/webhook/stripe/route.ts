@@ -1,12 +1,9 @@
 import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma-client";
 import { revalidatePath } from "next/cache";
-import BookingConfirmationMail from "@/components/emails/booking-confirmation";
 import { resend } from "@/lib/resend";
-import { Booking, Listing } from "@prisma/client";
 import OnlinePaymentBookingComplete from "@/components/emails/online-payment-booking-complete";
 import Invoice from "@/components/emails/invoice";
 
@@ -99,7 +96,12 @@ export async function POST(req: Request) {
           guests: parseInt(checkoutSession.metadata.guests),
           nights: parseInt(checkoutSession.metadata.nights),
           rooms: JSON.parse(checkoutSession.metadata.rooms).map(
-            (room: any) => ({
+            (room: {
+              name: string;
+              rate: number;
+              noOfRooms: number;
+              roomID: string;
+            }) => ({
               roomId: room.roomID,
               name: room.name,
               rate: room.rate,

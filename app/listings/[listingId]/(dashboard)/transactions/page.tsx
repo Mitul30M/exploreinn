@@ -1,27 +1,18 @@
-import { DoorOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { getListingById } from "@/lib/actions/listings/listings";
 import {
   getListingTransactions,
-  getMonthlyRevenue,
   getMonthlyRevenueComparison,
   getPaymentStatusOverview,
   getRevenueByTimePeriod,
 } from "@/lib/actions/transactions/transactions";
 import { HandCoins } from "lucide-react";
 import { notFound } from "next/navigation";
-import {
-  Card,
-  CardDescription,
-  CardTitle,
-  CardHeader,
-} from "@/components/ui/card";
-import { format } from "date-fns";
+
 import ListingTodayRevenue from "@/components/listing-dashoard/transactions/today-revenue";
 import ListingWeeklyRevenue from "@/components/listing-dashoard/transactions/weekly-revenue";
 import ListingMonthlyRevenue from "@/components/listing-dashoard/transactions/monthl-revenue";
 import ListingYearlyRevenue from "@/components/listing-dashoard/transactions/yearly-revenue";
-import { ListingMonthWiseRevenueGraph } from "@/components/listing-dashoard/overview/revenue-graph";
 import { ListingYearlyRevenueCompare } from "@/components/listing-dashoard/transactions/year-revenue-compare-graph";
 import { PaymentStatusConfig } from "@/lib/utils/types/status/payement-status";
 import { paymentStatus } from "@/lib/utils/types/status/payement-status";
@@ -34,7 +25,6 @@ import {
 
 const ListingTransactionsPage = async ({
   params,
-  searchParams,
 }: {
   params: Promise<{ listingId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -60,7 +50,7 @@ const ListingTransactionsPage = async ({
         <div className="text-md  flex justify-between rounded-none items-center gap-2  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <h1 className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
             <HandCoins size={22} className="text-primary" />
-            {listing.name}'s Transactions
+            {listing.name}&apos;s Transactions
           </h1>
 
           <p className="font-medium tracking-tight text-sm">

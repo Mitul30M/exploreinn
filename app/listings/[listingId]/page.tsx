@@ -19,12 +19,9 @@ import { hotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 // import { Listing, seedListing } from "@/lib/utils/seed/listing/listings";
 import { Review, Room } from "@prisma/client";
 import {
-  Bus,
   BusFront,
-  Check,
   ChevronLeft,
   DoorOpen,
-  Earth,
   HandPlatter,
   Heart,
   Hotel,
@@ -32,7 +29,6 @@ import {
   List,
   MessageCircleHeart,
   Plane,
-  PlaneTakeoff,
   Pyramid,
   Share,
   Sparkles,

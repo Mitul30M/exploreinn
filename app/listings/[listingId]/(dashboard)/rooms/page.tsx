@@ -1,30 +1,14 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { getListingById } from "@/lib/actions/listings/listings";
-import { getListingRooms } from "@/lib/actions/rooms/rooms";
-import { BedDouble, Copy, DoorOpen } from "lucide-react";
+import { BedDouble, DoorOpen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 const ListingRoomsPage = async ({
   params,
-  searchParams,
 }: {
   params: Params;
   searchParams?: SearchParams;
@@ -41,7 +25,7 @@ const ListingRoomsPage = async ({
       <div id="hotel-owner" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <BedDouble size={22} className="text-primary" />
-          {listing.name}'s Rooms
+          {listing.name}&apos;s Rooms
         </h1>
         <div className="w-full px-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
           {/* new room dialog card */}

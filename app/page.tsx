@@ -1,4 +1,3 @@
-import { AppSidebar } from "@/components/sidebars/user-page-sidebar/user-dashboard-app-sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 import Link from "next/link";
 import { UserButton,SignedIn } from "@clerk/nextjs";
@@ -9,7 +8,7 @@ export default function HomePage() {
       <Navbar />
 
       <h1 className="text-center mt-4">
-        Home Page 'https://exploreinn.mitul30m.in/'
+        Home Page &apos;https://exploreinn.mitul30m.in/&apos;
       </h1>
 
       <div className="p-4 text-center flex flex-col items-center justify-center gap-4">

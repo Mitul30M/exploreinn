@@ -84,6 +84,11 @@ export function AppSidebar({
         url: `/listings/${listingID}/rooms`,
         icon: BedDouble,
       },
+      {
+        title: "Events",
+        url: `/listings/${listingID}/events`,
+        icon: CalendarRange,
+      },
     ],
   };
 

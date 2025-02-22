@@ -1,7 +1,7 @@
 import BookingInfoCard from "@/components/listing-page/confirm-booking/booking-info-card";
 import PaymentConfirmationCard from "@/components/listing-page/confirm-booking/payment-confirmation-card";
 import { getListingById } from "@/lib/actions/listings/listings";
-import { CalendarCheck, ChevronLeft, ListCheck } from "lucide-react";
+import { CalendarCheck, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";

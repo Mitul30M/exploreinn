@@ -1,31 +1,14 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { UserListingsDataTable } from "@/components/user-page/listings/listings-data-table";
-import {
-  getListingById,
-  isListingOwner,
-  isListingManager,
-} from "@/lib/actions/listings/listings";
-import { getUser } from "@/lib/actions/user/user";
-import { currentUser } from "@clerk/nextjs/server";
 import { format } from "date-fns";
-import { Suspense } from "react";
 import {
-  BadgeDollarSign,
   BedDouble,
-  Calendar,
-  CalendarClock,
-  ChartLine,
-  CreditCard,
   DoorOpen,
-  HandCoins,
-  Hotel,
   Mail,
   Phone,
-  Star,
   Users,
-  Wallet,
+  CalendarClock,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import {
@@ -36,7 +19,6 @@ import {
   getMonthlyListingBookingsComparison,
 } from "@/lib/actions/bookings/bookings";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { late } from "zod";
 import {
   PaymentStatusConfig,
   paymentStatus,
@@ -53,10 +35,10 @@ import {
   dashboardBookingsTableColumns,
   TDashboardBookingsColumns,
 } from "@/components/listing-dashoard/bookings/bookings-dashboard-table-colums";
+import { getListingById } from "@/lib/actions/listings/listings";
 
 const ListingBookingsPage = async ({
   params,
-  searchParams,
 }: {
   params: Promise<{ listingId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -88,7 +70,7 @@ const ListingBookingsPage = async ({
         <div className="text-md  flex justify-between rounded-none items-center gap-2  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <h1 className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
             <DoorOpen size={22} className="text-primary" />
-            {listing.name}'s' Bookings
+            {listing.name}&apos;s Bookings
           </h1>
 
           <p className="font-medium tracking-tight text-sm">

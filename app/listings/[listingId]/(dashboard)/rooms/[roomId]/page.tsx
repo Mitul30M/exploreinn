@@ -38,7 +38,6 @@ import { notFound } from "next/navigation";
 
 const RoomInfoPage = async ({
   params,
-  searchParams,
 }: {
   params: Params;
   searchParams?: SearchParams;

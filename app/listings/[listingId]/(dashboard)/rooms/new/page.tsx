@@ -20,11 +20,9 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { toast } from "@/hooks/use-toast";
 import { createListingRoom } from "@/lib/actions/rooms/rooms";
 import { getSignedURL } from "@/lib/actions/s3-buckets/s3-bucket";
-import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import { computeSHA256 } from "@/lib/utils/seed/sha256";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ToastAction } from "@radix-ui/react-toast";
@@ -99,10 +97,10 @@ const dropzone = {
   maxSize: 4 * 1024 * 1024,
 } satisfies DropzoneOptions;
 
-export default function Page({ params }: { params: Params }) {
+export default function Page() {
   const listingId = useParams<{ listingId: string }>().listingId;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number[]>([]);
+  const [progress] = useState<number[]>([]);
   const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -133,8 +131,8 @@ export default function Page({ params }: { params: Params }) {
     setIsLoading(true);
     try {
       let successCount = 0;
-      const promise = await Promise.all(
-        files.map(async (file, index) => {
+      await Promise.all(
+        files.map(async (file) => {
           const signedURLResult = await getSignedURL({
             prefix: "room",
             fileSize: file.size,
@@ -230,6 +228,7 @@ export default function Page({ params }: { params: Params }) {
         });
       }
     } catch (error) {
+      console.log(error);
       toast({
         title: `*Error while Enlisting New Room!`,
         description:
@@ -262,8 +261,8 @@ export default function Page({ params }: { params: Params }) {
             Add New Room to your Listing
           </h1>
           <p className="text-muted-foreground text-sm">
-            Set details about your listing's room. You can edit, add, or remove
-            rooms later as well.
+            Set details about your listing`&apos;s room. You can edit, add, or
+            remove rooms later as well.
           </p>
         </div>
 
@@ -415,7 +414,7 @@ export default function Page({ params }: { params: Params }) {
                       htmlFor="room-area"
                       className="text-[14px] text-accent-foreground"
                     >
-                      Room's Area (sq.ft.)
+                      Room`&apos;s Area (sq.ft.)
                     </FormLabel>
                     <FormControl>
                       <Input

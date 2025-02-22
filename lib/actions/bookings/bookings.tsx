@@ -526,6 +526,19 @@ export async function updateListingBookingStatus(
           bookingStatus: "ongoing",
         },
       });
+      for (const room of onGoingBooking.rooms) {
+        await prisma.room.update({
+          where: {
+            id: room.roomId,
+          },
+          data: {
+            currentlyAvailableRooms: {
+              decrement: room.noOfRooms,
+            },
+          },
+        });
+      }
+
       // Send a notification & email to the guest
       // Send a notification & email to the host
       break;
@@ -541,6 +554,19 @@ export async function updateListingBookingStatus(
           bookingStatus: "completed",
         },
       });
+
+      for (const room of completedBooking.rooms) {
+        await prisma.room.update({
+          where: {
+            id: room.roomId,
+          },
+          data: {
+            currentlyAvailableRooms: {
+              increment: room.noOfRooms,
+            },
+          },
+        });
+      }
       // Send a notification & email to the guest
       // Send a notification & email to the host
       break;

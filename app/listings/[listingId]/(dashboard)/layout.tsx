@@ -1,5 +1,4 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 import { AppSidebar } from "@/components/sidebars/user-listing-dashboard-sidebar/listing-dashboard-app-sidebar";
 import {
   getListingById,

@@ -77,13 +77,15 @@ export async function UserProfileDropdown() {
               {user?.gender === "Male"
                 ? "(M)"
                 : user?.gender === "Female"
-                ? "(F)"
-                : null}
+                  ? "(F)"
+                  : null}
               {/* <p className="text-xs my-1 text-foreground/70 font-medium flex flex-row items-center gap-[6px]">
                 {user?.email}
               </p> */}
               <p className="text-xs h-max w-full text-foreground/70 font-medium flex flex-row items-center gap-[6px] line-clamp-1">
-                {user?.email && user.email.length > 24 ? `${user.email.slice(0, 24)}...` : user?.email}
+                {user?.email && user.email.length > 24
+                  ? `${user.email.slice(0, 24)}...`
+                  : user?.email}
               </p>{" "}
             </div>
           </DropdownMenuItem>
@@ -111,10 +113,12 @@ export async function UserProfileDropdown() {
               Bookings
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem className="hover:cursor-pointer">
-            <Inbox />
-            Inbox
-          </DropdownMenuItem>
+          <Link href={`/users/${user?.id}/inbox`}>
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <Inbox />
+              Inbox
+            </DropdownMenuItem>
+          </Link>
           <Link href={`/users/${user?.id}/rewards`}>
             <DropdownMenuItem className="hover:cursor-pointer">
               <Gift />
@@ -127,10 +131,12 @@ export async function UserProfileDropdown() {
 
         {/* dropdown group2 */}
         <DropdownMenuGroup>
-          <DropdownMenuItem className="hover:cursor-pointer">
-            <Hotel />
-            Listings
-          </DropdownMenuItem>
+          <Link href={`/users/${user?.id}/listings`}>
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <Hotel />
+              Listings
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem className="hover:cursor-pointer">
             <Cog />
             Preferences

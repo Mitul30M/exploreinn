@@ -1,7 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { UserListingsDataTable } from "@/components/user-page/listings/listings-data-table";
 import {
   getListingById,
   isListingOwner,
@@ -10,16 +9,13 @@ import {
 import { getUser } from "@/lib/actions/user/user";
 import { currentUser } from "@clerk/nextjs/server";
 import { format } from "date-fns";
-import { Suspense } from "react";
 import {
   BadgeDollarSign,
   BedDouble,
-  Calendar,
   CalendarClock,
   ChartLine,
   CreditCard,
   DoorOpen,
-  HandCoins,
   Hotel,
   Mail,
   Phone,
@@ -40,7 +36,6 @@ import {
   getListingLatestBooking,
 } from "@/lib/actions/bookings/bookings";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { late } from "zod";
 import {
   PaymentStatusConfig,
   paymentStatus,
@@ -53,8 +48,7 @@ import Link from "next/link";
 import { ListingWeekWiseBookingsGraph } from "@/components/listing-dashoard/overview/bookings-graph";
 
 const ListingOverviewPage = async ({
-  params,
-  searchParams,
+  params
 }: {
   params: Promise<{ listingId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;

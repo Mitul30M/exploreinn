@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 async function ServerPage() {
-  const { userId, sessionClaims, ...authInfo } = await auth();
+  const { sessionClaims, ...authInfo } = await auth();
   const user = await currentUser();
 
   // console.log(authInfo, "\n", userId, "\n\n");

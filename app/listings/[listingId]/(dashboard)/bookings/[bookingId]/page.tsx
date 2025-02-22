@@ -15,8 +15,6 @@ import {
 import { format } from "date-fns";
 import {
   BadgeDollarSign,
-  BedDouble,
-  CalendarCheck,
   CalendarClock,
   ChevronLeft,
   CreditCard,
@@ -44,7 +42,7 @@ const BookingInfoPage = async ({ params }: { params: Params }) => {
           className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight hover:text-primary hover:underline hover:underline-offset-2"
         >
           <ChevronLeft className="text-primary" size={22} />
-          {booking.guest.firstName}'s Booking Details
+          {booking.guest.firstName}&apos;s Booking Details
         </Link>
       </div>
 

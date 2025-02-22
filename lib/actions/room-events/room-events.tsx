@@ -72,7 +72,7 @@ export async function createBookingClosedEvent(args: {
   const { roomIds, startDate, endDate, listingId, authorId } = args;
   const bookingClosedEvent = await prisma.roomEvent.create({
     data: {
-      type: "HighDemand",
+      type: "BookingClosed",
       roomIds: roomIds,
       startDate,
       endDate,
