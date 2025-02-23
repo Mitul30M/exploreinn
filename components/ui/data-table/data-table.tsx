@@ -24,27 +24,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  CircleArrowLeft,
-  CircleArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Hotel,
-  Columns3,
-} from "lucide-react";
+
+
+
+
 import { ScrollBar, ScrollArea } from "../scroll-area";
-import { DataTablePagination } from "./data-table-pagination";
-import { Input } from "../input";
-import { Button } from "../button";
-import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
-import { UserBookingsTableFloatingActionBar } from "@/components/user-page/bookings/bookings-table-floating-action-bar";
-import { ListingsDataTableToolbar } from "@/components/user-page/listings/listings-data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

@@ -1,24 +1,17 @@
 "use client";
 
 import {
-  BookmarkCheck,
-  ChevronLeft,
-  ChevronRight,
   Handshake,
   Minus,
   Plus,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
-import { ListingRoom } from "@/lib/utils/seed/listing/listings";
+import { useState } from "react";
 import { Room } from "@prisma/client";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
   addRoom,
-  calculateTax,
-  calculateTotal,
-  calculateTotalPayable,
   removeRoom,
 } from "@/lib/redux-store/slices/new-booking-slice";
 

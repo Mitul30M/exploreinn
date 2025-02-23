@@ -1,4 +1,4 @@
-import { Booking, Listing, Transaction, User } from "@prisma/client";
+import { Booking, Transaction, User } from "@prisma/client";
 import {
   Body,
   Button,
@@ -6,7 +6,6 @@ import {
   Column,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Link,
@@ -16,7 +15,6 @@ import {
   Text,
   Tailwind,
 } from "@react-email/components";
-import { format } from "date-fns";
 import * as React from "react";
 
 const baseURL = process.env.NEXT_PUBLIC_ORIGIN as string;

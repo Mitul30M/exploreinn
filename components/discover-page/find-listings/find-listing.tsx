@@ -1,7 +1,6 @@
 import { DatePickerWithRange } from "./date-range-picker";
 import GuestCounterInput from "./guest-input";
 import LocationInput from "./location-input";
-import { Minus, Plus } from "lucide-react";
 
 const FindListingsInput = () => {
   return (

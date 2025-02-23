@@ -1,19 +1,13 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
   pushAmenity,
   removeAmenity,
-  setListingName,
-  setListingType,
   setStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
-import { listingAmenities, listingTypes } from "@/lib/utils/listing/listing";
-import { useDebouncedCallback } from "use-debounce";
+import { listingAmenities } from "@/lib/utils/listing/listing";
 import { cloneElement, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";

@@ -2,7 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Hotel, Inbox, Receipt } from "lucide-react";
+import { Download, Hotel } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import {
@@ -13,29 +13,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BookingStatusConfig } from "@/lib/utils/types/status/booking-status";
-import { bookingStatus } from "@/lib/utils/types/status/booking-status";
 import { paymentStatus } from "@/lib/utils/types/status/payement-status";
 import { PaymentStatusConfig } from "@/lib/utils/types/status/payement-status";
-import { Booking, Transaction } from "@prisma/client";
+import { Transaction } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { differenceInDays, format } from "date-fns";
+import { format } from "date-fns";
 import {
-  CalendarCheck,
   Calendar1,
   ClipboardList,
   Mail,
   Phone,
   SquareUserRound,
-  CalendarMinus2,
-  CalendarRange,
-  Users,
-  DoorOpen,
   Tag,
   Hourglass,
   MoreHorizontal,
   Clipboard,
-  Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { getRevenueFromTransaction } from "@/lib/actions/transactions/transactions";

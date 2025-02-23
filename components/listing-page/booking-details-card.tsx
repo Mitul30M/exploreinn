@@ -1,11 +1,10 @@
 "use client";
 import { Listing, Room } from "@prisma/client";
-import { Handshake, ListCheck, Receipt } from "lucide-react";
+import { Handshake, ListCheck } from "lucide-react";
 import React, { useEffect } from "react";
 import { DatePickerWithRange } from "../discover-page/find-listings/date-range-picker";
 import GuestCounterInput from "../discover-page/find-listings/guest-input";
 import { Separator } from "../ui/separator";
-import { currentUser } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";

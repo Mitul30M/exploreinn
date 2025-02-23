@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Star, ThumbsUp } from "lucide-react";
 import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import Image from "next/image";
-import { HotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 import { Separator } from "@/components/ui/separator";
 import ListingAmenities from "./listing-amenities";
 import { TListingCard } from "@/lib/actions/listings/listings";

@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useCouponValidity } from "@/hooks/use-coupon-validity";
-import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import { userOffers } from "@/lib/utils/seed/user-rewards/user-reward-points-history";
-import { format, formatDistance, addMonths } from "date-fns";
-import { Clipboard, ClipboardCheck, Tag } from "lucide-react";
+import { Clipboard, Tag } from "lucide-react";
 import React from "react";
 
 const RedeemedOffers = ({ ...props }) => {

@@ -10,8 +10,6 @@ import {
   ChartLine,
   CreditCard,
   ExternalLink,
-  HandCoins,
-  TicketsPlane,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 

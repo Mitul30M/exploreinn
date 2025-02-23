@@ -2,11 +2,8 @@ import {
   Bold,
   Italic,
   Strikethrough,
-  Code,
   List,
   ListOrdered,
-  Undo,
-  Redo,
   Underline,
   Undo2,
   Redo2,
@@ -22,7 +19,6 @@ import {
 import { Editor } from "@tiptap/react";
 import { ToggleGroup } from "@/components/ui/toggle-group";
 import { Toggle } from "../toggle";
-import { Button } from "../button";
 
 export default function TextEditorMenuBar({
   editor,

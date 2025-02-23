@@ -2,8 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Form,
   FormField,
@@ -22,21 +20,15 @@ import {
   setCheckInRulesAndRestrictions,
   setCheckInTime,
   setCheckOutTime,
-  setDescription,
-  setEmail,
   setGroundRulesAndRestrictions,
-  setPhone,
   setStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
 import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { NotebookTabs } from "lucide-react";
 import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
-import DOMPurify from "dompurify";
-import { DatetimePicker } from "@/components/ui/datetime-picker";
 
 const FormSchema = z.object({
   checkInTime: z

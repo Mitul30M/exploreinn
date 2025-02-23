@@ -1,14 +1,8 @@
-import { DataTable } from "@/components/ui/data-table/data-table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { bookingTableColumns } from "@/components/user-page/bookings/booking-table-columns";
-import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
 import { listingTableColumns } from "@/components/user-page/listings/listing-table-columns";
 import { UserListingsDataTable } from "@/components/user-page/listings/listings-data-table";
 import { getOwnedListings } from "@/lib/actions/listings/listings";
-import { bookings } from "@/lib/utils/seed/bookings";
 import { currentUser } from "@clerk/nextjs/server";
-import { HandCoins, HotelIcon, TicketsPlane } from "lucide-react";
-import { list } from "postcss";
+import { HandCoins } from "lucide-react";
 
 const UserListingsPage = async ({
   params,

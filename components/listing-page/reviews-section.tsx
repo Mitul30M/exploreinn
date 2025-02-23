@@ -5,14 +5,11 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import {
   ArrowUpDown,
-  BadgeDollarSign,
-  ChevronsUp,
   DoorOpen,
   HandCoins,
   MapPinCheckInside,
@@ -28,12 +25,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Label } from "../ui/label";
 import Autoplay from "embla-carousel-autoplay";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Review } from "@prisma/client";
 
 interface ListingReviewsSectionProps {
   reviews: {

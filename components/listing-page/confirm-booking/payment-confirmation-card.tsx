@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAppSelector } from "@/hooks/redux-hooks";
 import { RootState } from "@/lib/redux-store/store";
 import { Listing } from "@prisma/client";
-import { BadgeDollarSign, Handshake, ListCheck, Loader2 } from "lucide-react";
+import { BadgeDollarSign, Handshake, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,

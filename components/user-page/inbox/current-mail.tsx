@@ -1,6 +1,5 @@
 import { AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -14,7 +13,7 @@ import {
 import { Mail } from "@/lib/utils/seed/user-inbox/mails";
 import { Avatar } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
-import { Archive, MailX, Send, Trash2 } from "lucide-react";
+import { Archive, Send, Trash2 } from "lucide-react";
 import React from "react";
 
 interface CurrentMailProps {

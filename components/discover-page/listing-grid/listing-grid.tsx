@@ -1,7 +1,5 @@
 import ListingCard from "./listing-card";
-import { propagateServerField } from "next/dist/server/lib/render-server";
 import {
-  getListingsPreview,
   TListingCard,
 } from "@/lib/actions/listings/listings";
 

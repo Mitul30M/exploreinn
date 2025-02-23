@@ -7,7 +7,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import {
   hotelAmenities,
-  HotelAmenities,
 } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 import { cloneElement } from "react";
 

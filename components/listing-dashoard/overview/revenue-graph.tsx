@@ -2,13 +2,10 @@
 
 import { TrendingDown, TrendingUp } from "lucide-react";
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Line,
   LineChart,
   XAxis,
-  YAxis,
 } from "recharts";
 
 import {
@@ -25,7 +22,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const chartConfig = {
   revenue: {

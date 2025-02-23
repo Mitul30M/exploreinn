@@ -9,16 +9,13 @@ import {
   Booking,
   BookingStatus,
   Listing,
-  Transaction,
   User,
 } from "@prisma/client";
-import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
 import {
   startOfWeek,
   endOfWeek,
-  getDay,
   format,
   endOfYear,
   startOfYear,

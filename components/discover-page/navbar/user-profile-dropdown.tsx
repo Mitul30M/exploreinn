@@ -5,13 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -23,15 +17,13 @@ import {
   IdCard,
   Inbox,
   LogOut,
-  Mail,
   Menu,
-  Phone,
   ShieldCheck,
   TicketsPlane,
 } from "lucide-react";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
-import { SignOutButton, UserButton } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
 import { getUser } from "@/lib/actions/user/user";
 
 export async function UserProfileDropdown() {

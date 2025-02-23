@@ -6,7 +6,6 @@ import {
   Column,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Link,

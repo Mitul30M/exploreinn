@@ -1,4 +1,4 @@
-import { Booking, Listing, Transaction, User } from "@prisma/client";
+import { Booking, Listing, User } from "@prisma/client";
 import {
   Body,
   Button,
@@ -6,7 +6,6 @@ import {
   Column,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Link,

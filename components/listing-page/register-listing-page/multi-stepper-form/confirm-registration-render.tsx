@@ -1,26 +1,19 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
+import { useAppSelector } from "@/hooks/redux-hooks";
 import { enlistListing } from "@/lib/actions/listings/listings";
-import { AppDispatch, RootState } from "@/lib/redux-store/store";
-import { LayoutDashboard, PartyPopper, ScrollText } from "lucide-react";
+import { RootState } from "@/lib/redux-store/store";
+import { PartyPopper, ScrollText } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { FileCheck, HardDriveUpload, Loader, ServerCrash } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useActionState, useRef, startTransition, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import {
-  RegisterListing,
   RegisterListingSchema,
 } from "@/lib/redux-store/slices/register-listing-slice";
 import { Button } from "@/components/ui/button";

@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma-client";
 import { stripe } from "@/lib/stripe";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 const bookingFormSchema = z.object({

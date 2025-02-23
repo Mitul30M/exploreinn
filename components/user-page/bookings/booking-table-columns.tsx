@@ -5,23 +5,17 @@ import {
   BedDouble,
   Calendar1,
   CalendarCheck,
-  CalendarCheck2,
-  CalendarClock,
   CalendarMinus2,
-  CalendarOff,
   CalendarRange,
   Clipboard,
   ClipboardList,
   DoorOpen,
-  HandCoins,
   Hotel,
   Hourglass,
   Inbox,
   MoreHorizontal,
   Tag,
-  ThumbsUp,
   Users,
-  ArrowUpDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,13 +26,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   paymentStatus,
-  PaymentStatus,
   PaymentStatusConfig,
 } from "@/lib/utils/types/status/payement-status";
 import {
@@ -46,9 +38,6 @@ import {
   BookingStatusConfig,
 } from "@/lib/utils/types/status/booking-status";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
-import { cn } from "@/lib/utils";
-import { BookedRooms, Booking } from "@prisma/client";
-import { prisma } from "@/lib/prisma-client";
 import { UserBookings } from "@/app/users/[userId]/bookings/page";
 import Link from "next/link";
 // This type is used to define the shape of our data.

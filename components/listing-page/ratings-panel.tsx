@@ -1,7 +1,6 @@
 import {
   DoorOpen,
   HandCoins,
-  Laugh,
   MapPinCheckInside,
   MessageSquareText,
   Sparkles,
@@ -15,8 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Separator } from "../ui/separator";
-import { Listing, Review } from "@prisma/client";
+import { Review } from "@prisma/client";
 import { getRatingLabel } from "@/lib/utils/listing/util-functions";
 
 interface RatingsPanelProps {

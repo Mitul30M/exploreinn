@@ -1,10 +1,6 @@
-import { DataTable } from "@/components/ui/data-table/data-table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { bookingTableColumns } from "@/components/user-page/bookings/booking-table-columns";
 import { UserBookingsDataTable } from "@/components/user-page/bookings/bookings-data-table";
-import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
 import { getUserBookings } from "@/lib/actions/bookings/bookings";
-import { bookings } from "@/lib/utils/seed/bookings";
 import { currentUser } from "@clerk/nextjs/server";
 import { TicketsPlane } from "lucide-react";
 import React from "react";

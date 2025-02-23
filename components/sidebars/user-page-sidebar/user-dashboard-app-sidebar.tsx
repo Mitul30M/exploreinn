@@ -3,39 +3,24 @@ import * as React from "react";
 import { NavUser } from "@/components/sidebars/user-page-sidebar/nav-user";
 import {
   ArchiveX,
-  AudioWaveform,
-  BedDouble,
   BookHeart,
-  BookOpen,
-  Bot,
   CalendarCheck,
   CalendarClock,
   CalendarRange,
   CalendarX2,
   Cog,
   Coins,
-  Command,
   ConciergeBell,
   Contact,
-  Frame,
-  GalleryVerticalEnd,
   Gift,
   HandCoins,
-  Heart,
   HeartHandshake,
   Hotel,
-  icons,
   IdCard,
   Inbox,
-  Mail,
-  Mails,
-  Map,
   MapPinHouse,
-  PieChart,
   Send,
-  Settings2,
   ShieldCheck,
-  SquareTerminal,
   SquareUser,
   TicketCheck,
   TicketsPlane,
@@ -51,8 +36,6 @@ import {
 import { ScrollArea } from "../../ui/scroll-area";
 import { NavMain } from "./nav-main";
 import { useUser } from "@clerk/nextjs";
-import { getUser } from "@/lib/actions/user/user";
-import { string } from "zod";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();

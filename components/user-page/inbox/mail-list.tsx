@@ -3,7 +3,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mail } from "@/lib/utils/seed/user-inbox/mails";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 // add a interface for the mail prop for the mails array , each mail will be of type Mail, exported from the /seeds/user-inbox/mails.tsx file
 

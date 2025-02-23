@@ -3,11 +3,10 @@
 import prisma from "@/lib/prisma-client";
 import {
   RegisterListing,
-  RegisterListingSchema,
 } from "@/lib/redux-store/slices/register-listing-slice";
 import { FormState } from "@/lib/types/forms/form-state";
 import { auth } from "@clerk/nextjs/server";
-import { Booking, Listing, Transaction } from "@prisma/client";
+import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 /**

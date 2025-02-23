@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {

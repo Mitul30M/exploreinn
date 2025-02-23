@@ -1,15 +1,11 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
   pushLegalDocs,
   setStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
-import { useDebouncedCallback } from "use-debounce";
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -21,10 +17,6 @@ import {
   Form,
   FormField,
   FormItem,
-  FormMessage,
-  FormControl,
-  FormDescription,
-  FormLabel,
 } from "@/components/ui/form";
 import {
   FileInput,
@@ -34,11 +26,9 @@ import {
 } from "@/components/ui/file-upload";
 import {
   FileUp,
-  FolderUp,
   HardDriveUpload,
   Hourglass,
   Paperclip,
-  Pin,
 } from "lucide-react";
 import { HoverCard } from "@/components/ui/hover-card";
 import { Progress } from "@/components/ui/progress";

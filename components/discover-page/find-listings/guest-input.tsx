@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CircleMinus, CirclePlus, Minus, Plus, Users } from "lucide-react";
+import { Minus, Plus, Users } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 const GuestCounterInput = ({

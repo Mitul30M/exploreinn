@@ -1,6 +1,5 @@
 // "use client";
 import * as React from "react";
-import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
@@ -12,20 +11,14 @@ import Image from "next/image";
 import { Badge } from "../ui/badge";
 import {
   AirVentIcon,
-  Bed,
   BedDouble,
   Blinds,
-  Castle,
   Gift,
-  Glasses,
   Ratio,
-  Umbrella,
   Users,
   Wifi,
-  WifiHigh,
 } from "lucide-react";
 import { Extras } from "./add-ons-radio-group";
-import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import BookRoomBtn from "./book-room-btn";
 import { Room } from "@prisma/client";
 

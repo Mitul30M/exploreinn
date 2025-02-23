@@ -1,27 +1,14 @@
 "use client";
-import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   BedDouble,
-  Calendar1,
-  CalendarCheck,
-  CalendarCheck2,
   CalendarClock,
-  CalendarMinus2,
-  CalendarOff,
-  CalendarRange,
   Clipboard,
   ClipboardList,
   DoorOpen,
   HandCoins,
   Hotel,
-  Hourglass,
-  Inbox,
   MoreHorizontal,
-  Tag,
-  ThumbsUp,
-  Users,
-  ArrowUpDown,
   Star,
   Sparkles,
   DoorClosed,
@@ -37,12 +24,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
-import { cn } from "@/lib/utils";
 import { TOwnedListing } from "@/lib/actions/listings/listings";
 import Link from "next/link";
 import { getRevenueFromTransaction } from "@/lib/actions/transactions/transactions";

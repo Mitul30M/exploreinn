@@ -24,24 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  CircleArrowLeft,
-  CircleArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Hotel,
-  Columns3,
-} from "lucide-react";
-import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
+
+
+
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
-import Link from "next/link";
 import { TransactionsDataTableToolbar } from "./transaction-dashboard-table-toolbar";
 import { ListingDashboardFloatingActionBar } from "./transactions-dashboard-table-action-bar";
 

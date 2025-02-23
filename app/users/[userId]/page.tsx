@@ -1,6 +1,4 @@
 import {
-  Cog,
-  Contact,
   SquareUser,
   MapPinHouse,
   Mail,
@@ -10,14 +8,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import PersonalInfo from "@/components/user-page/info/personal-info";
-import { Button } from "@/components/ui/button";
 import ResidentialInfo from "@/components/user-page/info/residential-info";
 import { EditPersonalInfoModal } from "@/components/user-page/info/edit-modals/edit-personal-info";
 import { EditResidentialInfoModal } from "@/components/user-page/info/edit-modals/edit-residential-info";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { getUser } from "@/lib/actions/user/user";
 import { notFound } from "next/navigation";
-import { User } from "@prisma/client";
 
 export const metadata = {
   title: "Profile",

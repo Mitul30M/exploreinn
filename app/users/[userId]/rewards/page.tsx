@@ -3,7 +3,6 @@ import {
   GalleryVerticalEnd,
   Gift,
   HandCoins,
-  Tag,
   TicketCheck,
 } from "lucide-react";
 import {

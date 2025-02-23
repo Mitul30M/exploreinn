@@ -17,7 +17,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Switch } from "@/components/ui/switch";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { inboxNav, Mail } from "@/lib/utils/seed/user-inbox/mails";
 import MailList from "@/components/user-page/inbox/mail-list";
 import { toast } from "@/hooks/use-toast";

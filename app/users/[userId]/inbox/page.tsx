@@ -1,9 +1,7 @@
 'use client'
 import { InboxSidebar } from "@/components/sidebars/user-inbox-sidebar/inbox-sidebar";
 import {
-  SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Inbox } from "lucide-react";
 import React from "react";

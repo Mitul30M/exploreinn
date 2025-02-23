@@ -2,7 +2,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import {
@@ -10,16 +9,12 @@ import {
   setDistanceFromAirport,
   setDistanceFromBusStop,
   setDistanceFromRailwayStation,
-  setListingName,
-  setListingType,
   setStep,
 } from "@/lib/redux-store/slices/register-listing-slice";
-import { listingTypes } from "@/lib/utils/listing/listing";
 import { useDebouncedCallback } from "use-debounce";
 import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { useQuery } from "@tanstack/react-query";
 import { fetchNearbyPlaces } from "@/lib/utils/export/export";
 
 const RenderStep3 = () => {

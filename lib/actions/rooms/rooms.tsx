@@ -2,9 +2,7 @@
 
 import { RoomType } from "@/app/listings/[listingId]/(dashboard)/rooms/new/page";
 import prisma from "@/lib/prisma-client";
-import { PriceChange, Room } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 /**
  * Retrieves all rooms for a given listing.

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Github, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { OAuthStrategy } from "@clerk/types";

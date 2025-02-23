@@ -1,18 +1,14 @@
 // import { EditPersonalInfoForm } from "@/components/forms/user-page/edit-personal-info-form";
-import EditPersonalInfoForm from "@/components/forms/user-page/edit-personal-info-form";
 import EditResidentialInfoForm from "@/components/forms/user-page/edit-residential-info-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { User } from "@prisma/client";

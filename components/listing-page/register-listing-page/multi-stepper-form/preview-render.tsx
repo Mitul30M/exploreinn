@@ -1,7 +1,6 @@
 "use client";
 import ListingAmenities from "@/components/discover-page/listing-grid/listing-amenities";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,13 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
-import { convertCurrency } from "@/lib/utils/currency/currency-convertor";
 import { hotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 import { Heart, Sparkles, Star, ThumbsUp } from "lucide-react";
 import Image from "next/image";

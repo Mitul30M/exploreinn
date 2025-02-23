@@ -8,7 +8,6 @@ import {
   Wallet,
   Nfc,
 } from "lucide-react";
-import { ReactNode } from "react";
 
 export interface PaymentStatusConfig {
   icon: LucideIcon;

@@ -1,20 +1,13 @@
 "use client";
 
-import { Toggle } from "@/components/ui/toggle";
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Bold, Italic, List, ListOrdered, Strikethrough } from "lucide-react";
-import { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import ToolBar from "./toolbar";
-import Document from "@tiptap/extension-document";
-import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
 import Blockquote from "@tiptap/extension-blockquote";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Paragraph from "@tiptap/extension-paragraph";
-import History from "@tiptap/extension-history";
 import Underline from "@tiptap/extension-underline";
 import ListItem from "@tiptap/extension-list-item";
 import BulletList from "@tiptap/extension-bullet-list";

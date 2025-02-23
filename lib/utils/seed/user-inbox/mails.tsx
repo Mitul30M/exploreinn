@@ -1,8 +1,5 @@
 import {
   Archive,
-  ArchiveX,
-  Command,
-  File,
   Inbox,
   Send,
   Trash2,

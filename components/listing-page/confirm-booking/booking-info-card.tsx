@@ -8,7 +8,6 @@ import { Listing } from "@prisma/client";
 import { format } from "date-fns";
 import { ListCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 interface BookingInfoCardProps {
   className?: string;

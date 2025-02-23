@@ -1,4 +1,4 @@
-import { Booking, Listing, Transaction, User } from "@prisma/client";
+import { Listing, User } from "@prisma/client";
 import {
   Body,
   Button,
@@ -6,7 +6,6 @@ import {
   Column,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Link,
@@ -16,7 +15,6 @@ import {
   Text,
   Tailwind,
 } from "@react-email/components";
-import { format } from "date-fns";
 import { PartyPopper } from "lucide-react";
 import * as React from "react";
 

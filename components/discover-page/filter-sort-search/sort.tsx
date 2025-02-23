@@ -5,11 +5,10 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, BadgeDollarSign, ChevronsUp } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
 export function SortListings() {
   return (

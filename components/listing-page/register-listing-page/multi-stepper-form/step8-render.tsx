@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormField,
@@ -11,7 +10,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";

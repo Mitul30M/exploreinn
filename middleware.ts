@@ -1,11 +1,8 @@
 import {
   clerkMiddleware,
   createRouteMatcher,
-  currentUser,
 } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "./lib/prisma-client";
-import { isStripeConnectedAccount } from "./lib/actions/stripe/stripe";
 
 const isPublicRoute = createRouteMatcher([
   "/",

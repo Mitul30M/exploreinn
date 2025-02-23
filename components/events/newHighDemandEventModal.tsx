@@ -3,13 +3,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChartSpline, Save } from "lucide-react";
 import { z } from "zod";
@@ -25,9 +23,12 @@ import {
 } from "../ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
-import { addMonths, format, formatDate } from "date-fns";
+import { addMonths, formatDate } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import { DateRange } from "react-day-picker";
+import { startTransition, useState } from "react";
+import { createHighDemandChangeEvent } from "@/lib/actions/room-events/room-events";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
 const formSchema = z.object({
   data: z.array(
     z.object({
@@ -55,6 +56,8 @@ export function NewHighDemandEventModal({
   roomInfo,
   listingId,
 }: NewHighDemandEventModalProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,9 +75,51 @@ export function NewHighDemandEventModal({
     },
   });
 
-  const onSubmit = async (data: FormSchema): Promise<void> => {
-      console.log(data);
-      
+  const onSubmit = async (formData: FormSchema): Promise<void> => {
+    console.log(formData);
+    setIsLoading(true);
+    startTransition(async () => {
+      console.log("Creating High Demand Event");
+      const isEventCreated = await createHighDemandChangeEvent({
+        data: formData.data.map((room) => ({
+          roomId: room.roomId,
+          priceIncrementPercentage: room.percentage,
+          roomName: room.roomName,
+        })),
+        authorId,
+        startDate: new Date(formData.dateRange.from.toISOString()),
+        endDate: new Date(formData.dateRange.to.toISOString()),
+        listingId,
+      });
+      if (isEventCreated) {
+        toast({
+          title: `*High Demand Event Created Successfully!`,
+          description: "Your High Demand Event has been created.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <Save className="size-4 text-primary" /> Ok
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: `*Error while Enlisting New High Demand Event!`,
+          description: "Something went wrong! Please Try Again.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="error"
+            >
+              <Save className="size-4 text-primary" /> Try Again
+            </ToastAction>
+          ),
+        });
+      }
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -175,8 +220,14 @@ export function NewHighDemandEventModal({
                 )}
               />
             ))}
-            <Button type="submit" size="sm" className=" self-end w-max">
-              <Save /> Create Event
+            <Button
+              type="submit"
+              size="sm"
+              className={" self-end w-max"}
+              disabled={isLoading}
+            >
+              <Save className={isLoading ? "animate-spin" : ""} />
+              {isLoading ? "Creating..." : "Create Event"}
             </Button>
           </form>
         </Form>

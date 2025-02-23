@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/lib/prisma-client";
 import { PriceChange, HighDemand } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -53,6 +54,25 @@ export async function createHighDemandChangeEvent(args: {
     },
   });
   console.log("Created High Demand Change Event: ", highDemandChange);
+
+  const eventRooms = await Promise.all(
+    rooms.map((roomId) =>
+      prisma.room.update({
+        where: { id: roomId },
+        data: {
+          roomEventIds: {
+            push: highDemandChange.id,
+          },
+        },
+        select: {
+          roomEvents: true,
+          roomEventIds: true,
+        },
+      })
+    )
+  );
+
+  console.log("Event Rooms: ", eventRooms);
 
   revalidatePath(`/listings/${listingId}/events`);
   for (const room of rooms) {
