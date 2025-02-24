@@ -140,17 +140,17 @@ export async function dynamicallySetRoomPrice(roomId: string) {
     highDemandEvent?.highDemand?.find((change) => change.roomId === roomId) ??
     undefined;
 
+  // set base price to the new price in the price change event
+  finalPrice = roomPriceChangeEvent
+    ? roomPriceChangeEvent.newPrice
+    : finalPrice;
+
+  // add the percentage increase to the new price in the high demand event
+  finalPrice = roomHighDemandEvent
+    ? finalPrice * (1 + roomHighDemandEvent.priceIncrementPercentage)
+    : finalPrice;
+
   if (room.isDynamicallyPriced) {
-    // set base price to the new price in the price change event
-    finalPrice = roomPriceChangeEvent
-      ? roomPriceChangeEvent.newPrice
-      : finalPrice;
-
-    // add the percentage increase to the new price in the high demand event
-    finalPrice = roomHighDemandEvent
-      ? finalPrice * (1 + roomHighDemandEvent.priceIncrementPercentage)
-      : finalPrice;
-
     // Adjust price based on occupancy rate
     if (occupancyRate > 80) {
       finalPrice += finalPrice * 0.2; // Increase by 20% if occupancy > 80%
@@ -242,6 +242,19 @@ export async function dynamicallySetRoomPrice(roomId: string) {
       }
 
       return updatedRoom;
+    });
+  } else {
+    // set the price and create a new price entry in the room dynamic price
+    await prisma.room.update({
+      where: {
+        id: roomId,
+      },
+      data: {
+        dynamicPrice: {
+          set: [{ date: new Date(), price: finalPrice }, ...room.dynamicPrice],
+        },
+        price: finalPrice,
+      },
     });
   }
 

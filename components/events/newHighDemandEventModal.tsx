@@ -207,14 +207,18 @@ export function NewHighDemandEventModal({
                 name={`data.${index}.percentage`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{room.roomName}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
+                    <div className="flex items-center gap-2">
+                      <FormLabel>{room.roomName}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

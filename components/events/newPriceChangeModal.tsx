@@ -9,11 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  BadgeDollarSignIcon,
-  CalendarIcon,
-  Save,
-} from "lucide-react";
+import { BadgeDollarSignIcon, CalendarIcon, Save } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -29,6 +25,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { addMonths, formatDate } from "date-fns";
 import { Calendar } from "../ui/calendar";
+import { startTransition, useState } from "react";
+import { createPriceChangeEvent } from "@/lib/actions/room-events/room-events";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
 const formSchema = z.object({
   data: z.array(
     z.object({
@@ -56,6 +56,7 @@ export function NewPriceChangeEventModal({
   roomInfo,
   listingId,
 }: NewPriceChangeEventModalProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,8 +74,51 @@ export function NewPriceChangeEventModal({
     },
   });
 
-  const onSubmit = async (data: FormSchema): Promise<void> => {
-    console.log(data);
+  const onSubmit = async (formData: FormSchema): Promise<void> => {
+    console.log(formData);
+    setIsLoading(true);
+    startTransition(async () => {
+      console.log("Creating High Demand Event");
+      const isEventCreated = await createPriceChangeEvent({
+        data: formData.data.map((room) => ({
+          roomId: room.roomId,
+          newPrice: room.newPrice,
+          roomName: room.roomName,
+        })),
+        authorId,
+        startDate: new Date(formData.dateRange.from.toISOString()),
+        endDate: new Date(formData.dateRange.to.toISOString()),
+        listingId,
+      });
+      if (isEventCreated) {
+        toast({
+          title: `*Price Change Event Created Successfully!`,
+          description: "Your Price Change Event has been created.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <Save className="size-4 text-primary" /> Ok
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: `*Error while Enlisting New Price Change Event!`,
+          description: "Something went wrong! Please Try Again.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="error"
+            >
+              <Save className="size-4 text-primary" /> Try Again
+            </ToastAction>
+          ),
+        });
+      }
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -162,21 +206,30 @@ export function NewPriceChangeEventModal({
                 name={`data.${index}.newPrice`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{room.roomName} (in $)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
+                    <div className="flex items-center gap-2">
+                      <FormLabel>{room.roomName} (Price in USD $)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                    </div>
                   </FormItem>
                 )}
               />
             ))}
-            <Button type="submit" size="sm" className=" self-end w-max">
-              <Save /> Create Event
+            <Button
+              type="submit"
+              size="sm"
+              className={" self-end w-max"}
+              disabled={isLoading}
+            >
+              <Save className={isLoading ? "animate-spin" : ""} />
+              {isLoading ? "Creating..." : "Create Event"}
             </Button>
           </form>
         </Form>

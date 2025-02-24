@@ -8,11 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  CalendarIcon,
-  CalendarOff,
-  Save,
-} from "lucide-react";
+import { CalendarIcon, CalendarOff, Save } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -29,6 +25,10 @@ import { cn } from "@/lib/utils";
 import { addMonths, formatDate } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { Checkbox } from "../ui/checkbox";
+import { startTransition, useState } from "react";
+import { createBookingClosedEvent } from "@/lib/actions/room-events/room-events";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
 const formSchema = z.object({
   data: z.array(z.string()),
   dateRange: z.object({
@@ -50,6 +50,7 @@ export function BookingClosedEventModal({
   roomInfo,
   listingId,
 }: BookingEventModalProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,8 +64,47 @@ export function BookingClosedEventModal({
     },
   });
 
-  const onSubmit = async (data: FormSchema): Promise<void> => {
-    console.log(data);
+  const onSubmit = async (formData: FormSchema): Promise<void> => {
+    console.log(formData);
+    setIsLoading(true);
+    startTransition(async () => {
+      console.log("Creating Booking Closed Event");
+      const isEventCreated = await createBookingClosedEvent({
+        roomIds: formData.data,
+        authorId,
+        startDate: new Date(formData.dateRange.from.toISOString()),
+        endDate: new Date(formData.dateRange.to.toISOString()),
+        listingId,
+      });
+      if (isEventCreated) {
+        toast({
+          title: `*Booking Closed Event Created Successfully!`,
+          description: "Your Booking Closed Event has been created.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <Save className="size-4 text-primary" /> Ok
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: `*Error while Enlisting New Booking Closed Event!`,
+          description: "Something went wrong! Please Try Again.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="error"
+            >
+              <Save className="size-4 text-primary" /> Try Again
+            </ToastAction>
+          ),
+        });
+      }
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -184,8 +224,14 @@ export function BookingClosedEventModal({
                 />
               ))}
             </div>
-            <Button type="submit" size="sm" className=" self-end w-max">
-              <Save /> Create Event
+            <Button
+              type="submit"
+              size="sm"
+              className={" self-end w-max"}
+              disabled={isLoading}
+            >
+              <Save className={isLoading ? "animate-spin" : ""} />
+              {isLoading ? "Creating..." : "Create Event"}
             </Button>
           </form>
         </Form>
