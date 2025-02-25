@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma-client";
 import { PriceChange, HighDemand } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { dynamicallySetRoomPrice } from "../rooms/rooms";
 
 export async function createPriceChangeEvent(args: {
   data: PriceChange[];
@@ -160,7 +161,7 @@ export async function deleteEvent(eventId: string) {
       const room = await prisma.room.findUnique({ where: { id: roomId } });
       const updatedEventIds =
         room?.roomEventIds.filter((id) => id !== eventId) ?? [];
-
+      await dynamicallySetRoomPrice(roomId);
       return prisma.room.update({
         where: { id: roomId },
         data: {
@@ -197,14 +198,18 @@ export async function fetchEvents({
       listingId,
       AND: [
         {
-          startDate: {
-            lte: date,
-          },
-        },
-        {
-          endDate: {
-            gte: date,
-          },
+          AND: [
+            {
+              startDate: {
+                lte: new Date(date),
+              },
+            },
+            {
+              endDate: {
+                gte: new Date(date),
+              },
+            },
+          ],
         },
       ],
     };

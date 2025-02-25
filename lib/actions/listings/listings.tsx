@@ -1,13 +1,12 @@
 "use server";
 
 import prisma from "@/lib/prisma-client";
-import {
-  RegisterListing,
-} from "@/lib/redux-store/slices/register-listing-slice";
+import { RegisterListing } from "@/lib/redux-store/slices/register-listing-slice";
 import { FormState } from "@/lib/types/forms/form-state";
 import { auth } from "@clerk/nextjs/server";
 import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { dynamicallySetRoomPrice } from "../rooms/rooms";
 
 /**
  * Creates a new listing and a room in the database.
@@ -162,7 +161,7 @@ export type TListingCard = {
     listingId: string;
   }[];
   rooms: {
-    basePrice: number;
+    price: number;
   }[];
 };
 export async function getListingsPreview(
@@ -182,7 +181,7 @@ export async function getListingsPreview(
       reviews: true,
       rooms: {
         select: {
-          basePrice: true,
+          price: true,
         },
       },
     },
@@ -200,12 +199,60 @@ export async function getListingsPreview(
  */
 export async function getListingById(listingId: string) {
   console.log("\nsearching for: ", listingId);
-  const listing = await prisma.listing.findFirst({
+  const closedBookingRooms = await prisma.roomEvent.findFirst({
+    where: {
+      type: "BookingClosed",
+      listingId: listingId,
+      startDate: {
+        lte: new Date(),
+      },
+      endDate: {
+        gte: new Date(),
+      },
+    },
+    select: {
+      roomIds: true,
+    },
+  });
+
+  const closedBookingRoomsIds = closedBookingRooms?.roomIds || [];
+
+  const roomIds = await prisma.room.findMany({
+    where: {
+      id: {
+        notIn: closedBookingRoomsIds,
+      },
+      listingId: listingId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  await prisma.room.updateMany({
+    where: {
+      id: {
+        in: closedBookingRoomsIds,
+      },
+    },
+    data: {
+      isAvailable: false,
+    },
+  });
+  roomIds.forEach(async (room) => {
+    await dynamicallySetRoomPrice(room.id);
+  });
+
+  const listing = await prisma.listing.findUnique({
     where: {
       id: listingId,
     },
     include: {
       rooms: {
+        where: {
+          id: {
+            notIn: closedBookingRoomsIds,
+          },
+        },
         select: {
           area: true,
           basePrice: true,
@@ -255,7 +302,6 @@ export async function getListingById(listingId: string) {
       },
     },
   });
-
   if (!listing) return null;
   return listing;
 }

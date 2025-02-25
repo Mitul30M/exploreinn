@@ -2,12 +2,29 @@ import { EventsCalendarControl } from "@/components/events/events-calendar-contr
 import { BookingClosedEventModal } from "@/components/events/newBookingClosedEventModal";
 import { NewHighDemandEventModal } from "@/components/events/newHighDemandEventModal";
 import { NewPriceChangeEventModal } from "@/components/events/newPriceChangeModal";
+import { DeleteEventForm } from "@/components/listing-dashoard/events/delete-event";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 import { getListingById } from "@/lib/actions/listings/listings";
 import { fetchEvents } from "@/lib/actions/room-events/room-events";
 import { currentUser } from "@clerk/nextjs/server";
 import { format } from "date-fns";
-import { CalendarRange } from "lucide-react";
+import {
+  ArrowUp,
+  BadgeDollarSignIcon,
+  CalendarOff,
+  CalendarRange,
+  ChartSpline,
+  DoorClosed,
+  DoorOpen,
+} from "lucide-react";
 import { notFound } from "next/navigation";
 
 const ListingEventPage = async ({
@@ -49,7 +66,7 @@ const ListingEventPage = async ({
       <div className="text-md  flex  rounded-none items-center gap-2  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
         <h1 className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
           <CalendarRange size={22} className="text-primary" />
-          {listing.name}'s Events {month} {year}
+          {listing.name}&apos;s Events
         </h1>
       </div>
 
@@ -93,18 +110,130 @@ const ListingEventPage = async ({
           {events.map((event) => (
             <div
               key={event.id}
-              className="aspect-square rounded-md p-4 border border-border/90"
+              className="aspect-square rounded-md p-4 border border-border/90 space-y-4"
             >
-              <h3 className="text-lg font-semibold text-primary">
-                {event.type}
-              </h3>
-              <p className="text-sm text-foreground/60">
-                {format(new Date(event.startDate), "dd MMM yyyy")} to
-                {format(new Date(event.endDate), "dd MMM yyyy")}
-              </p>
-              <p>
-                Created By: {event.author.firstName} {event.author.lastName}
-              </p>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button
+                    variant="link"
+                    className="text-[14px] font-semibold text-primary w-max flex gap-2 items-center p-0"
+                  >
+                    {event.type === "HighDemand" && (
+                      <ChartSpline className="text-primary" size={18} />
+                    )}
+                    {event.type === "PriceChange" && (
+                      <BadgeDollarSignIcon className="text-primary" size={18} />
+                    )}
+                    {event.type === "BookingClosed" && (
+                      <CalendarOff className="text-primary" size={18} />
+                    )}
+                    {event.type.match(/[A-Z][a-z]+|[0-9]+/g)?.join(" ") ||
+                      event.type}
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-max p-3 ">
+                  <div className="flex flex-col gap-3">
+                    <h3 className="text-[15px] font-medium  w-max flex gap-1 items-center">
+                      {event.type === "HighDemand" && (
+                        <ChartSpline className="text-primary" size={18} />
+                      )}
+                      {event.type === "PriceChange" && (
+                        <BadgeDollarSignIcon
+                          className="text-primary"
+                          size={18}
+                        />
+                      )}
+                      {event.type === "BookingClosed" && (
+                        <CalendarOff className="text-primary" size={18} />
+                      )}
+                      {event.type.match(/[A-Z][a-z]+|[0-9]+/g)?.join(" ") ||
+                        event.type}
+                    </h3>
+                    <div className="flex flex-col gap-3 border-border/90 border-[1px] p-3 rounded">
+                      {event.type === "HighDemand" &&
+                        event.highDemand.map((eventRoom) => (
+                          <div key={eventRoom.roomId} className="flex gap-6">
+                            <span className=" font-medium">
+                              {eventRoom.roomName}
+                            </span>
+                            <span className="text-[15px] font-medium  w-max flex items-center gap-1">
+                              <ArrowUp size={16} />
+                              {eventRoom.priceIncrementPercentage}%
+                            </span>
+                          </div>
+                        ))}
+                      {event.type === "PriceChange" &&
+                        event.priceChange.map((eventRoom) => (
+                          <div key={eventRoom.roomId} className="flex gap-6">
+                            <span className="font-medium">
+                              {eventRoom.roomName}
+                            </span>
+                            <span className="text-[15px] font-medium w-max flex items-center gap-1">
+                              <ArrowUp size={16} />
+                              {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                              }).format(eventRoom.newPrice)}
+                            </span>
+                          </div>
+                        ))}
+                      {event.type === "BookingClosed" &&
+                        event.rooms.map((eventRoom) => (
+                          <div key={eventRoom.id} className="flex gap-4">
+                            <span className="font-medium">
+                              {eventRoom.name}
+                            </span>
+                            <span className="text-[15px] font-medium w-max flex items-center gap-1">
+                              <DoorClosed size={16} />
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                    <DeleteEventForm eventId={event.id} />
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+              <Separator className="bg-border/90" />
+
+              <Badge
+                className="w-max flex gap-2 items-center"
+                variant={"outline"}
+              >
+                <CalendarRange className="w-4 h-4" />
+                <span>
+                  Start Date: {format(new Date(event.startDate), "dd MMM yyyy")}{" "}
+                </span>
+              </Badge>
+              <Badge
+                className="w-max flex gap-2 items-center"
+                variant={"outline"}
+              >
+                <CalendarRange className="w-4 h-4" />
+                <span>
+                  End Date: {format(new Date(event.endDate), "dd MMM yyyy")}{" "}
+                </span>
+              </Badge>
+              <Badge
+                className="w-max flex gap-2 items-center"
+                variant="secondary"
+              >
+                <DoorOpen className="w-4 h-4" />
+                <span>Rooms Applicable: {event.rooms.length}</span>
+              </Badge>
+              <Badge
+                className="w-max flex gap-1 items-center"
+                variant="secondary"
+              >
+                <Avatar className="h-max w-max border">
+                  <AvatarImage
+                    className="h-4 w-4"
+                    src={event.author.profileImg}
+                    alt="@username"
+                  />
+                  <AvatarFallback>{`${event.author.firstName?.[0]?.toUpperCase()}${event.author.lastName?.[0]?.toUpperCase()}`}</AvatarFallback>{" "}
+                </Avatar>
+                {event.author.firstName + " " + event.author.lastName}
+              </Badge>
             </div>
           ))}
         </div>

@@ -22,6 +22,7 @@ import {
   setNights,
   setTax,
 } from "@/lib/redux-store/slices/new-booking-slice";
+import { useRouter } from "next/navigation";
 
 interface BookingDetailsProps {
   className?: string;
@@ -54,6 +55,7 @@ const BookingDetails = ({
   } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();
 
+  const router = useRouter();
   useEffect(() => {
     console.log("guests,room,extras,nights");
     dispatch(calculateTotal());
@@ -88,7 +90,7 @@ const BookingDetails = ({
           <GuestCounterInput
             guestCount={guests}
             onIncrement={() => {
-              dispatch(incGuests())
+              dispatch(incGuests());
             }}
             onDecrement={() => dispatch(decGuests())}
           />
@@ -266,11 +268,13 @@ const BookingDetails = ({
           </Link>
         </p>
 
-        <Link href={`/listings/${listing.id}/confirm-booking`}>
-        <Button className="w-full">
+        <Button
+          className="w-full"
+          disabled={!rooms.length || !checkIn || !checkOut}
+          onClick={() => router.push(`/listings/${listing.id}/confirm-booking`)}
+        >
           <Handshake /> Confirm Booking
         </Button>
-        </Link>
       </div>
     );
   else

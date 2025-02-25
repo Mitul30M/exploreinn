@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Handshake,
-  Minus,
-  Plus,
-} from "lucide-react";
+import { Handshake, Minus, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { Room } from "@prisma/client";
@@ -49,8 +45,6 @@ const BookRoomBtn = ({
   const decrementRooms = () => {
     dispatch(removeRoom(room.id));
   };
-
-
 
   return (
     <div className="flex flex-col w-full gap-4">

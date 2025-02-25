@@ -5,12 +5,7 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import {
-  Booking,
-  BookingStatus,
-  Listing,
-  User,
-} from "@prisma/client";
+import { Booking, BookingStatus, Listing, User } from "@prisma/client";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
 import {
@@ -23,6 +18,7 @@ import {
 } from "date-fns";
 import { stripe } from "@/lib/stripe";
 import Invoice from "@/components/emails/invoice";
+import { dynamicallySetRoomPrice } from "../rooms/rooms";
 
 const bookingFormSchema = z.object({
   listingID: z.string(),
@@ -717,6 +713,11 @@ export async function updateListingBookingStatus(
       return new Error(`Invalid booking status: ${status}`);
   }
 
+  updateBooking.rooms.forEach(async (room) => {
+    await dynamicallySetRoomPrice(room.roomId);
+    revalidatePath(`/listings/${updateBooking.listingId}/rooms/${room.roomId}`);
+  });
+
   // listing dashboard revalidation
   revalidatePath(`/listings/${updateBooking.listingId}/bookings`);
   revalidatePath(
@@ -725,6 +726,7 @@ export async function updateListingBookingStatus(
   // guest side revalidation
   revalidatePath(`/users/${updateBooking.guestId}/bookings`);
   revalidatePath(`/user/${updateBooking.guestId}/bookings/${updateBooking.id}`);
+  revalidatePath(`/listings/${updateBooking.listingId}`);
 }
 
 // to create invnvoice for late cancellation

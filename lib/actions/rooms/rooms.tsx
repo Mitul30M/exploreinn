@@ -185,48 +185,23 @@ export async function dynamicallySetRoomPrice(roomId: string) {
 
       // Get today's date without time
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
 
       // Check if dynamicPrice array exists and has elements
       if (updatedRoom.dynamicPrice.length > 0) {
-        const firstDynamicPrice = updatedRoom.dynamicPrice[0];
-
-        // Convert the date from the dynamic price to comparable format
-        const dynamicPriceDate = new Date(firstDynamicPrice.date);
-        dynamicPriceDate.setHours(0, 0, 0, 0);
-
-        // If dates match, update the price
-        if (dynamicPriceDate.toDateString() === today.toDateString()) {
-          return await tx.room.update({
-            where: {
-              id: roomId,
+        return await tx.room.update({
+          where: {
+            id: roomId,
+          },
+          data: {
+            dynamicPrice: {
+              set: [
+                { date: today, price: finalPrice },
+                ...updatedRoom.dynamicPrice,
+              ],
             },
-            data: {
-              dynamicPrice: {
-                set: [
-                  { date: firstDynamicPrice.date, price: finalPrice },
-                  ...updatedRoom.dynamicPrice.slice(1),
-                ],
-              },
-              price: finalPrice,
-            },
-          });
-        } else {
-          return await tx.room.update({
-            where: {
-              id: roomId,
-            },
-            data: {
-              dynamicPrice: {
-                set: [
-                  { date: today, price: finalPrice },
-                  ...updatedRoom.dynamicPrice,
-                ],
-              },
-              price: finalPrice,
-            },
-          });
-        }
+            price: finalPrice,
+          },
+        });
       } else {
         return await tx.room.update({
           where: {
@@ -259,7 +234,9 @@ export async function dynamicallySetRoomPrice(roomId: string) {
   }
 
   console.log(`Updated Booking Fee for ${room.name}: $${finalPrice}`);
-  revalidatePath(`/listings/${room.listingId}`, "layout");
+  revalidatePath(`/listings/${room.listingId}`);
+  revalidatePath(`/listings/${room.listingId}/events`);
+  revalidatePath(`/listings/${room.listingId}/rooms/${roomId}`);
   return room.isDynamicallyPriced;
 }
 
