@@ -1,8 +1,10 @@
-import {
-  clerkMiddleware,
-  createRouteMatcher,
-} from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import {
+  isListingManager,
+  isListingOwner,
+} from "./lib/actions/listings/listings";
+import { isStripeConnectedAccount } from "./lib/actions/stripe/stripe";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -11,12 +13,18 @@ const isPublicRoute = createRouteMatcher([
   "/sign-up(.*)",
   "/api/webhooks(.*)",
   "/api/webhook/stripe(.*)",
-  "/listings(.*)",
+  // "/listings(.*)",
+  "/listings/:listingId",
+  "/listings/:listingId/confirm-booking"
 ]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isStripeRoute = createRouteMatcher([
   "/api/stripe(.*)",
   "/users/(.*)/billing(.*)",
+]);
+
+const listingDashboardRoute = createRouteMatcher([
+  "/listings/:listingId/(overview|bookings|transactions|inbox|events|rooms)",
 ]);
 
 const isRegisterNewListingRoute = createRouteMatcher(["/listings/register"]);
@@ -43,19 +51,33 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   // comment out when testing locally since prisma client cant run on edge middleware & runtime
-  // if (userId && isRegisterNewListingRoute(req)) {
-  //   if (await isStripeConnectedAccount({ userId })) {
-  //     return NextResponse.next();
-  //   } else {
-  //     const billingUrl = new URL(
-  //       `/users/${
-  //         (sessionClaims.public_metadata as PublicMetadataType).userDB_id
-  //       }/billing`,
-  //       req.url
-  //     );
-  //     return NextResponse.redirect(billingUrl);
-  //   }
-  // }
+  if (userId && isRegisterNewListingRoute(req)) {
+    if (await isStripeConnectedAccount({ userId })) {
+      return NextResponse.next();
+    } else {
+      const billingUrl = new URL(
+        `/users/${
+          (sessionClaims.public_metadata as PublicMetadataType).userDB_id
+        }/billing`,
+        req.url
+      );
+      return NextResponse.redirect(billingUrl);
+    }
+  }
+
+  // check if user is either owner or manager.if yes only then allow to view the listing dashboard
+  if (userId && listingDashboardRoute(req)) {
+    const listingId = req.nextUrl.pathname.split("/")[2];
+
+    if (
+      (await isListingManager(userId, listingId)) ||
+      (await isListingOwner(userId, listingId))
+    ) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL(`/listings/${listingId}`, req.url));
+
+  }
 
   // If the user is logged in and the route is protected, let them view.
   if (userId && !isPublicRoute(req)) return NextResponse.next();

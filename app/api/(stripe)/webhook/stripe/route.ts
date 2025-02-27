@@ -152,6 +152,10 @@ export async function POST(req: Request) {
         revalidatePath(
           `/listings/${newBooking.listingId}/bookings/${newBooking.id}`
         );
+        revalidatePath(`/listings/${newBooking.listingId}/transactions`);
+        revalidatePath(
+          `/listings/${newBooking.listingId}/transactions/${newBooking.transactionId}`
+        );
         // guest side revalidation
         revalidatePath(`/users/${newBooking.guestId}/bookings`);
         revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);

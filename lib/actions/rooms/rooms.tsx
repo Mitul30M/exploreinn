@@ -234,9 +234,7 @@ export async function dynamicallySetRoomPrice(roomId: string) {
   }
 
   console.log(`Updated Booking Fee for ${room.name}: $${finalPrice}`);
-  revalidatePath(`/listings/${room.listingId}`);
-  revalidatePath(`/listings/${room.listingId}/events`);
-  revalidatePath(`/listings/${room.listingId}/rooms/${roomId}`);
+
   return room.isDynamicallyPriced;
 }
 

@@ -13,12 +13,14 @@ export async function createPriceChangeEvent(args: {
 }) {
   const { data, startDate, endDate, listingId, authorId } = args;
   const rooms = data.map((room) => room.roomId);
+  const adjustedStartDate = new Date(startDate.setHours(0, 0, 0, 0));
+  const adjustedEndDate = new Date(endDate.setHours(23, 59, 59, 999));
   const priceChange = await prisma.roomEvent.create({
     data: {
       type: "PriceChange",
       roomIds: rooms,
-      startDate,
-      endDate,
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
       listingId,
       authorId,
       priceChange: data,
@@ -46,6 +48,7 @@ export async function createPriceChangeEvent(args: {
   console.log("Event Rooms: ", eventRooms);
 
   revalidatePath(`/listings/${listingId}/events`);
+  revalidatePath(`/listings/${listingId}`);
   for (const room of rooms) {
     revalidatePath(`/listings/${listingId}/rooms/${room}`);
   }
@@ -62,12 +65,14 @@ export async function createHighDemandChangeEvent(args: {
 }) {
   const { data, startDate, endDate, listingId, authorId } = args;
   const rooms = data.map((room) => room.roomId);
+  const adjustedStartDate = new Date(startDate.setHours(0, 0, 0, 0));
+  const adjustedEndDate = new Date(endDate.setHours(23, 59, 59, 999));
   const highDemandChange = await prisma.roomEvent.create({
     data: {
       type: "HighDemand",
       roomIds: rooms,
-      startDate,
-      endDate,
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
       listingId,
       authorId,
       highDemand: data,
@@ -95,6 +100,7 @@ export async function createHighDemandChangeEvent(args: {
   console.log("Event Rooms: ", eventRooms);
 
   revalidatePath(`/listings/${listingId}/events`);
+  revalidatePath(`/listings/${listingId}`);
   for (const room of rooms) {
     revalidatePath(`/listings/${listingId}/rooms/${room}`);
   }
@@ -110,12 +116,14 @@ export async function createBookingClosedEvent(args: {
   authorId: string;
 }) {
   const { roomIds, startDate, endDate, listingId, authorId } = args;
+  const adjustedStartDate = new Date(startDate.setHours(0, 0, 0, 0));
+  const adjustedEndDate = new Date(endDate.setHours(23, 59, 59, 999));
   const bookingClosedEvent = await prisma.roomEvent.create({
     data: {
       type: "BookingClosed",
       roomIds: roomIds,
-      startDate,
-      endDate,
+      startDate: adjustedStartDate,
+      endDate: adjustedEndDate,
       listingId,
       authorId,
     },
@@ -142,6 +150,7 @@ export async function createBookingClosedEvent(args: {
   console.log("Event Rooms: ", eventRooms);
 
   revalidatePath(`/listings/${listingId}/events`);
+  revalidatePath(`/listings/${listingId}`);
   for (const room of roomIds) {
     revalidatePath(`/listings/${listingId}/rooms/${room}`);
   }
@@ -176,6 +185,13 @@ export async function deleteEvent(eventId: string) {
       });
     })
   );
+
+  revalidatePath(`/listings/${event.listingId}/events`);
+  revalidatePath(`/listings/${event.listingId}`);
+  revalidatePath(`/listings/${event.listingId}/rooms`);
+  for (const room of event.roomIds) {
+    revalidatePath(`/listings/${event.listingId}/rooms/${room}`);
+  }
 
   return !!event;
 }

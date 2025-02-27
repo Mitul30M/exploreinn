@@ -219,9 +219,6 @@ export async function getListingById(listingId: string) {
 
   const roomIds = await prisma.room.findMany({
     where: {
-      id: {
-        notIn: closedBookingRoomsIds,
-      },
       listingId: listingId,
     },
     select: {

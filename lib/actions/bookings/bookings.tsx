@@ -86,53 +86,60 @@ export async function createBookNowPayLaterBooking(
     redirect("/sign-up");
   }
 
-  const newBooking = await prisma.booking.create({
-    data: {
-      listingId: bookingDetails.listingID,
-      guestId: user.id,
-      checkInDate: bookingDetails.checkIn,
-      checkOutDate: bookingDetails.checkOut,
-      guests: bookingDetails.guests,
-      rooms: bookingDetails.rooms.map((room: any) => ({
-        roomId: room.roomID,
-        name: room.name,
-        rate: room.rate,
-        noOfRooms: room.noOfRooms,
-      })),
-      extras: bookingDetails.extras,
-      bookingType: "BOOK_NOW_PAY_LATER",
-      paymentStatus: "pending",
-      taxRates: bookingDetails.taxes,
-      tax: bookingDetails.tax,
-      totalCost: bookingDetails.totalPayable,
-      bookingStatus: "upcoming",
-    },
-  });
-  const listing = await prisma.listing.findUnique({
-    where: {
-      id: bookingDetails.listingID,
-    },
-  });
+  try {
+    const newBooking = await prisma.booking.create({
+      data: {
+        listingId: bookingDetails.listingID,
+        guestId: user.id,
+        checkInDate: bookingDetails.checkIn,
+        checkOutDate: bookingDetails.checkOut,
+        guests: bookingDetails.guests,
+        rooms: bookingDetails.rooms.map((room: any) => ({
+          roomId: room.roomID,
+          name: room.name,
+          rate: room.rate,
+          noOfRooms: room.noOfRooms,
+        })),
+        extras: bookingDetails.extras,
+        bookingType: "BOOK_NOW_PAY_LATER",
+        paymentStatus: "pending",
+        taxRates: bookingDetails.taxes,
+        tax: bookingDetails.tax,
+        totalCost: bookingDetails.totalPayable,
+        bookingStatus: "upcoming",
+      },
+    });
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: bookingDetails.listingID,
+      },
+    });
 
-  console.log("New Booking created successfully: ", newBooking);
-  // listing dashboard side revalidation
-  revalidatePath(`/listings/${newBooking.listingId}/bookings`);
-  revalidatePath(`/listings/${newBooking.listingId}/bookings/${newBooking.id}`);
-  // guest side revalidation
-  revalidatePath(`/users/${newBooking.guestId}/bookings`);
-  revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
-  const { data, error } = await resend.emails.send({
-    from: "exploreinn <no-reply@mitul30m.in>",
-    to: [user.email],
-    subject: "Booking Successful",
-    react: BookingConfirmationMail({
-      user,
-      booking: newBooking as Booking,
-      listing: listing as Listing,
-    }),
-    scheduledAt: "in 1 minute",
-  });
-  redirect(`/users/${newBooking.guestId}/bookings`);
+    console.log("New Booking created successfully: ", newBooking);
+    // listing dashboard side revalidation
+    revalidatePath(`/listings/${newBooking.listingId}/bookings`);
+    revalidatePath(
+      `/listings/${newBooking.listingId}/bookings/${newBooking.id}`
+    );
+    // guest side revalidation
+    revalidatePath(`/users/${newBooking.guestId}/bookings`);
+    revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
+    const { data, error } = await resend.emails.send({
+      from: "exploreinn <no-reply@mitul30m.in>",
+      to: [user.email],
+      subject: "Booking Successful",
+      react: BookingConfirmationMail({
+        user,
+        booking: newBooking as Booking,
+        listing: listing as Listing,
+      }),
+      scheduledAt: "in 1 minute",
+    });
+    redirect(`/users/${newBooking.guestId}/bookings`);
+  } catch (error) {
+    console.error("Error creating booking: ", error);
+    throw new Error("Error creating booking");
+  }
 }
 
 /**
