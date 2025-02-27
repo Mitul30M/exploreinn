@@ -50,34 +50,34 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(onboardingUrl);
   }
 
-  // comment out when testing locally since prisma client cant run on edge middleware & runtime
-  if (userId && isRegisterNewListingRoute(req)) {
-    if (await isStripeConnectedAccount({ userId })) {
-      return NextResponse.next();
-    } else {
-      const billingUrl = new URL(
-        `/users/${
-          (sessionClaims.public_metadata as PublicMetadataType).userDB_id
-        }/billing`,
-        req.url
-      );
-      return NextResponse.redirect(billingUrl);
-    }
-  }
+  // // comment out when testing locally since prisma client cant run on edge middleware & runtime
+  // if (userId && isRegisterNewListingRoute(req)) {
+  //   if (await isStripeConnectedAccount({ userId })) {
+  //     return NextResponse.next();
+  //   } else {
+  //     const billingUrl = new URL(
+  //       `/users/${
+  //         (sessionClaims.public_metadata as PublicMetadataType).userDB_id
+  //       }/billing`,
+  //       req.url
+  //     );
+  //     return NextResponse.redirect(billingUrl);
+  //   }
+  // }
 
-  // check if user is either owner or manager.if yes only then allow to view the listing dashboard
-  if (userId && listingDashboardRoute(req)) {
-    const listingId = req.nextUrl.pathname.split("/")[2];
+  // // check if user is either owner or manager.if yes only then allow to view the listing dashboard
+  // if (userId && listingDashboardRoute(req)) {
+  //   const listingId = req.nextUrl.pathname.split("/")[2];
 
-    if (
-      (await isListingManager(userId, listingId)) ||
-      (await isListingOwner(userId, listingId))
-    ) {
-      return NextResponse.next();
-    }
-    return NextResponse.redirect(new URL(`/listings/${listingId}`, req.url));
+  //   if (
+  //     (await isListingManager(userId, listingId)) ||
+  //     (await isListingOwner(userId, listingId))
+  //   ) {
+  //     return NextResponse.next();
+  //   }
+  //   return NextResponse.redirect(new URL(`/listings/${listingId}`, req.url));
 
-  }
+  // }
 
   // If the user is logged in and the route is protected, let them view.
   if (userId && !isPublicRoute(req)) return NextResponse.next();

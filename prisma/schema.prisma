@@ -106,6 +106,7 @@ model Listing {
   // socials
   socialMediaLinks            SocialMediaLinks[]
   tags                        String[]
+  Offer                       Offer[]
 }
 
 // Transaction
@@ -166,6 +167,8 @@ model Booking {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   specialNote   String?       @default("")
+  offer         Offer?        @relation("OfferBookings", fields: [offerId], references: [id])
+  offerId       String?       @db.ObjectId
 }
 
 type BookedRooms {
@@ -345,4 +348,39 @@ type HighDemand {
   priceIncrementPercentage Float
   roomId                   String
   roomName                 String
+}
+
+// Offers
+model Offer {
+  id                   String     @id @default(auto()) @map("_id") @db.ObjectId
+  scope                offerScope
+  name                 String
+  description          String
+  couponCode           String
+  isActive             Boolean    @default(true)
+  startDate            DateTime
+  endDate              DateTime
+  type                 offerType
+  flatDiscount         Float?     @default(0)
+  percentageDiscount   Float?     @default(0)
+  minimumBookingAmount Float?     @default(0)
+  maxDiscountAmount    Float?     @default(0)
+  redeemForPoints      Int?       @default(0)
+  bookings             Booking[]  @relation("OfferBookings")
+  bookingIds           String[]   @default([]) @db.ObjectId
+  listingId            String?    @db.ObjectId
+  listing              Listing?   @relation(fields: [listingId], references: [id])
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+enum offerScope {
+  ListingWide
+  AppWide
+}
+
+enum offerType {
+  Percentage_Discount
+  Flat_Discount
+  Extra_Perks
 }
