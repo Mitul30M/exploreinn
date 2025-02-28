@@ -197,7 +197,10 @@ export async function getListingsPreview(
  * @param listingId - The id of the listing to be retrieved.
  * @returns A promise that resolves to the listing with all of its rooms and reviews if it exists, otherwise null.
  */
-export async function getListingById(listingId: string) {
+export async function getListingById(
+  listingId: string,
+  forGuestBooking = false
+) {
   console.log("\nsearching for: ", listingId);
   const closedBookingRooms = await prisma.roomEvent.findFirst({
     where: {
@@ -239,17 +242,41 @@ export async function getListingById(listingId: string) {
     await dynamicallySetRoomPrice(room.id);
   });
 
+  const roomWhereClause = forGuestBooking
+    ? {
+        isAvailable: true,
+        id: {
+          notIn: closedBookingRoomsIds,
+        },
+        AND: [
+          {
+            isAvailable: true,
+          },
+          {
+            id: {
+              notIn: closedBookingRoomsIds,
+            },
+          },
+          {
+            id: {
+              in: roomIds.map((room) => room.id),
+            },
+          },
+        ],
+      }
+    : {
+        id: {
+          in: roomIds.map((room) => room.id),
+        },
+      };
+
   const listing = await prisma.listing.findUnique({
     where: {
       id: listingId,
     },
     include: {
       rooms: {
-        where: {
-          id: {
-            notIn: closedBookingRoomsIds,
-          },
-        },
+        where: roomWhereClause,
         select: {
           area: true,
           basePrice: true,

@@ -43,7 +43,7 @@ import React, { cloneElement } from "react";
 const ListingPage = async ({ params }: { params: Params }) => {
   // get the listingId from the url and then fetch data using api or server action
   const listingID = (await params).listingId;
-  const listing = await getListingById(listingID);
+  const listing = await getListingById(listingID, true);
 
   if (!listing) {
     return notFound();

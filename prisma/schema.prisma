@@ -268,14 +268,13 @@ model Review {
 
 // Room
 model Room {
-  id                      String         @id @default(auto()) @map("_id") @db.ObjectId
+  id                      String      @id @default(auto()) @map("_id") @db.ObjectId
   name                    String
   tag                     String
   isAvailable             Boolean
-  isDynamicallyPriced     Boolean        @default(false)
+  isDynamicallyPriced     Boolean     @default(false)
   price                   Float //used if dynamic-pricing is enabled, default to basePrice when created
   basePrice               Float //used if dynamic-pricing is disabled
-  dynamicPrice            DynamicPrice[]
   totalRoomsAllocated     Int
   currentlyAvailableRooms Int
   maxOccupancy            Int
@@ -288,24 +287,19 @@ model Room {
   perks                   String[]
   extras                  RoomExtra[]
   images                  String[]
-  roomEventIds            String[]       @default([]) @db.ObjectId
-  roomEvents              RoomEvent[]    @relation("RoomEvents", fields: [roomEventIds], references: [id])
+  roomEventIds            String[]    @default([]) @db.ObjectId
+  roomEvents              RoomEvent[] @relation("RoomEvents", fields: [roomEventIds], references: [id])
   coverImage              String
-  createdAt               DateTime       @default(now())
-  updatedAt               DateTime       @updatedAt
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
   // Relationships
-  listing                 Listing        @relation(fields: [listingId], references: [id])
-  listingId               String         @db.ObjectId
+  listing                 Listing     @relation(fields: [listingId], references: [id])
+  listingId               String      @db.ObjectId
 }
 
 type RoomBed {
   type  String
   count Int
-}
-
-type DynamicPrice {
-  date  DateTime
-  price Float
 }
 
 type RoomExtra {

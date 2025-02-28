@@ -40,12 +40,6 @@ export async function createListingRoom(
         area: data.area,
         basePrice: data.basePrice,
         extras: data.extras,
-        dynamicPrice: [
-          {
-            date: new Date(),
-            price: data.basePrice,
-          },
-        ],
         beds: data.beds,
         coverImage: data.images[0],
         currentlyAvailableRooms: data.totalRoomsAllocated,
@@ -171,67 +165,16 @@ export async function dynamicallySetRoomPrice(roomId: string) {
     } else if (currentDay === 1 || currentDay === 2 || currentDay === 3) {
       finalPrice -= finalPrice * 0.05; // Decrease by 5% on Mon, Tue, Wed
     }
-
-    // now set the finalPrice
-    const updatedPriceRoom = await prisma.$transaction(async (tx) => {
-      const updatedRoom = await tx.room.update({
-        where: {
-          id: roomId,
-        },
-        data: {
-          price: finalPrice,
-        },
-      });
-
-      // Get today's date without time
-      const today = new Date();
-
-      // Check if dynamicPrice array exists and has elements
-      if (updatedRoom.dynamicPrice.length > 0) {
-        return await tx.room.update({
-          where: {
-            id: roomId,
-          },
-          data: {
-            dynamicPrice: {
-              set: [
-                { date: today, price: finalPrice },
-                ...updatedRoom.dynamicPrice,
-              ],
-            },
-            price: finalPrice,
-          },
-        });
-      } else {
-        return await tx.room.update({
-          where: {
-            id: roomId,
-          },
-          data: {
-            dynamicPrice: {
-              set: [{ date: today, price: finalPrice }],
-            },
-            price: finalPrice,
-          },
-        });
-      }
-
-      return updatedRoom;
-    });
-  } else {
-    // set the price and create a new price entry in the room dynamic price
-    await prisma.room.update({
-      where: {
-        id: roomId,
-      },
-      data: {
-        dynamicPrice: {
-          set: [{ date: new Date(), price: finalPrice }, ...room.dynamicPrice],
-        },
-        price: finalPrice,
-      },
-    });
-  }
+  } // now set the finalPrice
+  // set the price and create a new price entry in the room dynamic price
+  await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      price: finalPrice,
+    },
+  });
 
   console.log(`Updated Booking Fee for ${room.name}: $${finalPrice}`);
 
