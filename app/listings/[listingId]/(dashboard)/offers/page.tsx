@@ -1,3 +1,5 @@
+import { ListingOffersDataTable } from "@/components/listing-dashoard/offers/offers-table";
+import { dashboardOffersTableColumns } from "@/components/listing-dashoard/offers/offers-table-columns";
 import { getListingById } from "@/lib/actions/listings/listings";
 import { getListingOffers } from "@/lib/actions/offers/offers";
 import { Tag } from "lucide-react";
@@ -24,6 +26,13 @@ const ListingOffersPage = async ({
           {listing.name}&apos;s Offers
         </h1>
       </div>
+
+      {/* Offers table */}
+      <ListingOffersDataTable
+        columns={dashboardOffersTableColumns}
+        data={offers}
+      />
     </section>
   );
 };
+export default ListingOffersPage;

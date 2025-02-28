@@ -1,7 +1,16 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   HoverCard,
   HoverCardContent,
@@ -19,16 +28,17 @@ import { format } from "date-fns";
 import {
   BadgeDollarSign,
   BadgePercent,
+  CalendarDays,
   CalendarRange,
   Clipboard,
   Code2,
+  MoreHorizontal,
   Tag,
   TicketCheck,
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
 import { startTransition } from "react";
-import { Button } from "react-day-picker";
 
 export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
   // select column
@@ -269,6 +279,55 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
     ),
     cell: ({ row }) => {
       return <p className="text-primary">{row.original.bookingIds.length}</p>;
+    },
+  },
+  // created at
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Created At"
+        icon={CalendarDays}
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <p className="text-primary">
+          {format(row.original.createdAt, "dd MMM yyy")}
+        </p>
+      );
+    },
+  },
+  // actions
+  {
+    id: "Actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const offer = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant={"ghost"} size="icon" className="h-6 w-6">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-56">
+            <DropdownMenuLabel className="font-medium ">
+              {offer.name}: {offer.couponCode.toUpperCase()}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => navigator.clipboard.writeText(offer.id)}
+            >
+              <Clipboard />
+              Copy BookingID
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
     },
   },
 ];
