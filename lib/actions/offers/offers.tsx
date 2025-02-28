@@ -148,8 +148,8 @@ export async function getListingOffers(
   activeOnly?: boolean
 ) {
   const whereClause = activeOnly
-    ? { listingId, isActive: true }
-    : { listingId };
+    ? { listingId, isActive: true, scope: "ListingWide" as offerScope }
+    : { listingId, scope: "ListingWide" as offerScope };
   const offers = await prisma.offer.findMany({
     where: whereClause,
     orderBy: {
@@ -163,16 +163,15 @@ export async function getListingOffers(
  * Retrieves all active "AppWide" offers.
  * The function returns a promise that resolves to an array of active offers
  * with a scope of "AppWide", ordered by their creation date in descending order.
- * 
+ *
  * @returns A promise that resolves to an array of active "AppWide" offers.
  */
-
-export async function getExploreinnOffers() {
+export async function getExploreinnOffers(activeOnly?: boolean) {
+  const whereClause = activeOnly
+    ? { scope: "AppWide" as offerScope, isActive: true }
+    : { scope: "AppWide" as offerScope };
   const offers = await prisma.offer.findMany({
-    where: {
-      scope: "AppWide",
-      isActive: true,
-    },
+    where: whereClause,
     orderBy: {
       createdAt: "desc",
     },

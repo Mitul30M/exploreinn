@@ -42,8 +42,7 @@ export const bookingStatus: BookingStatus = {
   },
   cancelled: {
     icon: CalendarOff,
-    className:
-      `bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100  ${baseClassName}`,
+    className: `bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100  ${baseClassName}`,
     label: "Cancelled",
   },
 } as const;
@@ -73,5 +72,4 @@ export const bookingStatusArray = [
     icon: CalendarOff,
     className: `bg-red-100/50 border-none text-red-950 dark:bg-red-900/50 dark:text-red-100  ${baseClassName}`,
   },
-]
-
+];

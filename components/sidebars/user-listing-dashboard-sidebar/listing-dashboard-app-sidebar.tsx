@@ -7,6 +7,7 @@ import {
   DoorOpen,
   HandCoins,
   Hotel,
+  Tag,
 } from "lucide-react";
 import {
   Sidebar,
@@ -52,6 +53,11 @@ export function AppSidebar({
         title: "Events",
         url: `/listings/${listingID}/events`,
         icon: CalendarRange,
+      },
+      {
+        title: "Offers",
+        url: `/listings/${listingID}/offers`,
+        icon: Tag,
       },
     ],
   };
