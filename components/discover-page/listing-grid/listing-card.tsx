@@ -29,7 +29,7 @@ import Link from "next/link";
 
 const ListingCard = async ({ listing }: { listing: TListingCard }) => {
   // ***currency conversion from $ -> default-user-currency
-  const amount = Math.min(...listing.rooms.map((room) => room.basePrice));
+  const amount = Math.min(...listing.rooms.map((room) => room.price));
   const toCurrency = "INR"; // Convert to Indian Rupees
   const formattedCurrency = await convertCurrency({
     amount,

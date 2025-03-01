@@ -37,15 +37,15 @@ interface DataTableProps<TData, TValue> {
    * @type React.ReactNode | null
    * @example floatingBar={<TasksTableFloatingBar table={table} />}
    */
-  floatingActionBar?: React.ReactNode | null;
   className?: string;
+  listingId: string;
 }
 
 export function ListingOffersDataTable<TData, TValue>({
   columns,
   data,
   className,
-  floatingActionBar,
+  listingId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -79,7 +79,7 @@ export function ListingOffersDataTable<TData, TValue>({
   return (
     <div className={"relative z-0 !mx-4 w-full" + className}>
       <div className="flex items-center pb-4">
-        <OffersTableToolbar table={table} />
+        <OffersTableToolbar table={table} listingId={listingId} />
       </div>
 
       <ScrollArea className="w-full rounded-md border-[1px] border-border/90 ">

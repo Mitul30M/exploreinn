@@ -49,8 +49,8 @@ export async function createListingSpecificOffer(data: {
         percentageDiscount: data.percentageDiscount,
         minimumBookingAmount: data.minimumBookingAmount,
         maxDiscountAmount: data.maxDiscountAmount,
-        startDate: data.startDate,
-        endDate: data.endDate,
+        startDate: new Date(data.startDate.setHours(0, 0, 0, 0)),
+        endDate: new Date(data.endDate.setHours(23, 59, 59, 999)),
       },
     });
     console.log("New Offer created:", newListingOffer);
@@ -98,8 +98,8 @@ export async function createAppWideOffer(data: {
         minimumBookingAmount: data.minimumBookingAmount,
         maxDiscountAmount: data.maxDiscountAmount,
         redeemForPoints: data.redeemForPoints,
-        startDate: data.startDate,
-        endDate: data.endDate,
+        startDate: new Date(data.startDate.setHours(0, 0, 0, 0)),
+        endDate: new Date(data.endDate.setHours(23, 59, 59, 999)),
       },
     });
     console.log("New AppWide Offer created:", newAppWideOffer);

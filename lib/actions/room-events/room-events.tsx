@@ -187,8 +187,8 @@ export async function deleteEvent(eventId: string) {
   );
 
   revalidatePath(`/listings/${event.listingId}/events`);
-  revalidatePath(`/listings/${event.listingId}`);
   revalidatePath(`/listings/${event.listingId}/rooms`);
+  revalidatePath(`/listings/${event.listingId}`);
   for (const room of event.roomIds) {
     revalidatePath(`/listings/${event.listingId}/rooms/${room}`);
   }

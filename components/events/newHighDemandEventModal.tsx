@@ -228,7 +228,7 @@ export function NewHighDemandEventModal({
               type="submit"
               size="sm"
               className={" self-end w-max"}
-              disabled={isLoading}
+              disabled={isLoading || form.formState.isSubmitting}
             >
               <Save className={isLoading ? "animate-spin" : ""} />
               {isLoading ? "Creating..." : "Create Event"}

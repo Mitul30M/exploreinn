@@ -10,13 +10,16 @@ import React from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { offerStatusArray } from "@/lib/utils/types/offer/offer-types";
+import { NewListingOfferDialog } from "./new-offer-dialog";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  listingId: string;
 }
 
 export function OffersTableToolbar<TData>({
   table,
+  listingId,
 }: DataTableToolbarProps<TData>) {
   const defaultSelectedOption = useSearchParams().get("offerType");
   const defaultBookingStatus = offerStatusArray.find(
@@ -76,8 +79,10 @@ export function OffersTableToolbar<TData>({
             <X />
           </Button>
         )}
+        <DataTableViewOptions table={table} className="ml-2 rounded" />
+        {/* new offer dialog trigger */}
+        <NewListingOfferDialog listingId={listingId} />
       </div>
-      <DataTableViewOptions table={table} className="ml-2 rounded" />
     </div>
   );
 }

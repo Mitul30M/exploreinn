@@ -29,6 +29,7 @@ const ListingOffersPage = async ({
 
       {/* Offers table */}
       <ListingOffersDataTable
+        listingId={listing.id}
         columns={dashboardOffersTableColumns}
         data={offers}
       />
