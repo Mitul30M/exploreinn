@@ -1,3 +1,4 @@
+import { offerType } from "@prisma/client";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -18,6 +19,15 @@ export interface NewBooking {
     cost: number;
   }[];
   totalWithoutTaxes: number;
+  isOfferApplied: boolean;
+  couponCode?: string;
+  offerId?: string;
+  offerType?: offerType | null;
+  offerName?: string;
+  offerDescription?: string;
+  discountPercentage?: number;
+  maxAllowedDiscountAmount: number;
+  discountedAmount: number;
   tax: number;
   totalPayable: number;
 }
@@ -33,6 +43,15 @@ const initialState: NewBooking = {
   totalWithoutTaxes: 0,
   tax: 0,
   totalPayable: 0,
+  isOfferApplied: false,
+  couponCode: "",
+  offerId: "",
+  offerType: null,
+  offerName: "",
+  offerDescription: "",
+  discountPercentage: 0,
+  maxAllowedDiscountAmount: 0,
+  discountedAmount: 0,
 };
 
 export const newBookingSlice = createSlice({
@@ -86,6 +105,40 @@ export const newBookingSlice = createSlice({
         }
       }
     },
+    // add discount
+    setDiscount: (
+      state,
+      action: PayloadAction<{
+        couponCode: string;
+        offerId: string;
+        offerType: offerType | null;
+        offerName: string;
+        offerDescription: string;
+        discountPercentage: number;
+        maxAllowedDiscountAmount: number;
+      }>
+    ) => {
+      state.couponCode = action.payload.couponCode.toUpperCase();
+      state.offerId = action.payload.offerId;
+      state.offerType = action.payload.offerType;
+      state.offerName = action.payload.offerName;
+      state.offerDescription = action.payload.offerDescription;
+      state.discountPercentage = action.payload.discountPercentage;
+      state.maxAllowedDiscountAmount = action.payload.maxAllowedDiscountAmount;
+      state.isOfferApplied = true;
+    },
+    //   remove discount
+    removeDiscount: (state) => {
+      state.couponCode = "";
+      state.offerId = "";
+      state.offerType = null;
+      state.offerName = "";
+      state.offerDescription = "";
+      state.discountPercentage = 0;
+      state.maxAllowedDiscountAmount = 0;
+      state.discountedAmount = 0;
+      state.isOfferApplied = false;
+    },
     //   add taxes
     setTax: (
       state,
@@ -117,10 +170,29 @@ export const newBookingSlice = createSlice({
       }, 0);
 
       const extrasTotal = state.extras.reduce((total, extra) => {
-        return total + (state.guests*extra.cost * state.nights);
+        return total + state.guests * extra.cost * state.nights;
       }, 0);
 
-      state.totalWithoutTaxes = roomsTotal + extrasTotal;
+      if (state.isOfferApplied) {
+        switch (state.offerType) {
+          case "Flat_Discount":
+            state.discountedAmount = state.maxAllowedDiscountAmount;
+            break;
+          case "Percentage_Discount":
+            const discountedAmount =
+              roomsTotal + extrasTotal * (state.discountPercentage! / 100);
+            state.discountedAmount =
+              state.maxAllowedDiscountAmount > discountedAmount
+                ? discountedAmount
+                : state.maxAllowedDiscountAmount;
+            break;
+          default:
+            state.discountedAmount = 0;
+        }
+      }
+
+      state.totalWithoutTaxes =
+        roomsTotal + extrasTotal - state.discountedAmount;
     },
 
     // calculate tax
@@ -148,6 +220,8 @@ export const {
   setTax,
   addExtra,
   removeExtra,
+  setDiscount,
+  removeDiscount,
   calculateTotal,
   calculateTax,
   calculateTotalPayable,

@@ -1,5 +1,6 @@
 import BookingDetails from "@/components/listing-page/booking-details-card";
 import { ImageCarousel } from "@/components/listing-page/image-carousel";
+import { OffersList } from "@/components/listing-page/offers-list";
 import RatingsPanel from "@/components/listing-page/ratings-panel";
 import { RenderHTML } from "@/components/listing-page/register-listing-page/multi-stepper-form/step4-render";
 import ListingReviewsSection from "@/components/listing-page/reviews-section";
@@ -43,7 +44,7 @@ import React, { cloneElement } from "react";
 const ListingPage = async ({ params }: { params: Params }) => {
   // get the listingId from the url and then fetch data using api or server action
   const listingID = (await params).listingId;
-  const listing = await getListingById(listingID, true);
+  const listing = await getListingById(listingID);
 
   if (!listing) {
     return notFound();
@@ -180,31 +181,32 @@ const ListingPage = async ({ params }: { params: Params }) => {
         <section className="flex gap-4 p-4 border-x-0 border-t-[1px] border-border/90 ">
           {/* listing details */}
           <div className="h-max flex flex-col xl:flex-row  gap-4">
-            {/* listing location */}
-            <div className=" h-max  border-[1px] border-border/90 rounded-sm pb-2">
-              <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex gap-2">
-                <Hotel className="text-primary mt-2" />
-                <div className="flex flex-col gap-0">
-                  <h1 className=" text-lg font-bold tracking-tight">
-                    {listing.name}
-                  </h1>
-                  <p className="text-muted-foreground/95 text-sm font-medium tracking-tight">
-                    {listing.address.city}, {listing.address.country}
-                  </p>
+            <div className="space-y-4 max-w-[400px]">
+              {/* listing location */}
+              <div className=" h-max  border-[1px] border-border/90 rounded-sm pb-2">
+                <h1 className="scroll-m-20 text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex gap-2">
+                  <div className="flex flex-col gap-0">
+                    <h1 className=" text-lg font-bold tracking-tight">
+                      {listing.name}
+                    </h1>
+                    <p className="text-muted-foreground/95 text-sm font-medium tracking-tight">
+                      {listing.address.fullAddress}
+                    </p>
+                  </div>
+                </h1>
+
+                {/* email */}
+                <div className="w-full flex items-center justify-between p-4 pb-0">
+                  <p className="text-sm">Email Address</p>
+                  <p className="font-semibold text-[16px]">{listing.email}</p>
                 </div>
-              </h1>
-              {/* email */}
-              <div className="w-full flex items-center justify-between p-4 pb-0">
-                <p className="text-sm">Email Address</p>
-                <p className="font-semibold text-[16px]">{listing.email}</p>
-              </div>
-              {/* phone */}
-              <div className="w-full flex items-center justify-between p-4">
-                <p className="text-sm">Phone No.</p>
-                <p className="font-semibold text-[16px]">{listing.phoneNo}</p>
-              </div>
-              {/* map; for now its just an image later we will use a mapbox api */}
-              <div className="w-full h-[350px] border-border/90 border-t-[1px] p-4 ">
+                {/* phone */}
+                <div className="w-full flex items-center justify-between p-4">
+                  <p className="text-sm">Phone No.</p>
+                  <p className="font-semibold text-[16px]">{listing.phoneNo}</p>
+                </div>
+                {/* map; for now its just an image later we will use a mapbox api */}
+                {/* <div className="w-full h-[350px] border-border/90 border-t-[1px] p-4 ">
                 <Image
                   src={"/exploreinn-map.png"}
                   alt="map"
@@ -212,78 +214,78 @@ const ListingPage = async ({ params }: { params: Params }) => {
                   height={600}
                   className="!w-full !h-full border-border/90 border-[1px] object-cover rounded"
                 />
-              </div>
-              {/* listing title */}
-              <h1 className="text-lg font-semibold tracking-tight px-4">
-                {listing.name}
-              </h1>
-              {/* listing address */}
-              <p className=" text-[14px] w-full h-min text-foreground/75 tracking-tight border-border/90 border-b-[1px] p-4 pt-0 line-clamp-5">
-                {listing.address.fullAddress}
-              </p>
-              {/* nearby landmark, airport,bus stop,train station */}
-              {/* landmark, tourist destination */}
-              <div className="w-full space-y-2 p-4 pb-2">
-                {listing.distanceFrom?.touristDestinations &&
-                  listing.distanceFrom?.touristDestinations.map(
-                    (destination, index) => (
-                      <div
-                        key={index}
-                        className="w-full flex items-center  gap-2"
-                      >
-                        <p className="text-sm">
-                          <Pyramid className="w-4 h-4 text-card-foreground/65" />
-                        </p>
-                        <p className="font-medium text-sm text-card-foreground/65">
-                          Approx {destination.distance}Km from{" "}
-                          {destination.name}.
-                        </p>
-                      </div>
-                    )
+              </div> */}
+
+                {/* nearby landmark, airport,bus stop,train station */}
+                {/* landmark, tourist destination */}
+                <div className="w-full space-y-2 p-4 pb-2 border-border/90 border-t-[1px]">
+                  {listing.distanceFrom?.touristDestinations &&
+                    listing.distanceFrom?.touristDestinations.map(
+                      (destination, index) => (
+                        <div
+                          key={index}
+                          className="w-full flex items-center  gap-2"
+                        >
+                          <p className="text-sm">
+                            <Pyramid className="w-4 h-4 text-card-foreground/65" />
+                          </p>
+                          <p className="font-medium text-sm text-card-foreground/65">
+                            Approx {destination.distance}Km from{" "}
+                            {destination.name}.
+                          </p>
+                        </div>
+                      )
+                    )}
+                  {/* airport */}
+                  {listing.distanceFrom?.airport && (
+                    <div className="w-full flex items-center  gap-2">
+                      <p className="text-sm">
+                        <Plane className="w-4 h-4 text-card-foreground/65" />
+                      </p>
+                      <p className="font-medium text-sm text-card-foreground/65">
+                        Approx {listing.distanceFrom?.airport.distance}Km from{" "}
+                        {listing.distanceFrom?.airport.name}.
+                      </p>
+                    </div>
                   )}
-                {/* airport */}
-                {listing.distanceFrom?.airport && (
-                  <div className="w-full flex items-center  gap-2">
-                    <p className="text-sm">
-                      <Plane className="w-4 h-4 text-card-foreground/65" />
-                    </p>
-                    <p className="font-medium text-sm text-card-foreground/65">
-                      Approx {listing.distanceFrom?.airport.distance}Km from{" "}
-                      {listing.distanceFrom?.airport.name}.
-                    </p>
-                  </div>
-                )}
-                {/* railway station */}
-                {listing.distanceFrom?.railwayStation && (
-                  <div className="w-full flex items-center  gap-2">
-                    <p className="text-sm">
-                      <TrainFront className="w-4 h-4 text-card-foreground/65" />
-                    </p>
-                    <p className="font-medium text-sm text-card-foreground/65">
-                      Approx {listing.distanceFrom?.railwayStation.distance}Km
-                      from {listing.distanceFrom?.railwayStation.name}.
-                    </p>
-                  </div>
-                )}
-                {/* bus stop */}
-                {listing.distanceFrom?.busStop && (
-                  <div className="w-full flex items-center  gap-2">
-                    <p className="text-sm">
-                      <BusFront className="w-4 h-4 text-card-foreground/65" />
-                    </p>
-                    <p className="font-medium text-sm text-card-foreground/65">
-                      Approx {listing.distanceFrom?.busStop.distance}Km from{" "}
-                      {listing.distanceFrom?.busStop.name}.
-                    </p>
-                  </div>
-                )}
-              </div>
-              {/*  
+                  {/* railway station */}
+                  {listing.distanceFrom?.railwayStation && (
+                    <div className="w-full flex items-center  gap-2">
+                      <p className="text-sm">
+                        <TrainFront className="w-4 h-4 text-card-foreground/65" />
+                      </p>
+                      <p className="font-medium text-sm text-card-foreground/65">
+                        Approx {listing.distanceFrom?.railwayStation.distance}Km
+                        from {listing.distanceFrom?.railwayStation.name}.
+                      </p>
+                    </div>
+                  )}
+                  {/* bus stop */}
+                  {listing.distanceFrom?.busStop && (
+                    <div className="w-full flex items-center  gap-2">
+                      <p className="text-sm">
+                        <BusFront className="w-4 h-4 text-card-foreground/65" />
+                      </p>
+                      <p className="font-medium text-sm text-card-foreground/65">
+                        Approx {listing.distanceFrom?.busStop.distance}Km from{" "}
+                        {listing.distanceFrom?.busStop.name}.
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {/*  
               <div className="w-full space-y-2 p-4 pt-0 flex flex-row justify-end">
                 <Button variant={"outline"} className="rounded-lg text-primary">
                   Navigate to Hotel
                 </Button>
               </div>*/}
+              </div>
+              {/* offers */}
+              <OffersList
+                listingId={listing.id}
+                listingName={listing.name}
+                listingOffers={listing.offers}
+              />
             </div>
             {/* listing amenities */}
             <div className="border-[1px]  border-border/90 h-max rounded-sm">

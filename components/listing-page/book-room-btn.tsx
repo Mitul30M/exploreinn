@@ -1,6 +1,6 @@
 "use client";
 
-import { Handshake, Minus, Plus } from "lucide-react";
+import { CircleX, Handshake, Minus, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { Room } from "@prisma/client";
@@ -56,9 +56,19 @@ const BookRoomBtn = ({
             incrementRooms();
             setShowCounter(true);
           }}
+          disabled={!room.isAvailable}
         >
-          <Handshake />
-          Book Room
+          {room.isAvailable ? (
+            <>
+              <Handshake />
+              Book Room
+            </>
+          ) : (
+            <>
+              <CircleX />
+              Room Not Available
+            </>
+          )}
         </Button>
       ) : (
         <div className="rounded-full flex flex-row py-1 gap-2 items-center justify-center">

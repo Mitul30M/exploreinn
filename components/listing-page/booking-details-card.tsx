@@ -52,6 +52,9 @@ const BookingDetails = ({
     rooms,
     taxes,
     totalWithoutTaxes,
+    isOfferApplied,
+    couponCode,
+    offerId,
   } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();
 
@@ -61,7 +64,7 @@ const BookingDetails = ({
     dispatch(calculateTotal());
     dispatch(calculateTax());
     dispatch(calculateTotalPayable());
-  }, [rooms, extras, nights, guests]);
+  }, [rooms, extras, nights, guests, isOfferApplied, couponCode, offerId]);
 
   if (checkIn && checkOut && nights && rooms.length > 0)
     return (
@@ -270,7 +273,7 @@ const BookingDetails = ({
 
         <Button
           className="w-full"
-          disabled={!rooms.length || !checkIn || !checkOut}
+          disabled={!rooms.length || !checkIn || !checkOut || !totalPayable}
           onClick={() => router.push(`/listings/${listing.id}/confirm-booking`)}
         >
           <Handshake /> Confirm Booking

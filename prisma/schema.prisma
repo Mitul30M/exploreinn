@@ -106,7 +106,7 @@ model Listing {
   // socials
   socialMediaLinks            SocialMediaLinks[]
   tags                        String[]
-  Offer                       Offer[]
+  offers                      Offer[]
 }
 
 // Transaction
