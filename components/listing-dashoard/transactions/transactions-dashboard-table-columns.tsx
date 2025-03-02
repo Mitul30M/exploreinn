@@ -174,7 +174,7 @@ export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactions
         // If no filter value is set, show all rows
         if (!filterValue || filterValue.length === 0) return true;
 
-        // Check if the row's bookingStatus matches any of the selected filters
+        // Check if the row's paymentStatus matches any of the selected filters
         return filterValue.includes(row.getValue(columnId));
       },
     },

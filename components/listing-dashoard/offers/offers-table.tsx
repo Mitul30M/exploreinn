@@ -114,7 +114,7 @@ export function ListingOffersDataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="text-nowrap font-medium py-[1px] text-center first:text-left last:text-right first:ps-4 last:pe-4 pr-6"
+                      className="text-nowrap font-medium py-[10px] text-center first:text-left last:text-right first:ps-4 last:pe-4 pr-6"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

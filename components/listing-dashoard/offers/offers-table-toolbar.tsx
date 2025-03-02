@@ -22,8 +22,8 @@ export function OffersTableToolbar<TData>({
   listingId,
 }: DataTableToolbarProps<TData>) {
   const defaultSelectedOption = useSearchParams().get("offerType");
-  const defaultBookingStatus = offerStatusArray.find(
-    (type) => type.label.toLowerCase() === defaultSelectedOption?.toLowerCase()
+  const defaultOfferType = offerStatusArray.find(
+    (type) => type.value === defaultSelectedOption?.toLowerCase()
   );
 
   const pathname = usePathname();
@@ -52,16 +52,12 @@ export function OffersTableToolbar<TData>({
           }, 500)}
           className="h-8 w-[150px] lg:w-[250px] rounded-lg shadow-sm"
         />
-        {table.getColumn("offerType") && (
+        {table.getColumn("type") && (
           <DataTableFacetedFilter
             table={table}
-            column={table.getColumn("offerType")!}
+            column={table.getColumn("type")!}
             title="Offer Types"
             options={offerStatusArray}
-            defaultSelectedOption={
-              defaultBookingStatus ? [defaultBookingStatus] : []
-            }
-            applyFilterOnlyOnce={true}
           />
         )}
         {isFiltered && (

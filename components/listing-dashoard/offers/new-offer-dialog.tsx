@@ -35,6 +35,9 @@ import { cn } from "@/lib/utils";
 import { addMonths, formatDate } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { createListingSpecificOffer } from "@/lib/actions/offers/offers";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const formSchema = z.object({
   listingID: z.string(),
@@ -91,9 +94,50 @@ export const NewListingOfferDialog = ({ listingId }: { listingId: string }) => {
 
   const onSubmit = async (formData: FormSchema): Promise<void> => {
     console.log(formData);
-    // setIsLoading(true);
-    // startTransition(async () => {});
-    // setIsLoading(false);
+    setIsLoading(true);
+    startTransition(async () => {
+      const isOfferCreated = await createListingSpecificOffer({
+        listingID: formData.listingID,
+        name: formData.name,
+        description: formData.description,
+        type: formData.type,
+        couponCode: formData.couponCode.toUpperCase(),
+        startDate: new Date(formData.dateRange.from.toISOString()),
+        endDate: new Date(formData.dateRange.to.toISOString()),
+        flatDiscount: formData.flatDiscount,
+        percentageDiscount: formData.percentageDiscount,
+        maxDiscountAmount: formData.maxDiscountAmount,
+        minimumBookingAmount: formData.minimumBookingAmount,
+      });
+      if (isOfferCreated) {
+        toast({
+          title: `*Offer Created Successfully!`,
+          description: `${formData.name} offer created successfully!`,
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <Save className="size-4 text-primary" /> Ok
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: `*Error while creating offer!`,
+          description: "Something went wrong! Please Try Again.",
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="error"
+            >
+              <Save className="size-4 text-primary" /> Try Again
+            </ToastAction>
+          ),
+        });
+      }
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -152,7 +196,6 @@ export const NewListingOfferDialog = ({ listingId }: { listingId: string }) => {
                   <FormLabel>Offer Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tell us a little bit about yourself"
                       className="resize h-max"
                       {...field}
                     />

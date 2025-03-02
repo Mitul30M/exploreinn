@@ -17,8 +17,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Switch } from "@/components/ui/switch";
-import { toggleIsActive } from "@/lib/actions/offers/offers";
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
+import { deleteOffer, toggleIsActive } from "@/lib/actions/offers/offers";
 import {
+  offerStatus,
   offerStatusArray,
   OfferStatusConfig,
 } from "@/lib/utils/types/offer/offer-types";
@@ -33,10 +36,12 @@ import {
   Clipboard,
   Code2,
   MoreHorizontal,
+  Save,
   Tag,
   TicketCheck,
   ToggleLeft,
   ToggleRight,
+  Trash2,
 } from "lucide-react";
 import { startTransition } from "react";
 
@@ -85,10 +90,10 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
       return (
         <HoverCard>
           <HoverCardTrigger asChild>
-            <p className="w-[80px] truncate">{row.original.description}</p>
+            <p className="w-[150px] truncate">{row.original.description}</p>
           </HoverCardTrigger>
           <HoverCardContent className="w-60 p-4">
-            <div className="flex justify-between border-border/90 border-[1px] items-center">
+            <div className="w-full text-wrap">
               {row.original.description}
             </div>
           </HoverCardContent>
@@ -143,13 +148,13 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  //   Valid ro-from
+  //   Valid to-from
   {
     accessorKey: "validity",
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Valid From"
+        title="Validity"
         icon={CalendarRange}
       />
     ),
@@ -164,7 +169,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
   },
   // Offer Type
   {
-    accessorKey: "offerType",
+    accessorKey: "type",
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -173,9 +178,8 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
       />
     ),
     cell: ({ row }) => {
-      const type: OfferStatusConfig = offerStatusArray.find(
-        (item) => item.value === row.original.type
-      )!;
+      const type: OfferStatusConfig =
+        offerStatus[row.original.type as keyof typeof offerStatus];
       if (type) {
         return (
           <div className="w-full flex items-center justify-center">
@@ -190,7 +194,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
       // If no filter value is set, show all rows
       if (!filterValue || filterValue.length === 0) return true;
 
-      // Check if the row's bookingStatus matches any of the selected filters
+      // Check if the row's offerType matches any of the selected filters
       return filterValue.includes(row.getValue(columnId));
     },
   },
@@ -200,7 +204,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Discount Amount($)"
+        title="Discount Amount ($)"
         icon={BadgeDollarSign}
       />
     ),
@@ -233,7 +237,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
   {
     accessorKey: "minimumBookingAmount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Min. Booking Fee($)" />
+      <DataTableColumnHeader column={column} title="Min. Booking Fee ($)" />
     ),
     cell: ({ row }) => {
       return (
@@ -252,7 +256,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
   {
     accessorKey: "maxDiscountAmount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Max. Discount($)" />
+      <DataTableColumnHeader column={column} title="Max. Discount ($)" />
     ),
     cell: ({ row }) => {
       return (
@@ -293,7 +297,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <p className="text-primary">
+        <p >
           {format(row.original.createdAt, "dd MMM yyy")}
         </p>
       );
@@ -325,6 +329,50 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
               <Clipboard />
               Copy BookingID
             </DropdownMenuItem>
+            {!offer.bookingIds.length && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="flex items-center gap-2"
+                  onClick={async () => {
+                    startTransition(async () => {
+                      const isOfferDeleted = await deleteOffer(offer.id);
+                      if (isOfferDeleted) {
+                        toast({
+                          title: `*Offer Created Successfully!`,
+                          description: `${offer.name} offer deleted successfully!`,
+                          action: (
+                            <ToastAction
+                              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+                              altText="success"
+                            >
+                              <Save className="size-4 text-primary" /> Ok
+                            </ToastAction>
+                          ),
+                        });
+                      } else {
+                        toast({
+                          title: `*Error while deleting offer!`,
+                          description:
+                            "Something went wrong! Please Try Again.",
+                          action: (
+                            <ToastAction
+                              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+                              altText="error"
+                            >
+                              <Save className="size-4 text-primary" /> Try Again
+                            </ToastAction>
+                          ),
+                        });
+                      }
+                    });
+                  }}
+                >
+                  <Trash2 />
+                  Delete Offer
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

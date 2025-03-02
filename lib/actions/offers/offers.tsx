@@ -178,3 +178,27 @@ export async function getExploreinnOffers(activeOnly?: boolean) {
   });
   return offers;
 }
+
+/**
+ * Deletes an offer by its id.
+ *
+ * @param offerId - The id of the offer to be deleted.
+ *
+ * @returns A promise that resolves to true if the offer was deleted successfully, false otherwise.
+ * If the offer is deleted successfully, it revalidates the /listings and /listings/:listingId/offers pages.
+ * If there is an error, it returns false.
+ */
+export async function deleteOffer(offerId: string) {
+  try {
+    console.log("Deleting offer: ", offerId);
+    const deletedOffer = await prisma.offer.delete({
+      where: { id: offerId },
+    });
+    console.log("Offer deleted:", deletedOffer);
+    revalidatePath(`/listing/${deletedOffer.listingId}`);
+    revalidatePath(`/listing/${deletedOffer.listingId}/offers`);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
