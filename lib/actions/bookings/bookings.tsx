@@ -148,7 +148,7 @@ export async function createBookNowPayLaterBooking(
     redirect(`/users/${newBooking.guestId}/bookings`);
   } catch (error) {
     console.error("Error creating booking: ", error);
-    throw new Error("Error creating booking");
+    // throw new Error("Error creating booking");
   }
 }
 

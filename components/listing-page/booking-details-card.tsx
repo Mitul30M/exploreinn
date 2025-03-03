@@ -215,17 +215,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
-              }).format(
-                (rooms.reduce(
-                  (acc, room) => acc + room.noOfRooms * nights * room.rate,
-                  0
-                ) +
-                  extras.reduce(
-                    (acc, extra) => acc + extra.cost * nights * guests,
-                    0
-                  )) *
-                  (tax.rate / 100)
-              )}
+              }).format(totalWithoutTaxes * (tax.rate / 100))}
             </p>
           </div>
         ))}
