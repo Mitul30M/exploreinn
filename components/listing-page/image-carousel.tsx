@@ -31,7 +31,7 @@ export function ImageCarousel({
       //   onMouseLeave={plugin.current.reset}
     >
       <CarouselContent className="">
-        {images.map((_, index) => (
+        {images.map((_) => (
           <CarouselItem key={_} className="w-full h-full">
             <div className=" w-full bg-muted  h-[300px]  md:h-[400px]   lg:h-[450px]  xl:h-[500px] flex items-center justify-center">
               <Image

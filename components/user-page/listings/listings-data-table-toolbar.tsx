@@ -24,7 +24,7 @@ export function ListingsDataTableToolbar<TData>({
   const params = new URLSearchParams(searchParams);
   const isFiltered = table.getState().columnFilters.length > 0;
   const [searchQuery, setSearchQuery] = React.useState("");
-
+  console.log(searchQuery, isFiltered);
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">

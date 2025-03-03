@@ -12,7 +12,7 @@ interface MailListProps {
   onMailClick: (mail: Mail) => void;
 }
 
-const MailList = ({ mails, onMailClick, ...props }: MailListProps) => {
+const MailList = ({ mails, onMailClick }: MailListProps) => {
   return (
     <ScrollArea className="h-[calc(100vh-1rem)]">
       {mails.map((mail) => (

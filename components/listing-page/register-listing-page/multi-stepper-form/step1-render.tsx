@@ -20,11 +20,9 @@ const RenderStep1 = () => {
 
   return (
     <div className="space-y-14 w-full">
-      
-
       <h1 className="text-xl font-semibold  flex flex-col gap-4">
         <Badge className="rounded-full w-max">Step 1</Badge>
-        Let's Get Started
+        Let&apos;s Get Started
       </h1>
 
       {/* Listing Name */}

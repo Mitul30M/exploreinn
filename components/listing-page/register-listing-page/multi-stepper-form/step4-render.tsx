@@ -90,7 +90,7 @@ const RenderStep4 = () => {
       <div className="flex flex-col gap-4">
         <h1 className="text-xl font-semibold flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 4</Badge>
-          {listingName}'s Contact Details
+          {listingName}&apos;s Contact Details
         </h1>
 
         <p className="text-[14px] text-accent-foreground">

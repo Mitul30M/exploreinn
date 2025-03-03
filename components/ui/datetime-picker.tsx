@@ -16,7 +16,7 @@ type TimeFormat = "hours" | "minutes" | "seconds" | "am/pm";
 type DateTimeArray<T extends DateFormat | TimeFormat> = T[];
 type DateTimeFormatDefaults = [
   DateTimeArray<DateFormat>,
-  DateTimeArray<TimeFormat>
+  DateTimeArray<TimeFormat>,
 ];
 
 const DEFAULTS = [
@@ -147,7 +147,7 @@ export const DatetimePicker = forwardRef<HTMLDivElement, DateTimeInput>(
   ) => {
     const handleDateChange = useCallback(
       (nextDate: Date | undefined) => {
-        onChange ? onChange(nextDate) : console.log(nextDate);
+        if (onChange) onChange(nextDate);
       },
       [onChange]
     );

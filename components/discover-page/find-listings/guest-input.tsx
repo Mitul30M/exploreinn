@@ -26,16 +26,14 @@ const GuestCounterInput = ({
   // Function to increase the guest count
   const incrementGuests = () => {
     if (noOfGuests < 10) {
-      guestCount && onIncrement?.();
-      setNoOfGuests(noOfGuests + 1);
+      if (guestCount) onIncrement?.();      setNoOfGuests(noOfGuests + 1);
     }
   };
 
   // Function to decrease the guest count
   const decrementGuests = () => {
     if (noOfGuests > 1) {
-      guestCount && onDecrement?.();
-      setNoOfGuests(noOfGuests - 1);
+      if (guestCount) onDecrement?.();      setNoOfGuests(noOfGuests - 1);
     }
   };
 

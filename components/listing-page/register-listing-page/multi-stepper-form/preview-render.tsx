@@ -9,22 +9,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
-import { AppDispatch, RootState } from "@/lib/redux-store/store";
-import { hotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
+import { useAppSelector } from "@/hooks/redux-hooks";
+import { RootState } from "@/lib/redux-store/store";
 import { Heart, Sparkles, Star, ThumbsUp } from "lucide-react";
 import Image from "next/image";
 
 const RenderPreviewStep = () => {
   const listing = useAppSelector((state: RootState) => state.registerListing);
-  const dispatch: AppDispatch = useAppDispatch();
 
   return (
     <div className="space-y-14 w-full">
       <div className="flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
           <Badge className="rounded-full w-max">Preview</Badge>
-          Let's Preview Your Listing
+          Let&apos;s Preview Your Listing
         </h1>
         <p className="text-[14px] text-accent-foreground">
           You can edit your listing anytime from your dashboard. If satisfied
@@ -84,12 +82,7 @@ const RenderPreviewStep = () => {
             <Separator className="my-4" />
 
             {/* Ammenities */}
-            <ListingAmenities
-              listing={hotelAmenities.filter((hotelAmenity) =>
-                listing.amenities.includes(hotelAmenity.name)
-              )}
-            />
-
+            <ListingAmenities amenities={listing.amenities} />
             <Separator className="mt-4 px-4" />
           </CardContent>
 
@@ -107,7 +100,7 @@ const RenderPreviewStep = () => {
         </Card>
 
         <p className="text-[14px] text-accent-foreground/70">
-          Look's Good, Doesn't It?
+          Look&apos;s Good, Doesn&apos;t It?
         </p>
       </div>
     </div>

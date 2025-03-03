@@ -21,10 +21,10 @@ export function OffersTableToolbar<TData>({
   table,
   listingId,
 }: DataTableToolbarProps<TData>) {
-  const defaultSelectedOption = useSearchParams().get("offerType");
-  const defaultOfferType = offerStatusArray.find(
-    (type) => type.value === defaultSelectedOption?.toLowerCase()
-  );
+  // const defaultSelectedOption = useSearchParams().get("offerType");
+  // const defaultOfferType = offerStatusArray.find(
+  //   (type) => type.value === defaultSelectedOption?.toLowerCase()
+  // );
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -32,7 +32,7 @@ export function OffersTableToolbar<TData>({
   const params = new URLSearchParams(searchParams);
   const isFiltered = table.getState().columnFilters.length > 0;
   const [searchQuery, setSearchQuery] = React.useState("");
-
+  console.log(searchQuery);
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">

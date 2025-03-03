@@ -25,7 +25,7 @@ const UserInboxPage = () => {
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
         <Inbox size={22} className="text-primary" />
-        Mitul's Mails
+        Mitul&apos;s Mails
       </h1>
 
       <SidebarProvider
@@ -36,11 +36,17 @@ const UserInboxPage = () => {
         }
         className="max-h-[70vh] "
       >
-        <InboxSidebar data={sortedMails} onMailClick={setSelectedMail} className="flex items-start justify-start rounded-md" />
+        <InboxSidebar
+          data={sortedMails}
+          onMailClick={setSelectedMail}
+          className="flex items-start justify-start rounded-md"
+        />
         {/* selected mail should not be passed down like this, instead make use of redux store to select the current mail directly in the component*/}
         {/* also update the logic to change an unread text to read when the user clicks on the mail */}
-        <CurrentMail mail={selectedMail} className="max-h-[80%] w-full p-4 border border-border/90" />
-
+        <CurrentMail
+          mail={selectedMail}
+          className="max-h-[80%] w-full p-4 border border-border/90"
+        />
       </SidebarProvider>
     </section>
   );

@@ -39,7 +39,17 @@ export async function createUser(data: {
 
 export async function onboardUser(
   prevState: FormState,
-  data: Record<string, any>
+  data: {
+    dob: Date;
+    gender: "Male" | "Female" | "Other";
+    country: string;
+    residence: string;
+    street: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    landmark?: string | undefined;
+  }
 ): Promise<FormState> {
   try {
     const { userId, sessionClaims } = await auth();
@@ -51,10 +61,6 @@ export async function onboardUser(
         message: "Unauthorized",
         type: "error",
       };
-    }
-    // Parse `dob` as a Date
-    if (data.dob) {
-      data.dob = new Date(data.dob as string);
     }
 
     // Validate using Zod
@@ -107,7 +113,7 @@ export async function onboardUser(
         },
       });
 
-      const { data, error } = await resend.emails.send({
+      await resend.emails.send({
         from: "exploreinn <onboarding@mitul30m.in>",
         to: [user.email],
         subject: "Account Onboarding Complete",
@@ -181,7 +187,11 @@ export async function deleteUser(clerkId?: string, userId?: string) {
 
 export async function updatePersonalInfo(
   prevState: FormState,
-  data: Record<string, any>
+  data: {
+    dob: Date;
+    gender: "Male" | "Female" | "Other";
+    country: string;
+  }
 ): Promise<FormState> {
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
@@ -193,11 +203,6 @@ export async function updatePersonalInfo(
     };
   }
   try {
-    // Parse `dob` as a Date
-    if (data.dob) {
-      data.dob = new Date(data.dob as string);
-    }
-
     // Validate using Zod
     const parsed = updatePersonalInfoFormSchema.safeParse(data);
 
@@ -229,6 +234,7 @@ export async function updatePersonalInfo(
       fields: parsed.data,
     };
   } catch (err) {
+    console.error(err);
     return {
       type: "error",
       message: "Internal server error",
@@ -238,7 +244,14 @@ export async function updatePersonalInfo(
 
 export async function updateResidentialInfo(
   prevState: FormState,
-  data: Record<string, any>
+  data: {
+    residence: string;
+    street: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    landmark?: string | undefined;
+  }
 ): Promise<FormState> {
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
@@ -286,6 +299,7 @@ export async function updateResidentialInfo(
       fields: parsed.data,
     };
   } catch (err) {
+    console.error(err);
     return {
       type: "error",
       message: "Internal server error",

@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { updateResidentialInfoFormSchema } from "@/lib/schemas/zod-schema";
 import { User } from "@prisma/client";
 
-const EditResidentialInfoForm = ({ user, ...props }: { user: User }) => {
+const EditResidentialInfoForm = ({ user }: { user: User }) => {
   const [state, formAction] = useActionState(updateResidentialInfo, {
     message: "",
     type: undefined,
@@ -81,7 +81,7 @@ const EditResidentialInfoForm = ({ user, ...props }: { user: User }) => {
     <Form {...form}>
       <form
         ref={residentialInfoFormRef}
-        action={formAction}
+        // action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
           form.handleSubmit(() => {

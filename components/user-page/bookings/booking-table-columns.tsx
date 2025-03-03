@@ -377,7 +377,7 @@ export const bookingTableColumns: ColumnDef<UserBookings>[] = [
             <Link href={`/listings/${booking.listingId}`}>
               <DropdownMenuItem className="flex items-center gap-2">
                 <Hotel />
-                Visit Listing's Page
+                Visit Listing&apos;s Page
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem

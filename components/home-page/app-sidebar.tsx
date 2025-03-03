@@ -1,11 +1,11 @@
-import * as React from "react"
-import { ChevronRight, File, Folder } from "lucide-react"
+import * as React from "react";
+import { ChevronRight, File, Folder } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +18,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 // This is sample data.
 const data = {
@@ -62,7 +62,7 @@ const data = {
     "package.json",
     "README.md",
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -97,11 +97,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
 
-function Tree({ item }: { item: string | any[] }) {
-  const [name, ...items] = Array.isArray(item) ? item : [item]
+function Tree({
+  item,
+}: {
+  item: string | (string | (string | (string | string[])[])[])[];
+}) {
+  const [name, ...items] = Array.isArray(item) ? item : [item];
 
   if (!items.length) {
     return (
@@ -112,7 +116,7 @@ function Tree({ item }: { item: string | any[] }) {
         <File />
         {name}
       </SidebarMenuButton>
-    )
+    );
   }
 
   return (
@@ -137,5 +141,5 @@ function Tree({ item }: { item: string | any[] }) {
         </CollapsibleContent>
       </Collapsible>
     </SidebarMenuItem>
-  )
+  );
 }

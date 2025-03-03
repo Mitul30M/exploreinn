@@ -13,26 +13,14 @@ import {
 
 const BookRoomBtn = ({
   room,
-  className,
-  ...props
 }: {
   room: Room;
   className?: string;
 }) => {
   const [showCounter, setShowCounter] = useState<boolean>(false);
+  console.log(showCounter);
   // const [rooms, setRooms] = useState<number>(1);
-  const {
-    checkIn,
-    checkOut,
-    guests,
-    nights,
-    totalPayable,
-    tax,
-    extras,
-    rooms,
-    taxes,
-    totalWithoutTaxes,
-  } = useAppSelector((state: RootState) => state.newBooking);
+  const { rooms } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();
 
   const currentRoom = rooms.find((_) => _.roomID === room.id);

@@ -27,7 +27,7 @@ export default function RewardsPage() {
       {/* User's Reward Points and Offers */}
       <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
         <Gift size={22} className="text-primary" />
-        Mitul's Rewards
+        Mitul&apos;s Rewards
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] gap-4 h-full w-full px-4">

@@ -61,7 +61,7 @@ const RenderStep5 = () => {
     useAppSelector((state: RootState) => state.registerListing);
   const dispatch: AppDispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number[]>([]);
+  const [progress] = useState<number[]>([]);
 
   useEffect(() => {
     if (!email.length || !phone.length) {
@@ -114,8 +114,8 @@ const RenderStep5 = () => {
     setIsLoading(true);
     try {
       let successCount = 0;
-      const promise = await Promise.all(
-        files.map(async (file, index) => {
+      await Promise.all(
+        files.map(async (file) => {
           const signedURLResult = await getSignedURL({
             prefix: "listing",
             fileSize: file.size,
@@ -173,6 +173,7 @@ const RenderStep5 = () => {
         dispatch(setCoverImage(images[0]));
       }
     } catch (error) {
+      console.error("Error uploading files:", error);
       toast({
         title: `*Error while Uploading Files`,
         description:

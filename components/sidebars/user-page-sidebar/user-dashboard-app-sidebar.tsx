@@ -204,10 +204,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <NavUser
           user={{
-            name: user?.fullName!,
-            email: user?.emailAddresses[0]!.emailAddress!,
-            avatar: user?.imageUrl!,
-            userDB_id: userDB_id as string,
+            name: user?.fullName ?? '',
+            email: user?.emailAddresses[0]?.emailAddress ?? '',
+            avatar: user?.imageUrl ?? '',
+            userDB_id: userDB_id?.toString() ?? '',
           }}
         />
       </SidebarHeader>

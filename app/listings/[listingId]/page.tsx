@@ -25,7 +25,6 @@ import {
   DoorOpen,
   HandPlatter,
   Heart,
-  Hotel,
   Info,
   List,
   MessageCircleHeart,

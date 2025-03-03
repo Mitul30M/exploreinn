@@ -14,7 +14,7 @@ export interface OfferStatusConfig {
   value: offerType;
 }
 
-type OfferStatusKey = "Percentage_Discount" | "Flat_Discount" | "Extra_Perks";
+// type OfferStatusKey = "Percentage_Discount" | "Flat_Discount" | "Extra_Perks";
 
 export type OfferStatus = {
   Percentage_Discount: OfferStatusConfig;

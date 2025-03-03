@@ -25,13 +25,7 @@ export type UserBookings = Booking & {
   };
 };
 
-const UserBookingsPage = async ({
-  params,
-  searchParams,
-}: {
-  params: Params;
-  searchParams?: SearchParams;
-}) => {
+const UserBookingsPage = async () => {
   const user = await currentUser();
   const userBookings = await getUserBookings();
 
@@ -41,7 +35,7 @@ const UserBookingsPage = async ({
       <div id="personal-info" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <TicketsPlane size={22} className="text-primary" />
-          {user?.firstName}'s Booking History
+          {user?.firstName}&apos;s Booking History
         </h1>
 
         {/* User's Booking History */}

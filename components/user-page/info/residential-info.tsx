@@ -4,7 +4,7 @@ interface ResidentialInfoProps {
   user: User;
   className?: string;
 }
-const ResidentialInfo = ({ user, ...props }: ResidentialInfoProps) => {
+const ResidentialInfo = ({ user }: ResidentialInfoProps) => {
   return (
     <div className="grid grid-cols-[300px_1fr] items-center gap-4">
       {/* flat no. */}

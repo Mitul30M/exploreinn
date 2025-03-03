@@ -212,7 +212,6 @@ export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactions
         />
       ),
       cell: ({ row }) => {
-        const amount = row.original.totalCost;
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",

@@ -36,7 +36,7 @@ export function EditResidentialInfoModal({
           </DialogTitle>
           <DialogDescription>
             Make changes to your residential information here. Click save when
-            you're done.
+            you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Separator className="my-2" />

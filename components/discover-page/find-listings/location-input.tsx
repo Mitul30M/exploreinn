@@ -8,7 +8,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Building, FerrisWheel, Globe, Loader, MapPinHouse } from "lucide-react";
+import {
+  Building,
+  FerrisWheel,
+  Globe,
+  Loader,
+  MapPinHouse,
+} from "lucide-react";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area"; // Import the ScrollArea component
@@ -69,7 +75,9 @@ const LocationInput = () => {
       }
 
       const data = await response.json();
-      return data.features.map((feature: any) => feature.place_name);
+      return data.features.map(
+        (feature: { place_name: string }) => feature.place_name
+      );
     } catch (error) {
       console.error("Error fetching city suggestions:", error);
       return [];
@@ -85,20 +93,32 @@ const LocationInput = () => {
     // add the selected city to the redux store's value to maintain and make it available globally
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="rounded-xl rounded-r-none hover:text-primary">
+        <Button
+          variant="outline"
+          className="rounded-xl rounded-r-none hover:text-primary"
+        >
           <MapPinHouse />
-          {cityInput ? cityInput : 'Find The Perfect Destination'}
+          {cityInput ? cityInput : "Find The Perfect Destination"}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-4">
         <div className="space-y-2">
-          <Label htmlFor="location-search" className="flex items-center gap-1 mb-2"><Building size={20} />Cities to Explore</Label>
+          <Label
+            htmlFor="location-search"
+            className="flex items-center gap-1 mb-2"
+          >
+            <Building size={20} />
+            Cities to Explore
+          </Label>
           <Input
             id="location-search"
             type="text"
             placeholder="Search for a city"
             defaultValue={cityInput}
-            onChange={useDebouncedCallback((event) => handleInputChange(event), 150)}
+            onChange={useDebouncedCallback(
+              (event) => handleInputChange(event),
+              150
+            )}
             className="w-full px-3 py-2"
           />
           {queryLoading ? (

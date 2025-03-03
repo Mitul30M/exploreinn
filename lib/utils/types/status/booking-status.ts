@@ -12,7 +12,7 @@ export interface BookingStatusConfig {
   label: string;
 }
 
-type BookingStatusKey = "ongoing" | "upcoming" | "completed" | "cancelled";
+// type BookingStatusKey = "ongoing" | "upcoming" | "completed" | "cancelled";
 
 export type BookingStatus = {
   ongoing: BookingStatusConfig;

@@ -18,7 +18,7 @@ const ListingTodayRevenue = ({
   return (
     <Card className={className}>
       <CardHeader className="p-4 m-0">
-        <CardTitle>Today's Revenue</CardTitle>
+        <CardTitle>Today&apos;s Revenue</CardTitle>
         <CardDescription>{format(new Date(), "dd MMMM yyyy")}</CardDescription>
       </CardHeader>
       <CardContent className="p-4 text-3xl font-semibold text-primary m-0">

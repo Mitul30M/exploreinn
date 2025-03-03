@@ -21,7 +21,6 @@ const baseURL = process.env.NEXT_PUBLIC_ORIGIN as string;
 
 const Invoice = ({
   user,
-  booking,
   transaction,
 }: {
   user: User;
@@ -228,55 +227,5 @@ Invoice.PreviewProps = {
     chargedAt: null,
     refundedAt: null,
   } satisfies Transaction,
-  booking: {
-    id: "678a7e8650c81a45fe6b4b73",
-    listingId: "678a7c0c50c81a45fe6b4b70",
-    guestId: "6789e51a0426fc58cdd53323",
-    checkInDate: new Date("2025-01-17T18:30:00.000Z"),
-    checkOutDate: new Date("2025-01-18T18:30:00.000Z"),
-    guests: 1,
-    bookingType: "ONLINE_PAYMENT",
-    paymentId: "pi_3QiHxSLq2IOwmPMu03Fwea9u",
-    paymentStatus: "completed",
-    tax: 144,
-    totalCost: 1144,
-    bookingStatus: "upcoming",
-    createdAt: new Date("2025-01-17T16:00:05.931Z"),
-    updatedAt: new Date("2025-01-17T16:00:07.962Z"),
-    specialNote: "",
-    rooms: [
-      {
-        roomId: "678a7c0c50c81a45fe6b4b71",
-        name: "Deluxe Room",
-        rate: 1000,
-        noOfRooms: 1,
-      },
-    ],
-    extras: [
-      {
-        name: "No Extras",
-        cost: 0,
-      },
-    ],
-    taxRates: [
-      {
-        name: "State Room Occupancy Excise Tax",
-        rate: 5.7,
-      },
-      {
-        name: "Local Option Room Occupancy Tax",
-        rate: 2.5,
-      },
-      {
-        name: "Convention Center Financing Fee",
-        rate: 2.2,
-      },
-      {
-        name: "Tourism Assessment Fee",
-        rate: 4,
-      },
-    ],
-    transactionId: "678a7e8750c81a45fe6b4b74",
-  } satisfies Booking,
 };
 export default Invoice;

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTableViewOptions } from "../../ui/data-table/data-table-view-options";
 // import { priorities, statuses } from "../data/data";
-import { bookingStatusArray } from "@/lib/utils/types/status/booking-status";
 import { paymentStatusArray } from "@/lib/utils/types/status/payement-status";
 import { DataTableFacetedFilter } from "../../ui/data-table/data-table-faceted-filter";
 import React from "react";
@@ -20,11 +19,11 @@ interface DataTableToolbarProps<TData> {
 export function TransactionsDataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const defaultSelectedOption = useSearchParams().get("bookingStatus");
-  const defaultBookingStatus = bookingStatusArray.find(
-    (status) =>
-      status.label.toLowerCase() === defaultSelectedOption?.toLowerCase()
-  );
+  // const defaultSelectedOption = useSearchParams().get("bookingStatus");
+  // const defaultBookingStatus = bookingStatusArray.find(
+  //   (status) =>
+  //     status.label.toLowerCase() === defaultSelectedOption?.toLowerCase()
+  // );
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -32,7 +31,7 @@ export function TransactionsDataTableToolbar<TData>({
   const params = new URLSearchParams(searchParams);
   const isFiltered = table.getState().columnFilters.length > 0;
   const [searchQuery, setSearchQuery] = React.useState("");
-
+  console.log(searchQuery);
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">

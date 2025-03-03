@@ -58,6 +58,7 @@ export async function createListingSpecificOffer(data: {
     revalidatePath(`/listing/${data.listingID}/offers`);
     return true;
   } catch (error) {
+    console.log(error);
     return false;
   }
 }
@@ -106,6 +107,7 @@ export async function createAppWideOffer(data: {
     revalidatePath(`/listings`);
     return true;
   } catch (error) {
+    console.error("Error creating AppWide Offer:", error);
     return false;
   }
 }
@@ -133,6 +135,7 @@ export async function toggleIsActive(offerId: string, isActive: boolean) {
     revalidatePath(`/listing/${updatedOffer.listingId}/offers`);
     return true;
   } catch (error) {
+    console.error("Error toggling isActive:", error);
     return false;
   }
 }
@@ -199,6 +202,7 @@ export async function deleteOffer(offerId: string) {
     revalidatePath(`/listing/${deletedOffer.listingId}/offers`);
     return true;
   } catch (error) {
+    console.error("Error deleting offer:", error);
     return false;
   }
 }

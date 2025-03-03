@@ -20,7 +20,6 @@ interface DataTableViewOptionsProps<TData> {
 
 export function DataTableViewOptions<TData>({
   table,
-  className,
   ...props
 }: DataTableViewOptionsProps<TData>) {
   return (

@@ -41,7 +41,7 @@ export function InboxSidebar({
   // Note: I'm using state to show active item.
   // IRL you should use the url/router.
   const [activeItem, setActiveItem] = React.useState(inboxNav[0]);
-  const { setOpen, open } = useSidebar();
+  const { open } = useSidebar();
   const [readMails, setReadMails] = React.useState(false);
 
   const filteredMails = React.useCallback(() => {
@@ -108,9 +108,11 @@ export function InboxSidebar({
         <SidebarHeader>
           <NavUser
             user={{
-              name: user?.fullName!,
-              email: user?.emailAddresses[0]!.emailAddress!,
-              avatar: user?.imageUrl!,
+              name: user?.fullName ?? "",
+              email: user?.emailAddresses[0]?.emailAddress ?? "",
+              avatar: user?.imageUrl ?? "",
+              userDB_id:
+                (user?.publicMetadata as PublicMetadataType)?.userDB_id ?? "",
             }}
           />
         </SidebarHeader>

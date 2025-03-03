@@ -34,7 +34,7 @@ export function EditPersonalInfoModal({
           </DialogTitle>
           <DialogDescription>
             Make changes to your personal information here. Click save when
-            you're done.
+            you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Separator className="my-2" />

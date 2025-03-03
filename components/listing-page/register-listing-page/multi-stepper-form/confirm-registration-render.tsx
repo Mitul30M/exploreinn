@@ -105,7 +105,7 @@ const ConfirmNewRegistration = () => {
         </h1>
         <p className="text-[14px] text-accent-foreground">
           Once registered you will be able to monitor your listing and manage
-          it. User's across the globe can view & make bookings on your listing.
+          it. User&apos;s across the globe can view & make bookings on your listing.
           You will be able to manage your listing from your dashboard.
         </p>
 

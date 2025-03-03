@@ -7,7 +7,7 @@ export default function WishlistPage() {
       {/* User's Wishlist */}
       <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
         <BookHeart size={22} className="text-primary" />
-        Mitul's Wishlist
+        Mitul&apos;s Wishlist
       </h1>
 
       <ListingGrid

@@ -110,6 +110,7 @@ export async function enlistListing(
       type: "success",
     };
   } catch (error) {
+    console.log(error);
     return {
       type: "error",
       message: "Internal server error",

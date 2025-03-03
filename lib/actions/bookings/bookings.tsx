@@ -20,7 +20,7 @@ import { stripe } from "@/lib/stripe";
 import Invoice from "@/components/emails/invoice";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
 
-const bookingFormSchema = z.object({
+const _bookingFormSchema = z.object({
   listingID: z.string(),
   checkIn: z.date(),
   checkOut: z.date(),
@@ -53,7 +53,6 @@ const bookingFormSchema = z.object({
     required_error: "Please a Payment Method",
   }),
 });
-
 /**
  * Creates a new booking with the given details and a payment status of "pending".
  *
@@ -64,7 +63,7 @@ const bookingFormSchema = z.object({
  * @throws {Error} If the booking creation fails
  */
 export async function createBookNowPayLaterBooking(
-  bookingDetails: z.infer<typeof bookingFormSchema>
+  bookingDetails: z.infer<typeof _bookingFormSchema>
 ): Promise<void> {
   console.log("creating new booking");
   console.log(bookingDetails);
@@ -87,6 +86,10 @@ export async function createBookNowPayLaterBooking(
   }
 
   try {
+    const parsedBookingDetails = _bookingFormSchema.parse(bookingDetails);
+    if (!parsedBookingDetails) {
+      throw new Error("Invalid booking details");
+    }
     const newBooking = await prisma.booking.create({
       data: {
         listingId: bookingDetails.listingID,
@@ -94,12 +97,19 @@ export async function createBookNowPayLaterBooking(
         checkInDate: bookingDetails.checkIn,
         checkOutDate: bookingDetails.checkOut,
         guests: bookingDetails.guests,
-        rooms: bookingDetails.rooms.map((room: any) => ({
-          roomId: room.roomID,
-          name: room.name,
-          rate: room.rate,
-          noOfRooms: room.noOfRooms,
-        })),
+        rooms: bookingDetails.rooms.map(
+          (room: {
+            roomID: string;
+            name: string;
+            rate: number;
+            noOfRooms: number;
+          }) => ({
+            roomId: room.roomID,
+            name: room.name,
+            rate: room.rate,
+            noOfRooms: room.noOfRooms,
+          })
+        ),
         extras: bookingDetails.extras,
         bookingType: "BOOK_NOW_PAY_LATER",
         paymentStatus: "pending",
@@ -124,7 +134,7 @@ export async function createBookNowPayLaterBooking(
     // guest side revalidation
     revalidatePath(`/users/${newBooking.guestId}/bookings`);
     revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
-    const { data, error } = await resend.emails.send({
+    await resend.emails.send({
       from: "exploreinn <no-reply@mitul30m.in>",
       to: [user.email],
       subject: "Booking Successful",
@@ -662,6 +672,8 @@ export async function updateListingBookingStatus(
             description: "Late cancellation fee. 5% of the total amount", // Description of the invoice item
             invoice: invoice.id,
           });
+
+          console.log("Invoice Items: ", invoiceItem);
 
           // Send the Invoice
           await stripe.invoices.sendInvoice(invoice.id);

@@ -13,9 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Loader,
-} from "lucide-react";
+import { Loader } from "lucide-react";
 import { useActionState, useRef, startTransition, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -81,7 +79,12 @@ const UserOnboardingForm = () => {
             }}
           >
             {/* <Heart size={16} className="text-primary" /> */}
-           <Image src="/logos/logo-rose.svg" alt="Exploreinn" height={26} width={26} />
+            <Image
+              src="/logos/logo-rose.svg"
+              alt="Exploreinn"
+              height={26}
+              width={26}
+            />
             Proceed
           </ToastAction>
         ),
@@ -110,7 +113,7 @@ const UserOnboardingForm = () => {
     <Form {...form}>
       <form
         ref={formRef}
-        action={formAction}
+        // action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
           form.handleSubmit(() => {

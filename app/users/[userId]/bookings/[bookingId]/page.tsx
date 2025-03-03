@@ -41,7 +41,7 @@ const UserBookingDetailPage = async ({ params }: { params: Params }) => {
           className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight hover:text-primary hover:underline hover:underline-offset-2"
         >
           <ChevronLeft className="text-primary" size={22} />
-          {booking.guest.firstName}'s Booking Details
+          {booking.guest.firstName}&apos;s Booking Details
         </Link>
       </div>
       <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

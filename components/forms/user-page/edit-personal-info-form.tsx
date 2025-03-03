@@ -38,7 +38,7 @@ import { countries } from "@/lib/utils/country/countries";
 import { updatePersonalInfoFormSchema } from "@/lib/schemas/zod-schema";
 import { User } from "@prisma/client";
 
-const EditPersonalInfoForm = ({ user, ...props }: { user: User }) => {
+const EditPersonalInfoForm = ({ user }: { user: User }) => {
   const [state, formAction, isPending] = useActionState(updatePersonalInfo, {
     message: "",
     type: undefined,
@@ -94,7 +94,7 @@ const EditPersonalInfoForm = ({ user, ...props }: { user: User }) => {
     <Form {...form}>
       <form
         ref={formRef}
-        action={formAction}
+        // action={formAction}
         onSubmit={(evt) => {
           evt.preventDefault();
           form.handleSubmit(() => {

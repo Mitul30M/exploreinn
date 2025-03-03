@@ -43,7 +43,7 @@ export function RoomTypesCarousel({
       //   onMouseLeave={plugin.current.reset}
     >
       <CarouselContent className="w-full">
-        {rooms.map(async (room, index) => {
+        {rooms.map(async (room) => {
           return (
             <CarouselItem
               key={room.id}

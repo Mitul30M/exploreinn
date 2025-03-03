@@ -54,7 +54,7 @@ const RenderStep7 = () => {
   );
   const dispatch: AppDispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number[]>([]);
+  const [progress] = useState<number[]>([]);
   useEffect(() => {
     if (!amenities.length || amenities.length < 6) {
       toast({
@@ -94,8 +94,8 @@ const RenderStep7 = () => {
     setIsLoading(true);
     try {
       let successCount = 0;
-      const promise = await Promise.all(
-        files.map(async (file, index) => {
+      await Promise.all(
+        files.map(async (file) => {
           const signedURLResult = await getSignedURLForLegalDocs({
             prefix: "listing",
             fileSize: file.size,
@@ -152,6 +152,7 @@ const RenderStep7 = () => {
         });
       }
     } catch (error) {
+      console.error("Error uploading files:", error);
       toast({
         title: `*Error while Uploading Files`,
         description:
@@ -175,17 +176,17 @@ const RenderStep7 = () => {
       <div className=" flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 7</Badge>
-          {listingName}'s Legal Documentation
+          {listingName}&apos;s Legal Documentation
         </h1>
         <p className="text-sm text-accent-foreground">
-          Please upload legal documentation for {listingName}. We won't share
-          these documents with anyone else & are required just for verification
-          purposes. These may include your Tax Identification Number (TIN),
-          VAT/GST certificate, business registration documents, proof of
-          property ownership (e.g., property deed, lease agreement, or NOC), or
-          any region-specific requirements such as an ABN, PAN, or CRN. Ensure
-          the documents are clear and legible and upload them in PDF, JPEG, or
-          PNG format
+          Please upload legal documentation for {listingName}. We won&apos;t
+          share these documents with anyone else & are required just for
+          verification purposes. These may include your Tax Identification
+          Number (TIN), VAT/GST certificate, business registration documents,
+          proof of property ownership (e.g., property deed, lease agreement, or
+          NOC), or any region-specific requirements such as an ABN, PAN, or CRN.
+          Ensure the documents are clear and legible and upload them in PDF,
+          JPEG, or PNG format
         </p>
       </div>
 
@@ -262,7 +263,7 @@ const RenderStep7 = () => {
               </FormItem>
             )}
           />
-          
+
           {form.formState.errors && (
             <div className="text-destructive text-sm">
               {Object.values(form.formState.errors).map((error) => (

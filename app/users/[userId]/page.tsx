@@ -44,7 +44,7 @@ export default async function ProfilePage({
     <section className="w-full space-y-4 pb-4 border-border/90 border-y-[1px]">
       <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
         <SquareUser size={22} className="text-primary" />
-        {user?.firstName}'s Account
+        {user?.firstName}&apos;s Account
       </h1>
 
       <div className="p-4 flex gap-6 h-max border-border/90 border m-4 rounded-md">

@@ -1,9 +1,8 @@
 "use client";
 
 import { Offer } from "@prisma/client";
-import { CircleX, Tag } from "lucide-react";
+import {  Tag } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
-import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
@@ -11,11 +10,15 @@ import {
   removeDiscount,
   setDiscount,
 } from "@/lib/redux-store/slices/new-booking-slice";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 
 export function OffersList({
   listingOffers,
   listingName,
-  listingId,
 }: {
   listingOffers: Offer[];
   listingName: string;
@@ -30,7 +33,7 @@ export function OffersList({
     <div className="border-[1px]  border-border/90 h-max rounded-sm">
       <h1 className=" text-lg font-semibold tracking-tight border-border/90 border-b-[1px] p-4 flex items-center gap-2">
         <Tag className="text-primary" />
-        Exciting Offers just for you
+        Ongoing Offers
       </h1>
       {/* scrollable offers list */}
       <ScrollArea className="w-full h-[300px] ">
@@ -44,12 +47,17 @@ export function OffersList({
               key={offer.id}
             >
               <div className="space-y-2 text-left">
-                <h1 className="text-[15px] font-medium tracking-tight ">
+                <h1 className="text-[15px] font-semibold tracking-tight ">
                   {offer.name}
                 </h1>
-                <p className="text-wrap text-[14px]  text-muted-foreground">
-                  {offer.description}
-                </p>
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <p className="w-[150px] truncate text-[13px]">{offer.description}</p>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-60 p-4">
+                    <div className="w-full text-[13px] text-wrap">{offer.description}</div>
+                  </HoverCardContent>
+                </HoverCard>
               </div>
               <Button
                 size={"sm"}
@@ -83,11 +91,9 @@ export function OffersList({
                   }
                 }}
               >
-                {isOfferApplied && offer.id === offerId ? (
-                  "Remove"
-                ) : (
-                  offer.couponCode.toUpperCase()
-                )}
+                {isOfferApplied && offer.id === offerId
+                  ? "Remove"
+                  : offer.couponCode.toUpperCase()}
               </Button>
             </div>
           ))}

@@ -5,7 +5,6 @@ import React, { useEffect } from "react";
 import { DatePickerWithRange } from "../discover-page/find-listings/date-range-picker";
 import GuestCounterInput from "../discover-page/find-listings/guest-input";
 import { Separator } from "../ui/separator";
-import { useUser } from "@clerk/nextjs";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
 import { AppDispatch, RootState } from "@/lib/redux-store/store";
 import { differenceInDays, format, isValid } from "date-fns";
@@ -30,12 +29,8 @@ interface BookingDetailsProps {
   roomList: Room[];
 }
 
-const BookingDetails = ({
-  listing,
-  roomList,
-  className,
-}: BookingDetailsProps) => {
-  const user = useUser();
+const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
+  // const user = useUser();
 
   useEffect(() => {
     dispatch(setTax(listing.taxRates));
@@ -261,7 +256,7 @@ const BookingDetails = ({
           night charge will be applicable.
           <br />
           *Incase of booking changes the same must be consulted with the
-          respective Listing's managers.
+          respective Listing&apos;s managers.
           <br />
           <Link
             href={"#"}

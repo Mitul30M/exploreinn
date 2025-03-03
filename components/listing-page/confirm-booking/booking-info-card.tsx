@@ -7,7 +7,6 @@ import { useUser } from "@clerk/nextjs";
 import { Listing } from "@prisma/client";
 import { format } from "date-fns";
 import { ListCheck } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface BookingInfoCardProps {
   className?: string;
@@ -20,15 +19,9 @@ const BookingInfoCard = ({ className, listing }: BookingInfoCardProps) => {
     checkOut,
     guests,
     nights,
-    totalPayable,
-    tax,
-    extras,
     rooms,
-    taxes,
-    totalWithoutTaxes,
   } = useAppSelector((state: RootState) => state.newBooking);
 
-  const router = useRouter();
 
   return (
     <div className={className}>

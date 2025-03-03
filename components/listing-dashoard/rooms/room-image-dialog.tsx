@@ -31,7 +31,6 @@ import { DropzoneOptions } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { computeSHA256 } from "@/lib/utils/seed/sha256";
-import { useRouter } from "next/navigation";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import {
   FileInput,
@@ -79,8 +78,7 @@ export default function RoomImageDialogContent({
   const [roomImages, setRoomImages] = useState(images);
   const [roomCoverImage, setRoomCoverImage] = useState(coverImg);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number[]>([]);
-  const router = useRouter();
+  const [progress] = useState<number[]>([]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -95,8 +93,8 @@ export default function RoomImageDialogContent({
     const newImages: string[] = [];
     try {
       let successCount = 0;
-      const promise = await Promise.all(
-        files.map(async (file, index) => {
+       await Promise.all(
+        files.map(async (file) => {
           const signedURLResult = await getSignedURL({
             prefix: "room",
             fileSize: file.size,
@@ -186,6 +184,7 @@ export default function RoomImageDialogContent({
         });
       }
     } catch (error) {
+      console.error("Error uploading files:", error);
       toast({
         title: `*Error while Uploading Files!`,
         description:

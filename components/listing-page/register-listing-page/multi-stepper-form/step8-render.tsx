@@ -91,7 +91,7 @@ const RenderStep8 = () => {
   );
   const dispatch: AppDispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number[]>([]);
+  const [progress] = useState<number[]>([]);
 
   useEffect(() => {
     if (legalDocs.length < 5) {
@@ -147,8 +147,8 @@ const RenderStep8 = () => {
     try {
       let successCount = 0;
       const images: string[] = [];
-      const promise = await Promise.all(
-        files.map(async (file, index) => {
+      await Promise.all(
+        files.map(async (file) => {
           const signedURLResult = await getSignedURL({
             prefix: "room",
             fileSize: file.size,
@@ -225,6 +225,7 @@ const RenderStep8 = () => {
         console.log(room);
       }
     } catch (error) {
+      console.error("Error:", error);
       toast({
         title: `*Error while Uploading Files`,
         description:
@@ -248,12 +249,12 @@ const RenderStep8 = () => {
       <div className="flex flex-col gap-4">
         <h1 className="text-xl font-semibold flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 8</Badge>
-          Let's get started by adding first room type to your listing.
+          Let&apos;s get started by adding first room type to your listing.
         </h1>
 
         <p className="text-[14px] text-accent-foreground">
-          Set details about your listing's room. You can edit, add, or remove
-          rooms later as well.
+          Set details about your listing&apos;s room. You can edit, add, or
+          remove rooms later as well.
         </p>
       </div>
 
@@ -405,7 +406,7 @@ const RenderStep8 = () => {
                     htmlFor="room-area"
                     className="text-[14px] text-accent-foreground"
                   >
-                    Room's Area (sq.ft.)
+                    Room&apos;s Area (sq.ft.)
                   </FormLabel>
                   <FormControl>
                     <Input

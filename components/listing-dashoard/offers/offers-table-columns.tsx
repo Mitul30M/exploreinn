@@ -22,7 +22,6 @@ import { toast } from "@/hooks/use-toast";
 import { deleteOffer, toggleIsActive } from "@/lib/actions/offers/offers";
 import {
   offerStatus,
-  offerStatusArray,
   OfferStatusConfig,
 } from "@/lib/utils/types/offer/offer-types";
 import { Offer } from "@prisma/client";
@@ -34,12 +33,10 @@ import {
   CalendarDays,
   CalendarRange,
   Clipboard,
-  Code2,
   MoreHorizontal,
   Save,
   Tag,
   TicketCheck,
-  ToggleLeft,
   ToggleRight,
   Trash2,
 } from "lucide-react";
@@ -93,9 +90,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
             <p className="w-[150px] truncate">{row.original.description}</p>
           </HoverCardTrigger>
           <HoverCardContent className="w-60 p-4">
-            <div className="w-full text-wrap">
-              {row.original.description}
-            </div>
+            <div className="w-full text-wrap">{row.original.description}</div>
           </HoverCardContent>
         </HoverCard>
       );
@@ -220,14 +215,14 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
   // discount percentage
   {
     accessorKey: "percentageDiscount",
-    header: ({ column }: { column: any }) => (
+    header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
         title="Discount %"
         icon={BadgePercent}
       />
     ),
-    cell: ({ row }: { row: any }) => {
+    cell: ({ row }) => {
       return row.original.percentageDiscount
         ? row.original.percentageDiscount + "%"
         : "-";
@@ -296,11 +291,7 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
       />
     ),
     cell: ({ row }) => {
-      return (
-        <p >
-          {format(row.original.createdAt, "dd MMM yyy")}
-        </p>
-      );
+      return <p>{format(row.original.createdAt, "dd MMM yyy")}</p>;
     },
   },
   // actions

@@ -51,7 +51,7 @@ const RenderStep6 = () => {
       <div className=" flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 6</Badge>
-          {listingName}'s Amenities
+          {listingName}&apos;s Amenities
         </h1>
         <p className="text-sm text-accent-foreground">
           Select Amenities & Services offered by {listingName}. You can edit
@@ -71,9 +71,11 @@ const RenderStep6 = () => {
                 : ""
             }`}
             onClick={() => {
-              !amenities.includes(amenity.name)
-                ? dispatch(pushAmenity(amenity.name))
-                : dispatch(removeAmenity(amenity.name));
+              if (!amenities.includes(amenity.name)) {
+                dispatch(pushAmenity(amenity.name));
+              } else {
+                dispatch(removeAmenity(amenity.name));
+              }
             }}
           >
             <span className=" primary">

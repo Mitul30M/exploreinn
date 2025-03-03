@@ -67,11 +67,10 @@ export function AppSidebar({
       <SidebarHeader>
         <NavUser
           user={{
-            name: user?.fullName!,
-            email: user?.emailAddresses[0]!.emailAddress!,
-            avatar: user?.imageUrl!,
-            userDB_id: userDB_id as string,
-          }}
+            name: user?.fullName ?? "",
+            email: user?.emailAddresses[0]?.emailAddress ?? "",
+            avatar: user?.imageUrl ?? "",
+            userDB_id: userDB_id ?? "",          }}
         />
       </SidebarHeader>
       <ScrollArea className="h-[100vh] overflow-hidden whitespace-nowrap">

@@ -88,7 +88,7 @@ const ListingReviewsSection = ({ reviews }: ListingReviewsSectionProps) => {
       {/* reviews  */}
       <Carousel className="cursor-grab w-full" plugins={[plugin.current]}>
         <CarouselContent className="gap-4">
-          {reviews.map((review, idx) => (
+          {reviews.map((review) => (
             <CarouselItem key={review.authorId} className="basis-auto">
               <div className="space-y-4 p-4 w-[350px] h-[214px] rounded-md border-border/90 border-[1px] overflow-x-hidden">
                 <div className="flex justify-between items-center">

@@ -281,6 +281,7 @@ const PaymentConfirmationCard = ({
                 }
               });
             } catch (error) {
+              console.log(error);
               toast({
                 variant: "destructive",
                 title: "Validation Error",
@@ -343,7 +344,7 @@ const PaymentConfirmationCard = ({
         charge will be applicable.
         <br />
         *Incase of booking changes the same must be consulted with the
-        respective Listing's managers.
+        respective Listing&apos;s managers.
         <br />
         <Link
           href={"#"}

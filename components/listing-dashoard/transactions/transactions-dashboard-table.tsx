@@ -50,7 +50,6 @@ export function ListingTransactionsDataTable<TData, TValue>({
   columns,
   data,
   className,
-  floatingActionBar,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

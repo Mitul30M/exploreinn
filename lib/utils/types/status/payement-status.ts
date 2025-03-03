@@ -15,13 +15,13 @@ export interface PaymentStatusConfig {
   label: string;
 }
 
-type PaymentStatusKey =
-  | "completed"
-  | "pending"
-  | "refunded"
-  | "cancelled"
-  | "requested_refund"
-  | "charged";
+// type PaymentStatusKey =
+//   | "completed"
+//   | "pending"
+//   | "refunded"
+//   | "cancelled"
+//   | "requested_refund"
+//   | "charged";
 
 export type PaymentStatus = {
   completed: PaymentStatusConfig;

@@ -369,7 +369,7 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
               //   `/listings/${listing.id}`
             >
               <Hotel />
-              <Link href={`/listings/${listing.id}`}>Visit Listing's Page</Link>
+              <Link href={`/listings/${listing.id}`}>Visit Listing&apos;s Page</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </DropdownMenuContent>

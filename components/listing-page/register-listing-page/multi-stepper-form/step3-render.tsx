@@ -92,7 +92,7 @@ const RenderStep3 = () => {
       <div className=" flex flex-col gap-4">
         <h1 className="text-xl font-semibold  flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 3</Badge>
-          {listingName}'s Address
+          {listingName}&apos;s Address
         </h1>
 
         <div className="text-[14px] text-accent-foreground">

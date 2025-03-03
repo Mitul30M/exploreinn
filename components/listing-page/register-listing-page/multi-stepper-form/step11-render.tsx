@@ -100,11 +100,11 @@ const RenderStep11 = () => {
       <div className="flex flex-col gap-4">
         <h1 className="text-xl font-semibold flex flex-col gap-4">
           <Badge className="rounded-full w-max">Step 11</Badge>
-          {listingName}'s Socials
+          {listingName}&apos;s Socials
         </h1>
 
         <p className="text-[14px] text-accent-foreground">
-          Set your listing's social media links for guests to find you.
+          Set your listing&apos;s social media links for guests to find you.
         </p>
       </div>
       <Form {...form}>
@@ -146,7 +146,7 @@ const RenderStep11 = () => {
                   htmlFor="extras"
                   className="text-[14px] text-accent-foreground"
                 >
-                  Add Listing's Social Media Links
+                  Add Listing&apos;s Social Media Links
                 </FormLabel>
                 <FormControl className="flex flex-col gap-4">
                   <div>

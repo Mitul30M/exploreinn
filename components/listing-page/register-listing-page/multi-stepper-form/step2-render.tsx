@@ -63,32 +63,34 @@ const RenderStep2 = () => {
   });
 
   // Handle drag start event
-  const onMarkerDragStart = useCallback((event: any) => {}, []);
+  const onMarkerDragStart = useCallback(() => {}, []);
 
   // Handle dragging event
-  const onMarkerDrag = useCallback((event: any) => {}, []);
+  const onMarkerDrag = useCallback(() => {}, []);
 
   // Handle drag end event
-  const onMarkerDragEnd = useCallback((event: any) => {
-    setMarker({
-      latitude: event.lngLat.lat,
-      longitude: event.lngLat.lng,
-    });
-    dispatch(
-      setGeometry({
-        lat: event.lngLat.lat,
-        lng: event.lngLat.lng,
-      })
-    );
-    mapRef.current?.flyTo({
-      center: [event.lngLat.lng, event.lngLat.lat],
-      duration: 2000,
-      zoom: 17,
-    });
-  }, []);
-
+  const onMarkerDragEnd = useCallback(
+    (event: { lngLat: { lat: number; lng: number } }) => {
+      setMarker({
+        latitude: event.lngLat.lat,
+        longitude: event.lngLat.lng,
+      });
+      dispatch(
+        setGeometry({
+          lat: event.lngLat.lat,
+          lng: event.lngLat.lng,
+        })
+      );
+      mapRef.current?.flyTo({
+        center: [event.lngLat.lng, event.lngLat.lat],
+        duration: 2000,
+        zoom: 17,
+      });
+    },
+    []
+  );
   // Handle geolocation
-  const handleGeolocation = (e: any) => {
+  const handleGeolocation = (e: GeolocationPosition) => {
     const { longitude, latitude } = e.coords;
     setDefaultCoordinates({
       latitude: latitude,
@@ -137,13 +139,13 @@ const RenderStep2 = () => {
           neighborhood: data.features[0].properties.context.neighborhood
             ? data.features[0].properties.context.neighborhood.name
             : data.features[0].properties.context.locality
-            ? data.features[0].properties.context.locality.name
-            : "",
+              ? data.features[0].properties.context.locality.name
+              : "",
           city: data.features[0].properties.context.city
             ? data.features[0].properties.context.neighborhood.city
             : data.features[0].properties.context.place
-            ? data.features[0].properties.context.place.name
-            : "",
+              ? data.features[0].properties.context.place.name
+              : "",
           state: data.features[0].properties.context.region.name,
           country: data.features[0].properties.context.country.name,
           zipCode: data.features[0].properties.context.postcode.name,

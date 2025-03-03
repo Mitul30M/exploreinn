@@ -36,7 +36,7 @@ const BillingPage = async ({
       <div id="personal-info" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <CreditCard size={22} className="text-primary" />
-          {user?.firstName}'s Billing Page
+          {user?.firstName}&apos;s Billing Page
         </h1>
 
         {/* User's Billing */}

@@ -36,8 +36,7 @@ const bookingFormSchema = z.object({
   paymentMethod: z.enum(["book-now-pay-later", "online-payment"], {
     required_error: "Please a Payment Method",
   }),
-});
-/**
+}); /**
  * Creates a Stripe Checkout Session for a booking.
  *
  * @param bookingDetails - The booking details form data
@@ -50,6 +49,10 @@ export async function createStripeCheckoutSession(
 ): Promise<void> {
   try {
     console.log(bookingDetails);
+    const parsedBookingDetails = bookingFormSchema.parse(bookingDetails);
+    if (!parsedBookingDetails) {
+      throw new Error("Invalid booking details");
+    }
     const { userId, sessionClaims } = await auth();
     const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
       .userDB_id;

@@ -53,7 +53,7 @@ export function ListingWeekWiseBookingsGraph({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>This Week's Bookings</CardTitle>
+        <CardTitle>This Week&apos;s Bookings</CardTitle>
         <CardDescription>
           {new Date().toLocaleDateString("en-US", {
             day: "2-digit",
@@ -121,7 +121,7 @@ export function ListingWeekWiseBookingsGraph({
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           {new Date().getDay() === 1 ? ( // Check if today is Monday
-            <>Today's Total Bookings: {chartData[0]?.bookings || 0}</>
+            <>Today&apos;s Total Bookings: {chartData[0]?.bookings || 0}</>
           ) : (
             (() => {
               const todayIndex = new Date().getDay(); // Get the index for today
@@ -141,7 +141,7 @@ export function ListingWeekWiseBookingsGraph({
 
               return isTrendingUp ? (
                 <div className="flex flex-col gap-2">
-                  <p>Today's bookings: {todayBookings}</p>
+                  <p>Today&apos;s bookings: {todayBookings}</p>
                   <p className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-green-500" /> by{" "}
                     {percentageChange}% today
@@ -149,7 +149,7 @@ export function ListingWeekWiseBookingsGraph({
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <p>Today's bookings: {todayBookings}</p>
+                  <p>Today&apos;s bookings: {todayBookings}</p>
                   <p className="flex items-center gap-2">
                     <TrendingDown className="h-4 w-4 text-primary" /> by{" "}
                     {percentageChange}% today
