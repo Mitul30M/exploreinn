@@ -50,6 +50,12 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
     isOfferApplied,
     couponCode,
     offerId,
+    offerDescription,
+    offerType,
+    discountedAmount,
+    discountPercentage,
+    minBookingFeeToApplyOffer,
+    maxAllowedDiscountAmount,
   } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();
 
@@ -60,6 +66,14 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
     dispatch(calculateTax());
     dispatch(calculateTotalPayable());
   }, [rooms, extras, nights, guests, isOfferApplied, couponCode, offerId]);
+
+  const roomsTotal = rooms.reduce((total, room) => {
+    return total + room.rate * room.noOfRooms * nights;
+  }, 0);
+
+  const extrasTotal = extras.reduce((total, extra) => {
+    return total + guests * extra.cost * nights;
+  }, 0);
 
   if (checkIn && checkOut && nights && rooms.length > 0)
     return (
@@ -181,6 +195,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               )
             </p>
             <p className="font-semibold text-[16px]">
+              +
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
@@ -188,16 +203,170 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
             </p>
           </div>
         ))}
+        {extras.map((extra) => (
+          <div
+            key={extra.name}
+            className="w-full flex items-center justify-between mt-2"
+          >
+            <p className="text-sm">
+              {extra.name} for {guests} Guest(s) for {nights} nights
+            </p>
+            <p className="font-semibold text-[16px]">
+              +
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(extra.cost * nights * guests)}
+            </p>
+          </div>
+        ))}
 
-        <div className="w-full flex items-center justify-between mt-2">
-          <p className="text-sm">Total</p>
-          <p className="font-semibold text-[16px]">
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(totalWithoutTaxes)}
-          </p>
-        </div>
+        {/* no offer */}
+        {!isOfferApplied && (
+          <>
+            <Separator className="my-6" />
+            <div className="w-full flex items-center justify-between mt-2">
+              <p className="text-sm">Total</p>
+              <p className="font-semibold text-[16px]">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(totalWithoutTaxes)}
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* offer applied but roomsTotal + extrasTotal << minBookingFeeToApplyOffer ; not enough to apply offer*/}
+        {isOfferApplied &&
+          roomsTotal + extrasTotal < minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="font-semibold text-[16px] text-primary">
+                  Can't Apply Offer. Add More
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(
+                    minBookingFeeToApplyOffer - roomsTotal + extrasTotal
+                  )}{" "}
+                  to apply offer & proceed with booking.
+                </p>
+              </div>
+            </>
+          )}
+
+        {/* flat discount offer*/}
+        {isOfferApplied &&
+          offerType === "Flat_Discount" &&
+          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total Before Discount</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(roomsTotal + extrasTotal)}
+                </p>
+              </div>
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">
+                  Discount <span className="text-primary">{couponCode}</span>
+                </p>
+                <p className="font-semibold text-[16px] text-primary">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(-discountedAmount)}
+                </p>{" "}
+              </div>
+              <Separator className="my-6" />
+
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalWithoutTaxes)}
+                </p>
+              </div>
+            </>
+          )}
+
+        {/* percentage discount offer*/}
+        {isOfferApplied &&
+          offerType === "Percentage_Discount" &&
+          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total Before Discount</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(roomsTotal + extrasTotal)}
+                </p>
+              </div>
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">
+                  {discountPercentage}% Discount{" "}
+                  {maxAllowedDiscountAmount &&
+                    `(upto ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(maxAllowedDiscountAmount)})`}{" "}
+                  <span className="text-primary">{couponCode}</span>
+                </p>
+                <p className="font-semibold text-[16px] text-primary">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(-discountedAmount)}
+                </p>{" "}
+              </div>
+              <Separator className="my-6" />
+
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalWithoutTaxes)}
+                </p>
+              </div>
+            </>
+          )}
+
+        {/* extra perks offer */}
+        {isOfferApplied &&
+          offerType === "Flat_Discount" &&
+          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">
+                  Extra Perks <span className="text-primary">{couponCode}</span>
+                </p>
+                <p className="font-semibold text-[16px] text-primary">
+                  {offerDescription}
+                </p>
+              </div>
+              <Separator className="my-6" />
+
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalWithoutTaxes)}
+                </p>
+              </div>
+            </>
+          )}
 
         <Separator className="my-6" />
         <div className="w-full flex items-center ">
@@ -242,8 +411,15 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         </div>
 
         <p className="text-accent-foreground/70 text-sm font-medium my-6">
-          *Free Cancellation upto to 48hrs before checkIn. After that, a one
-          night charge will be applicable.
+          *For Book-Now-Pay-Later bookings: Free Cancellation upto to 48hrs
+          after booking. After that, a one charge of 5% of the total booking
+          amount will be applicable which will be mailed as an invoice to you.
+          <br />
+          *For Prepaid Bookings: Free Cancellations till 24hr before check-in
+          and the payment will be refunded to the respective account. Incase of
+          cancellation after 24hrs before check-in, the payment will not be
+          refunded whilst deducting the cancellation charges of 5% of the total
+          booking amount.
           <br />
           *Incase of booking changes the same must be consulted with the
           respective Listing&apos;s managers.
@@ -258,7 +434,13 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
 
         <Button
           className="w-full"
-          disabled={!rooms.length || !checkIn || !checkOut || !totalPayable}
+          disabled={
+            !rooms.length ||
+            !checkIn ||
+            !checkOut ||
+            !totalPayable ||
+            (isOfferApplied && totalWithoutTaxes < minBookingFeeToApplyOffer)
+          }
           onClick={() => router.push(`/listings/${listing.id}/confirm-booking`)}
         >
           <Handshake /> Confirm Booking

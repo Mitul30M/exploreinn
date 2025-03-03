@@ -28,6 +28,7 @@ export interface NewBooking {
   discountPercentage?: number;
   maxAllowedDiscountAmount: number;
   discountedAmount: number;
+  minBookingFeeToApplyOffer: number;
   tax: number;
   totalPayable: number;
 }
@@ -52,6 +53,7 @@ const initialState: NewBooking = {
   discountPercentage: 0,
   maxAllowedDiscountAmount: 0,
   discountedAmount: 0,
+  minBookingFeeToApplyOffer: 0,
 };
 
 export const newBookingSlice = createSlice({
@@ -116,6 +118,7 @@ export const newBookingSlice = createSlice({
         offerDescription: string;
         discountPercentage: number;
         maxAllowedDiscountAmount: number;
+        minBookingFeeToApplyOffer: number;
       }>
     ) => {
       state.couponCode = action.payload.couponCode.toUpperCase();
@@ -125,6 +128,8 @@ export const newBookingSlice = createSlice({
       state.offerDescription = action.payload.offerDescription;
       state.discountPercentage = action.payload.discountPercentage;
       state.maxAllowedDiscountAmount = action.payload.maxAllowedDiscountAmount;
+      state.minBookingFeeToApplyOffer =
+        action.payload.minBookingFeeToApplyOffer;
       state.isOfferApplied = true;
     },
     //   remove discount
@@ -138,6 +143,7 @@ export const newBookingSlice = createSlice({
       state.maxAllowedDiscountAmount = 0;
       state.discountedAmount = 0;
       state.isOfferApplied = false;
+      state.minBookingFeeToApplyOffer = 0;
     },
     //   add taxes
     setTax: (
@@ -174,20 +180,22 @@ export const newBookingSlice = createSlice({
       }, 0);
 
       if (state.isOfferApplied) {
-        switch (state.offerType) {
-          case "Flat_Discount":
-            state.discountedAmount = state.maxAllowedDiscountAmount;
-            break;
-          case "Percentage_Discount":
-            const discountedAmount =
-              roomsTotal + extrasTotal * (state.discountPercentage! / 100);
-            state.discountedAmount =
-              state.maxAllowedDiscountAmount > discountedAmount
-                ? discountedAmount
-                : state.maxAllowedDiscountAmount;
-            break;
-          default:
-            state.discountedAmount = 0;
+        if (roomsTotal + extrasTotal >= state.minBookingFeeToApplyOffer) {
+          switch (state.offerType) {
+            case "Flat_Discount":
+              state.discountedAmount = state.maxAllowedDiscountAmount;
+              break;
+            case "Percentage_Discount":
+              const discountedAmount =
+                roomsTotal + extrasTotal * (state.discountPercentage! / 100);
+              state.discountedAmount =
+                state.maxAllowedDiscountAmount > discountedAmount
+                  ? discountedAmount
+                  : state.maxAllowedDiscountAmount;
+              break;
+            default:
+              state.discountedAmount = 0;
+          }
         }
       }
 

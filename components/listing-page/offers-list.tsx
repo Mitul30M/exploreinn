@@ -1,7 +1,7 @@
 "use client";
 
 import { Offer } from "@prisma/client";
-import {  Tag } from "lucide-react";
+import { Tag } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux-hooks";
@@ -38,24 +38,28 @@ export function OffersList({
       {/* scrollable offers list */}
       <ScrollArea className="w-full h-[300px] ">
         <div className="p-4 flex flex-col gap-2">
-          <h1 className="text-[16px] font-semibold tracking-tight ">
+          <h1 className="text-[16px] font-semibold tracking-tight mb-2 text-primary ">
             Offers from {listingName}
           </h1>
           {listingOffers.map((offer) => (
             <div
-              className="flex items-center justify-between gap-2 p-2 border-[1px]  border-border/90 rounded"
+              className="flex items-center justify-between gap-2 p-4 border-[1px]  border-border/90 rounded"
               key={offer.id}
             >
-              <div className="space-y-2 text-left">
+              <div className="space-y-1 text-left">
                 <h1 className="text-[15px] font-semibold tracking-tight ">
                   {offer.name}
                 </h1>
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <p className="w-[150px] truncate text-[13px]">{offer.description}</p>
+                    <p className="w-[180px] truncate text-[13px]">
+                      {offer.description}
+                    </p>
                   </HoverCardTrigger>
-                  <HoverCardContent className="w-60 p-4">
-                    <div className="w-full text-[13px] text-wrap">{offer.description}</div>
+                  <HoverCardContent className="w-72 p-4">
+                    <div className="w-full text-[13px] text-wrap">
+                      {offer.description}
+                    </div>
                   </HoverCardContent>
                 </HoverCard>
               </div>
@@ -86,6 +90,7 @@ export function OffersList({
                             : offer.type === "Percentage_Discount"
                               ? offer.maxDiscountAmount!
                               : 0,
+                        minBookingFeeToApplyOffer: offer.minimumBookingAmount!,
                       })
                     );
                   }

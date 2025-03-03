@@ -86,7 +86,23 @@ const PaymentConfirmationCard = ({
     rooms,
     taxes,
     totalWithoutTaxes,
+    isOfferApplied,
+    couponCode,
+    offerId,
+    offerDescription,
+    offerType,
+    discountedAmount,
+    discountPercentage,
+    minBookingFeeToApplyOffer,
+    maxAllowedDiscountAmount,
   } = useAppSelector((state: RootState) => state.newBooking);
+  const roomsTotal = rooms.reduce((total, room) => {
+    return total + room.rate * room.noOfRooms * nights;
+  }, 0);
+
+  const extrasTotal = extras.reduce((total, extra) => {
+    return total + guests * extra.cost * nights;
+  }, 0);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
@@ -164,6 +180,7 @@ const PaymentConfirmationCard = ({
               x {nights} {nights === 1 ? "night" : "nights"})
             </p>
             <p className="font-semibold text-[16px]">
+              +
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
@@ -186,6 +203,7 @@ const PaymentConfirmationCard = ({
               x {guests} {guests === 1 ? "guest" : "guests"})
             </p>
             <p className="font-semibold text-[16px]">
+              +
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
@@ -193,16 +211,152 @@ const PaymentConfirmationCard = ({
             </p>
           </div>
         ))}
-        {/* total without taxes */}
-        <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
-          <p className="text-sm">Gross Total</p>
-          <p className="font-semibold text-[16px]">
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(totalWithoutTaxes)}
-          </p>
-        </div>
+        {/* no offer */}
+        {!isOfferApplied && (
+          <>
+            <Separator className="my-6" />
+            <div className="w-full flex items-center justify-between mt-2">
+              <p className="text-sm">Total</p>
+              <p className="font-semibold text-[16px]">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(totalWithoutTaxes)}
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* offer applied but roomsTotal + extrasTotal << minBookingFeeToApplyOffer ; not enough to apply offer*/}
+        {isOfferApplied &&
+          roomsTotal + extrasTotal < minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="font-semibold text-[16px] text-primary">
+                  Can't Apply Offer. Add More
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(
+                    minBookingFeeToApplyOffer - roomsTotal + extrasTotal
+                  )}{" "}
+                  to apply offer & proceed with booking.
+                </p>
+              </div>
+            </>
+          )}
+
+        {/* flat discount offer*/}
+        {isOfferApplied &&
+          offerType === "Flat_Discount" &&
+          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total Before Discount</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(roomsTotal + extrasTotal)}
+                </p>
+              </div>
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">
+                  Discount <span className="text-primary">{couponCode}</span>
+                </p>
+                <p className="font-semibold text-[16px] text-primary">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(-discountedAmount)}
+                </p>{" "}
+              </div>
+              <Separator className="my-6" />
+
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalWithoutTaxes)}
+                </p>
+              </div>
+            </>
+          )}
+
+        {/* percentage discount offer*/}
+        {isOfferApplied &&
+          offerType === "Percentage_Discount" &&
+          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total Before Discount</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(roomsTotal + extrasTotal)}
+                </p>
+              </div>
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">
+                  {discountPercentage}% Discount{" "}
+                  {maxAllowedDiscountAmount &&
+                    `(upto ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(maxAllowedDiscountAmount)})`}{" "}
+                  <span className="text-primary">{couponCode}</span>
+                </p>
+                <p className="font-semibold text-[16px] text-primary">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(-discountedAmount)}
+                </p>{" "}
+              </div>
+              <Separator className="my-6" />
+
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalWithoutTaxes)}
+                </p>
+              </div>
+            </>
+          )}
+
+        {/* extra perks offer */}
+        {isOfferApplied &&
+          offerType === "Flat_Discount" &&
+          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+            <>
+              <Separator className="my-6" />
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">
+                  Extra Perks <span className="text-primary">{couponCode}</span>
+                </p>
+                <p className="font-semibold text-[16px] text-primary">
+                  {offerDescription}
+                </p>
+              </div>
+              <Separator className="my-6" />
+
+              <div className="w-full flex items-center justify-between mt-2">
+                <p className="text-sm">Total</p>
+                <p className="font-semibold text-[16px]">
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalWithoutTaxes)}
+                </p>
+              </div>
+            </>
+          )}
       </div>
 
       <p className="font-semibold text-[16px] mt-6">Taxes</p>
@@ -216,20 +370,11 @@ const PaymentConfirmationCard = ({
               {tax.name} ({tax.rate.toLocaleString()}%)
             </p>
             <p className="font-semibold text-[16px]">
+              +
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
-              }).format(
-                (rooms.reduce(
-                  (acc, room) => acc + room.noOfRooms * nights * room.rate,
-                  0
-                ) +
-                  extras.reduce(
-                    (acc, extra) => acc + extra.cost * nights * guests,
-                    0
-                  )) *
-                  (tax.rate / 100)
-              )}
+              }).format(totalWithoutTaxes * (tax.rate / 100))}
             </p>
           </div>
         ))}
@@ -242,14 +387,6 @@ const PaymentConfirmationCard = ({
             }).format(tax)}
           </p>
         </div>
-      </div>
-
-      {/* coupon code */}
-      <div className="w-full flex items-center justify-between mt-4 border-y-[1px] border-border/90 py-2 ">
-        <p className="text-sm">Coupon Code</p>
-        <p className="font-semibold text-[16px] capitalize text-primary">
-          FIRSTBOOKING
-        </p>
       </div>
 
       <p className="font-semibold text-[16px] mt-6">Total Booking Fee</p>
@@ -325,7 +462,14 @@ const PaymentConfirmationCard = ({
           <Button
             type="submit"
             className="w-full"
-            disabled={form.formState.isSubmitting}
+            disabled={
+              form.formState.isSubmitting ||
+              !rooms.length ||
+              !checkIn ||
+              !checkOut ||
+              !totalPayable ||
+              (isOfferApplied && totalWithoutTaxes < minBookingFeeToApplyOffer)
+            }
           >
             {form.formState.isSubmitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -340,8 +484,15 @@ const PaymentConfirmationCard = ({
       </Form>
 
       <p className="text-accent-foreground/70 text-sm font-medium ">
-        *Free Cancellation upto to 48hrs before checkIn. After that, a one night
-        charge will be applicable.
+        *For Book-Now-Pay-Later bookings: Free Cancellation upto to 48hrs after
+        booking. After that, a one charge of 5% of the total booking amount will
+        be applicable which will be mailed as an invoice to you.
+        <br />
+        *For Prepaid Bookings: Free Cancellations till 24hr before check-in and
+        the payment will be refunded to the respective account. Incase of
+        cancellation after 24hrs before check-in, the payment will not be
+        refunded whilst deducting the cancellation charges of 5% of the total
+        booking amount.
         <br />
         *Incase of booking changes the same must be consulted with the
         respective Listing&apos;s managers.
