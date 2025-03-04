@@ -57,7 +57,7 @@ const RenderStep3 = () => {
     const nearestRailwayStation = fetchNearbyPlaces(
       geometry.coordinates[1],
       geometry.coordinates[0],
-      "train station",
+      "train station"
     );
     nearestRailwayStation
       .then((railwayStations) => {
@@ -85,7 +85,6 @@ const RenderStep3 = () => {
         console.error("Error fetching nearest airport:", error);
       });
   }, []);
-
 
   return (
     <div className="space-y-14 w-full">

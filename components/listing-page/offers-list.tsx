@@ -43,7 +43,7 @@ export function OffersList({
           </h1>
           {listingOffers.map((offer) => (
             <div
-              className="flex items-center justify-between gap-2 p-4 border-[1px]  border-border/90 rounded"
+              className="flex items-center justify-between gap-2 p-2 px-3 border-[1px]  border-border/90 rounded"
               key={offer.id}
             >
               <div className="space-y-1 text-left">
@@ -52,7 +52,7 @@ export function OffersList({
                 </h1>
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <p className="w-[180px] truncate text-[13px]">
+                    <p className="w-[200px] truncate text-[13px]">
                       {offer.description}
                     </p>
                   </HoverCardTrigger>

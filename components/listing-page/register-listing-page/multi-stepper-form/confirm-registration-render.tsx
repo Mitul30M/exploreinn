@@ -6,16 +6,12 @@ import { PartyPopper, ScrollText } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Loader } from "lucide-react";
 import { useActionState, useRef, startTransition, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import {
-  RegisterListingSchema,
-} from "@/lib/redux-store/slices/register-listing-slice";
+import { RegisterListingSchema } from "@/lib/redux-store/slices/register-listing-slice";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -105,8 +101,8 @@ const ConfirmNewRegistration = () => {
         </h1>
         <p className="text-[14px] text-accent-foreground">
           Once registered you will be able to monitor your listing and manage
-          it. User&apos;s across the globe can view & make bookings on your listing.
-          You will be able to manage your listing from your dashboard.
+          it. User&apos;s across the globe can view & make bookings on your
+          listing. You will be able to manage your listing from your dashboard.
         </p>
 
         <Form {...form}>

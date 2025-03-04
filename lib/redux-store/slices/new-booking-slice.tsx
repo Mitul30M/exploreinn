@@ -187,7 +187,7 @@ export const newBookingSlice = createSlice({
               break;
             case "Percentage_Discount":
               const discountedAmount =
-                roomsTotal + extrasTotal * (state.discountPercentage! / 100);
+                (roomsTotal + extrasTotal) * (state.discountPercentage! / 100);
               state.discountedAmount =
                 state.maxAllowedDiscountAmount > discountedAmount
                   ? discountedAmount

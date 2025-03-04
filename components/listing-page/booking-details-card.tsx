@@ -22,6 +22,7 @@ import {
   setTax,
 } from "@/lib/redux-store/slices/new-booking-slice";
 import { useRouter } from "next/navigation";
+import { Badge } from "../ui/badge";
 
 interface BookingDetailsProps {
   className?: string;
@@ -108,7 +109,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           />
         </div>
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
         <div className="w-full flex items-center justify-between mt-2">
           <p className="text-sm">Guests</p>
           <p className="font-semibold text-[16px] ">{guests}</p>
@@ -130,7 +131,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           <p className="font-semibold text-[16px]">{nights}</p>
         </div>
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Room Rate ($/night)</p>
         </div>
@@ -151,7 +152,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           </div>
         ))}
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Extras</p>
         </div>
@@ -176,7 +177,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         <p className="font-semibold text-[16px]">$0.00</p>
       </div> */}
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Booking Fee</p>
         </div>
@@ -192,7 +193,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
                 style: "currency",
                 currency: "USD",
               }).format(room.rate)}
-              )
+              ) for {nights} night(s)
             </p>
             <p className="font-semibold text-[16px]">
               +
@@ -209,7 +210,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
             className="w-full flex items-center justify-between mt-2"
           >
             <p className="text-sm">
-              {extra.name} for {guests} Guest(s) for {nights} nights
+              {extra.name} for {guests} Guest(s) for {nights} night(s)
             </p>
             <p className="font-semibold text-[16px]">
               +
@@ -224,7 +225,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         {/* no offer */}
         {!isOfferApplied && (
           <>
-            <Separator className="my-6" />
+            <Separator className="my-4" />
             <div className="w-full flex items-center justify-between mt-2">
               <p className="text-sm">Total</p>
               <p className="font-semibold text-[16px]">
@@ -241,10 +242,10 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         {isOfferApplied &&
           roomsTotal + extrasTotal < minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
               <div className="w-full flex items-center justify-between mt-2">
-                <p className="font-semibold text-[16px] text-primary">
-                  Can't Apply Offer. Add More
+                <Badge>
+                  Can&apos;t Apply Offer. Add More
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",
@@ -252,7 +253,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
                     minBookingFeeToApplyOffer - roomsTotal + extrasTotal
                   )}{" "}
                   to apply offer & proceed with booking.
-                </p>
+                </Badge>
               </div>
             </>
           )}
@@ -260,9 +261,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         {/* flat discount offer*/}
         {isOfferApplied &&
           offerType === "Flat_Discount" &&
-          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+          roomsTotal + extrasTotal >= minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
@@ -283,7 +284,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
 
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total</p>
@@ -300,9 +301,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         {/* percentage discount offer*/}
         {isOfferApplied &&
           offerType === "Percentage_Discount" &&
-          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+          roomsTotal + extrasTotal >= minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
@@ -326,7 +327,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
 
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total</p>
@@ -342,19 +343,14 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
 
         {/* extra perks offer */}
         {isOfferApplied &&
-          offerType === "Flat_Discount" &&
-          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+          offerType === "Extra_Perks" &&
+          roomsTotal + extrasTotal >= minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
               <div className="w-full flex items-center justify-between mt-2">
-                <p className="text-sm">
-                  Extra Perks <span className="text-primary">{couponCode}</span>
-                </p>
-                <p className="font-semibold text-[16px] text-primary">
-                  {offerDescription}
-                </p>
+                <Badge>{offerDescription}</Badge>
               </div>
-              <Separator className="my-6" />
+              <Separator className="my-4" />
 
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total</p>
@@ -368,7 +364,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
             </>
           )}
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
         <div className="w-full flex items-center ">
           <p className="font-semibold text-[16px]">Taxes</p>
         </div>
@@ -399,7 +395,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           </p>
         </div>
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
         <div className="w-full flex items-center justify-between mt-2">
           <p className="font-semibold text-[16px]">Total Booking Amount</p>
           <p className="font-semibold text-[16px]">
@@ -439,7 +435,8 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
             !checkIn ||
             !checkOut ||
             !totalPayable ||
-            (isOfferApplied && totalWithoutTaxes < minBookingFeeToApplyOffer)
+            (isOfferApplied &&
+              roomsTotal + extrasTotal < minBookingFeeToApplyOffer)
           }
           onClick={() => router.push(`/listings/${listing.id}/confirm-booking`)}
         >

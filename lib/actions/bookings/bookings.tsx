@@ -17,8 +17,8 @@ import {
   getMonth,
 } from "date-fns";
 import { stripe } from "@/lib/stripe";
-import Invoice from "@/components/emails/invoice";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
+import ChargeInvoice from "@/components/emails/charge-invoice";
 
 const _bookingFormSchema = z.object({
   listingID: z.string(),
@@ -588,14 +588,41 @@ export async function updateListingBookingStatus(
 
       // if payment is made, ie. ONLINE_BOOKING bookingType, also update respective payment status and booking status in transaction table as well
       if (paymentStatus === "completed") {
-        console.log("Cancellation within 48 hours - Full refund");
-        // refund the payment
-        const refund = await stripe.refunds.create({
-          payment_intent: updateBooking.transaction?.paymentId as string,
-          refund_application_fee: true,
-          reverse_transfer: true,
-        });
-        console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
+        // Calculate time differences
+        const timeTillCheckin =
+          new Date(updateBooking.checkInDate).getTime() - new Date().getTime();
+        const creationToCheckinTime =
+          new Date(updateBooking.checkInDate).getTime() -
+          new Date(updateBooking.createdAt).getTime();
+        const HOURS_48 = 48 * 60 * 60 * 1000;
+        const HOURS_72 = 72 * 60 * 60 * 1000;
+
+        if (timeTillCheckin >= HOURS_48 || creationToCheckinTime <= HOURS_72) {
+          console.log(
+            "Full refund: Cancellation is either 2+ days before checkin OR booking was created within 3 days of checkin"
+          );
+          // Process full refund
+          const refund = await stripe.refunds.create({
+            payment_intent: updateBooking.transaction?.paymentId as string,
+            refund_application_fee: true,
+            reverse_transfer: true,
+          });
+          console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
+        } else {
+          console.log(
+            "Partial refund: Cancellation is less than 48 hours before checkin - Charging 5% cancellation fee"
+          );
+          // Calculate refund amount (95% of total)
+          const refundAmount = Math.floor(updateBooking.totalCost * 0.95);
+
+          const refund = await stripe.refunds.create({
+            payment_intent: updateBooking.transaction?.paymentId as string,
+            amount: refundAmount,
+            refund_application_fee: true,
+            reverse_transfer: true,
+          });
+          console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
+        }
 
         console.log(
           `Booking ${updateBooking.id} opted for cancellation. \nRefunding full amount: `,
@@ -713,8 +740,8 @@ export async function updateListingBookingStatus(
           await resend.emails.send({
             from: "exploreinn@mitul30m.in",
             to: [updateBooking.guest.email],
-            subject: "Invoice for Recent Transaction",
-            react: Invoice({
+            subject: "Invoice for Late Cancellation Charge",
+            react: ChargeInvoice({
               user: guest as User,
               transaction: chargedTransaction,
               booking: updateBooking,

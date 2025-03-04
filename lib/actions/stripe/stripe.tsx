@@ -202,7 +202,7 @@ export async function createStripeCheckoutSession(
     return redirect(session.url as string);
   } catch (error) {
     console.error("Error creating Stripe Checkout Session:", error);
-    throw new Error("Failed to create Stripe Checkout Session");
+    // throw new Error("Failed to create Stripe Checkout Session");
   }
 }
 

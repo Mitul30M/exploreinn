@@ -89,6 +89,7 @@ const UserOnboardingForm = () => {
           </ToastAction>
         ),
       });
+      router.push("/");
     } else if (state.type === "error") {
       console.log(state);
       toast({

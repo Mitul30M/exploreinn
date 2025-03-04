@@ -182,273 +182,270 @@ export const RegisterListingSchema = z.object({
   tags: z.array(z.string()),
 });
 
+// export const initialState: RegisterListing = {
+//   progress: 1,
+//   listingName: "",
+//   listingType: "Hotel",
+//   email: "",
+//   phone: "",
+//   description: "",
+//   geometry: null, // Initialize as null
+//   address: {
+//     street: "",
+//     neighborhood: "",
+//     city: "",
+//     state: "",
+//     country: "",
+//     zipCode: "",
+//     fullAddress: "",
+//     landmark: "",
+//   },
+//   distanceFrom: {
+//     touristDestinations: [],
+//     airport: { name: "", distance: 0 },
+//     railwayStation: { name: "", distance: 0 },
+//     busStop: { name: "", distance: 0 },
+//   },
+//   images: [],
+//   coverImage: "",
+//   amenities: [],
+//   legalDocs: [],
+//   room: {
+//     name: "",
+//     tag: "",
+//     basePrice: 0,
+//     totalRoomsAllocated: 0,
+//     maxOccupancy: 0,
+//     area: 0,
+//     beds: {
+//       type: "",
+//       count: 0,
+//     },
+//     isWifiAvailable: false,
+//     isAirConditioned: false,
+//     hasCityView: false,
+//     hasSeaView: false,
+//     perks: [],
+//     extras: [
+//       {
+//         name: "No Extras",
+//         cost: 0,
+//       },
+//     ],
+//     images: [],
+//     coverImage: "",
+//   },
+//   taxIN: "",
+//   taxRates: [{ name: "", rate: 0 }],
+//   checkInTime: "",
+//   checkOutTime: "",
+//   isBookNowPayLaterAllowed: true,
+//   checkInRulesAndRestrictions: "",
+//   groundRulesAndRestrictions: "",
+//   cancellationPolicy: "",
+//   socialMediaLinks: [],
+//   tags: [],
+// };
+
 export const initialState: RegisterListing = {
-  progress: 1,
-  listingName: "",
+  progress: 14,
+  listingName: "Hotel Aloha, Boston",
   listingType: "Hotel",
-  email: "",
-  phone: "",
-  description: "",
-  geometry: null, // Initialize as null
+  email: "info@hotelaloha.us",
+  phone: "+16175551234",
+  description:
+    "<p><strong>Hotel Aloha Boston</strong> is a modern and stylish retreat in the heart of Boston, offering a perfect blend of comfort and convenience for travelers. Located just minutes away from popular attractions like Fenway Park, Quincy Market, and the Boston Common, our hotel provides easy access to the city's vibrant culture and historic landmarks.</p><p>Guests can enjoy well-appointed rooms with plush bedding, high-speed Wi-Fi, and stunning city views. Our on-site restaurant serves a variety of delicious dishes, while the rooftop bar offers a relaxing space to unwind with handcrafted cocktails. Additional amenities include a fitness center, business lounge, and 24/7 concierge service to ensure a seamless stay.</p><p>Whether you're visiting for business or leisure, <strong>Hotel Aloha Boston</strong> promises a memorable experience with top-notch hospitality and modern comforts.</p>",
+  geometry: {
+    type: "Point",
+    coordinates: [-71.06826600265539, 42.35107928945507],
+  },
   address: {
-    street: "",
-    neighborhood: "",
-    city: "",
-    state: "",
-    country: "",
-    zipCode: "",
-    fullAddress: "",
-    landmark: "",
+    street: "91-95 Church Street",
+    neighborhood: "Boston Common",
+    city: "Boston",
+    state: "Massachusetts",
+    country: "United States",
+    zipCode: "02116",
+    fullAddress:
+      "91-95 Church Street, Boston, Massachusetts 02116, United States",
   },
   distanceFrom: {
-    touristDestinations: [],
-    airport: { name: "", distance: 0 },
-    railwayStation: { name: "", distance: 0 },
-    busStop: { name: "", distance: 0 },
-  },
-  images: [],
-  coverImage: "",
-  amenities: [],
-  legalDocs: [],
-  room: {
-    name: "",
-    tag: "",
-    basePrice: 0,
-    totalRoomsAllocated: 0,
-    maxOccupancy: 0,
-    area: 0,
-    beds: {
-      type: "",
-      count: 0,
+    touristDestinations: [
+      {
+        name: "Boston Musuem",
+        distance: 1.2,
+      },
+      {
+        name: "Boston City Center",
+        distance: 1.8,
+      },
+    ],
+    airport: {
+      name: "Boston Logan International Airport (BOS)",
+      distance: 4.34,
     },
-    isWifiAvailable: false,
-    isAirConditioned: false,
-    hasCityView: false,
+    railwayStation: {
+      name: "Mbta West Medford",
+      distance: 9.52,
+    },
+    busStop: {
+      name: "Plymouth & Brockton Park Plaza Bus Stop",
+      distance: 0.08,
+    },
+  },
+  images: [
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-db976088b8a35ce11791ff1fa73575e256ed71447cb669e55091b6907c364b73",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-651b368ada4092b2753c9b0a5b19f2a0f69279fe55b80101522c0fdc936d5bb3",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-b994f4becfd57b42c3c26801bc1d0e25040044b670c263675c614667057ee582",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-54860f4b1dfa675d2526f8aba026a01935f055b05a6ea7ab81a1c47f3445ba03",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-6c493b2cae7599a4f9b5112151ce43c9a73816a7a41be266c0508232f4bec801",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-7887421b8eb06b5aa4ec6606d3cb10f0c4046f4ad284af417b7983884fb8307c",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-65ef293bf368d8b83f5d54dbd7d14c0e66585fb711d09acaef351bba98f95b3a",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-997c16b9ddfdfd26c881a59d1a18336d0335a118242c224b3247f407a29f5730",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-bbab97ce70b6a7fc708c3646f5e214b95dfa5a553652b83e4b14ffb56989d92f",
+  ],
+  coverImage:
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-65ef293bf368d8b83f5d54dbd7d14c0e66585fb711d09acaef351bba98f95b3a",
+  amenities: [
+    "WiFi",
+    "King-Size Bed",
+    "Restaurant",
+    "24/7 Room Service",
+    "Air Conditioning",
+    "Swimming Pool",
+    "Local Dining",
+    "Housekeeping",
+    "Bath/Shower",
+    "Free Parking",
+    "Spa",
+    "Laundry Service",
+    "Play Area",
+    "Microwave",
+    "Refrigerator",
+    "TV",
+    "Hair Dryer",
+    "Baggage Storage",
+    "Smoking Allowed",
+    "Bar",
+    "Power Backup",
+    "Safe Locker",
+    "24/7 Help Desk",
+    "Security Alarm",
+    "Smoke Detector",
+    "CCTV Camera",
+    "Key Card Access",
+    "Fire Extinguisher",
+    "Elevator",
+    "Wheelchair Accessible",
+    "Conference Room",
+    "Business Center",
+    "Meeting Room",
+    "Concierge Service",
+    "Tour Assistance",
+    "Multi Linguage Staff",
+    "ATM",
+    "Currency Exchange",
+    "Airport Shuttle",
+  ],
+  legalDocs: [
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-222620598239c0ee7f2b34b2f9d0cc1b0410959b86e8d26f8ffedb802a70cc07",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-ac241100fee2513b399dfb411ec8c87849281ccfc5e21a043482a2749f6e1369",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-1bccbd7abb5a1f409c3b084254f550e0d5042812d92a21b083049e71509ca96e",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-7d2a2722078670e84c5cf66ff9fe9dd7bbc3855eeff4fb919d44acab212ccf8b",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-99f92bf2d00d0e112cf764b7be94751563dcce52fa3e436ce72028acc2cd1faf",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-9b41e84d28e47d7c926f6cd83ecf104fcff474f76ec179244904533b523121b4",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-73cc9a29056666f871dc1008d072cded96d5807984df7419ef9121df261b4dec",
+    "https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-fd5ad7117c4264f5e0ba61fa956f33b6d42b566161651fc2464d3f977765bebb",
+  ],
+  room: {
+    name: "Deluxe Room",
+    tag: "Best for business travellers.",
+    basePrice: 1000,
+    totalRoomsAllocated: 50,
+    maxOccupancy: 2,
+    area: 150,
+    beds: {
+      type: "King Size Bed",
+      count: 1,
+    },
+    isWifiAvailable: true,
+    isAirConditioned: true,
+    hasCityView: true,
     hasSeaView: false,
-    perks: [],
+    perks: ["Free Welcome Drink"],
     extras: [
       {
         name: "No Extras",
         cost: 0,
       },
+      {
+        name: "Breakfast Buffet",
+        cost: 650,
+      },
+      {
+        name: "Lunch Buffet",
+        cost: 750,
+      },
+      {
+        name: "Dinner Buffet",
+        cost: 850,
+      },
+      {
+        name: "Breakfast + Lunch + Dinner Buffet",
+        cost: 2000,
+      },
     ],
-    images: [],
-    coverImage: "",
+    images: [
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-12ff351abd8ba4aa5a78a70b5b36dab300297cec4dc76ddd7fc3d349e6a4c190",
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-8b6c8a6c966523943dc56bddbbbf4f957c239b301c78d5e366c438cdb16b5748",
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-1f875d4952f8f3a3a34df0d880d4c4dc64c1651dc7967b9cd7b334c11fa0006c",
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-ab54e924e18667cf1babfdfe4a5ccaff74615dc1c3128594f9df23cd343d88e7",
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-15cb99a68df05276c1ed2347122fba64c3033ffa446e4cd13bf2926c534f385f",
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-4b8ae1bbe6ad627f8c142a4d9722a3b8440d8532c8a499b891a2abd2111f7de3",
+    ],
+    coverImage:
+      "https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-1f875d4952f8f3a3a34df0d880d4c4dc64c1651dc7967b9cd7b334c11fa0006c",
   },
-  taxIN: "",
-  taxRates: [{ name: "", rate: 0 }],
-  checkInTime: "",
-  checkOutTime: "",
+  taxIN: "NWDN2EREQNJKO2",
+  taxRates: [
+    {
+      name: "State Room Occupancy Excise Tax",
+      rate: 5.7,
+    },
+    {
+      name: "Local Option Room Occupancy Tax",
+      rate: 2.5,
+    },
+    {
+      name: "Convention Center Financing Fee",
+      rate: 2.2,
+    },
+    {
+      name: "Tourism Assessment Fee",
+      rate: 1.5,
+    },
+  ],
+  checkInTime: "10:30",
+  checkOutTime: "09:30",
   isBookNowPayLaterAllowed: true,
-  checkInRulesAndRestrictions: "",
-  groundRulesAndRestrictions: "",
-  cancellationPolicy: "",
-  socialMediaLinks: [],
-  tags: [],
+  checkInRulesAndRestrictions:
+    '<h3 class=" text-base lg:text-lg font-semibold"><strong>Check-in Instructions</strong></h3><ul class="mt-2 ml-6 list-disc [&amp;>li]:mt-2"><li><p>Check-in time: <strong>3:00 PM</strong></p></li><li><p>Check-out time: <strong>11:00 AM</strong></p></li><li><p>A valid government-issued ID and credit/debit card are required at check-in.</p></li><li><p>Early check-in is subject to availability and may incur additional charges.</p></li><li><p>Guests must be <strong>18 years or older</strong> to check in.</p><p>By booking a stay at <strong>Hotel Aloha Boston</strong>, guests agree to abide by these rules and regulations.</p></li></ul>',
+  groundRulesAndRestrictions:
+    '<h3 class=" text-base lg:text-lg font-semibold"><strong>Hotel Rules &amp; Regulations</strong></h3><ol class="mt-2 ml-6 list-decimal [&amp;>li]:mt-2"><li><p><strong>No Smoking</strong> – This is a smoke-free property. A cleaning fee of <strong>$250</strong> will be charged for violations.</p></li><li><p><strong>No Pets Allowed</strong> – Service animals are welcome with proper documentation.</p></li><li><p><strong>Quiet Hours</strong> – Maintain low noise levels between <strong>10:00 PM and 7:00 AM</strong>.</p></li><li><p><strong>Guest Limit</strong> – Maximum of <strong>2 guests per room</strong> unless specified otherwise.</p></li><li><p><strong>Damage Policy</strong> – Any damages to the property will be charged to the guest’s registered payment method.</p></li><li><p><strong>Lost &amp; Found</strong> – The hotel is not responsible for lost or stolen items.</p></li><li><p><strong>Visitors Policy</strong> – Unregistered visitors are not allowed in guest rooms after <strong>10:00 PM</strong>.</p></li><li><p><strong>Alcohol &amp; Drug Policy</strong> – Consumption of alcohol is permitted only in designated areas. Illegal substances are strictly prohibited.</p><p>By booking a stay at <strong>Hotel Aloha Boston</strong>, guests agree to abide by these rules and regulations.</p></li></ol>',
+  cancellationPolicy:
+    '<h3 class=" text-base lg:text-lg font-semibold"><strong>Cancellation Policy for Hotel Aloha Boston</strong></h3><ol class="mt-2 ml-6 list-decimal [&amp;>li]:mt-2"><li><p><strong>Flexible Cancellation</strong> – Free cancellation if canceled <strong>at least 48 hours</strong> before the check-in date.</p></li><li><p><strong>Late Cancellation Fee</strong> – If canceled within <strong>48 hours of check-in</strong>, a fee equal to <strong>the first night\'s stay</strong> will be charged.</p></li><li><p><strong>No-Show Policy</strong> – If a guest does not check in and fails to cancel, they will be charged <strong>100% of the total booking amount</strong>.</p></li><li><p><strong>Non-Refundable Rates</strong> – Certain discounted bookings may be <strong>non-refundable</strong>, meaning no refunds will be issued upon cancellation.</p></li><li><p><strong>Modifications</strong> – Date changes are allowed <strong>up to 24 hours</strong> before check-in, subject to availability and possible rate adjustments.</p></li></ol><p>For any cancellations or modifications, guests must contact customer support or manage their booking through the<strong> exploreInn</strong> platform.</p>',
+  socialMediaLinks: [
+    {
+      name: "Instagram",
+      link: "https://instagram/accounts/hotel-aloha-boston",
+    },
+    {
+      name: "Twitter",
+      link: "https://twitter/accounts/hotel-aloha-boston",
+    },
+  ],
+  tags: ["Luxury Stay", "Urban Retreat", "Downtown Boston"],
 };
-
-//  initialState: RegisterListing = {
-//   progress: 14,
-//   listingName: 'Hotel Aloha, Boston',
-//   listingType: 'Hotel',
-//   email: 'info@hotelaloha.us',
-//   phone: '+16175551234',
-//   description: '<p>Pellentesque ac leo nulla. Suspendisse et mattis eros, volutpat tempor velit. Aenean placerat eros eu dui porttitor sollicitudin. Sed eu convallis nisi. Vivamus bibendum enim quis ante lobortis, sit amet porttitor urna malesuada. Nunc faucibus malesuada ex consectetur convallis. In tellus mauris, pulvinar ut ipsum at, vestibulum commodo ipsum. Nulla non turpis mauris. Aliquam et risus et tellus malesuada accumsan. Nunc a ante sed tellus maximus interdum. Nam condimentum sollicitudin mi, eget rhoncus quam tincidunt porta. Aliquam dignissim ullamcorper dolor sit amet malesuada. Morbi eu est vehicula magna consectetur condimentum. Nam rutrum nec justo eu euismod.</p><p>Maecenas sit amet vehicula leo. Nulla rhoncus sodales eros. Cras placerat ut sapien nec efficitur. Donec magna purus, imperdiet in aliquam id, laoreet pharetra ex. Suspendisse vulputate eget arcu vel scelerisque. Cras nec lorem id odio ultricies vestibulum. Etiam luctus ut urna eget placerat. Morbi eu enim turpis. Morbi vel ultrices lacus. Sed in volutpat orci. Duis semper massa sed velit dapibus elementum. Nulla vel elementum nulla. Nullam vel elit eget neque vehicula dapibus in non eros. In non odio et odio commodo molestie.</p><p>Quisque commodo, ex eget auctor sollicitudin, diam arcu lobortis metus, a feugiat felis mi in mi. Suspendisse potenti. Nunc ornare volutpat felis in egestas. Nunc vitae quam congue velit iaculis scelerisque. Etiam aliquam libero ac eros rhoncus, in mattis justo fermentum. Nulla facilisi. Aliquam ac pellentesque enim, non pretium dui. Donec eget lectus auctor, ultrices augue vitae, vulputate ipsum. Etiam at aliquet enim. Aenean semper consectetur risus, non pharetra magna rutrum non. Duis justo lorem, semper sit amet lacus sit amet, vulputate pulvinar turpis.</p>',
-//   geometry: {
-//     type: 'Point',
-//     coordinates: [
-//       -71.07463251661498,
-//       42.35129882553639
-//     ]
-//   },
-//   address: {
-//     street: '501b Boylston Street',
-//     neighborhood: 'Newbury Street',
-//     city: 'Boston',
-//     state: 'Massachusetts',
-//     country: 'United States',
-//     zipCode: '02116',
-//     fullAddress: '501b Boylston Street, Boston, Massachusetts 02116, United States'
-//   },
-//   distanceFrom: {
-//     touristDestinations: [
-//       {
-//         name: 'Boston Musuem',
-//         distance: 1.2
-//       },
-//       {
-//         name: 'Boston City Center',
-//         distance: 1.8
-//       }
-//     ],
-//     airport: {
-//       name: 'Boston Logan International Airport (BOS)',
-//       distance: 4.83
-//     },
-//     railwayStation: {
-//       name: 'Mbta West Medford',
-//       distance: 9.22
-//     },
-//     busStop: {
-//       name: 'Boylston',
-//       distance: 0.13
-//     }
-//   },
-//   images: [
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-eb8b628efb9e19d27314a47e588d64e8a59a9fec382c4bc28c805013cc8b77a1',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-b2199d4c4e1d13f8e56077ab64df9f8645fee3a7d7f9e186a9804d0037059e47',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-247ddd60813cb8b8d65bf7f6917af3986289e6bdb828865c7451b85fdb264b2a',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-01d34a247018e18bec799603191924e2915bb073fb6e084f3164efbdaf2390f4',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-dd27ba8d6a6e27802be30ac704ad103639a8ad33c5725c641be2fbf8d0f2b599',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-cbb7c24eb83714e9dc08dda5f33146a82386be58d2f898d971598cb6de9750f3',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-6dc512dc2cd85ba38c6bc5bb9c69d06675486f6018b59b2f52255f6d1d707d55',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-08365c4607b6d1ea16e17f0c4545e5dc6baa27355fc3d29986262ae2aa09eaba',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-6411f71a591df05726132f76f88e5b537cb5619a947195c89529d0023ae84533',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-d810c0daef4908e9abb4bf20205eaa7c6de12cf01587044c49d2ec97a6047d56'
-//   ],
-//   coverImage: 'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-6411f71a591df05726132f76f88e5b537cb5619a947195c89529d0023ae84533',
-//   amenities: [
-//     'WiFi',
-//     'King-Size Bed',
-//     'Restaurant',
-//     '24/7 Room Service',
-//     'Air Conditioning',
-//     'Swimming Pool',
-//     'Local Dining',
-//     'Housekeeping',
-//     'Bath/Shower',
-//     'Free Parking',
-//     'Spa',
-//     'Laundry Service',
-//     'Play Area',
-//     'Microwave',
-//     'TV',
-//     'Hair Dryer',
-//     'Baggage Storage',
-//     'Smoking Allowed',
-//     'Bar',
-//     'Power Backup',
-//     'Safe Locker',
-//     '24/7 Help Desk',
-//     'Security Alarm',
-//     'Smoke Detector',
-//     'CCTV Camera',
-//     'Key Card Access',
-//     'Fire Extinguisher',
-//     'Elevator',
-//     'Wheelchair Accessible',
-//     'Conference Room',
-//     'Meeting Room',
-//     'Concierge Service',
-//     'Tour Assistance',
-//     'Multi Linguage Staff',
-//     'ATM',
-//     'Currency Exchange',
-//     'Car Rental',
-//     'Airport Shuttle',
-//     'In-house Casino'
-//   ],
-//   legalDocs: [
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-5891a01fa628227fe6d590f58a022731498ce43b86ac74d78bec939b06a25632',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-0d09c51f5e5fdec786caad1878078027fc0279af322491824f841b66f722245a',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-e4ee6ef16b2e882e6d621201d44be164d808c07a8416e8a075bf8739e14fa448',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-a57521199cb29f0af9dd641fa72c92eff750930aa5c214b426bd995b72e5a45d',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-a3d479a3b5f2d8c87c344d74e44d8ca8ce01cdde99c108359d055ad6ae368c3c',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-247ea57587020896f817e3e69110830ca639de4db73e52e8cee525a4c9aa2cb8',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-7f255e70a7df8f25d62d6042edfbae611ac53cc0f4f655a76c548685aef2f4fc',
-//     'https://exploreinn-local.s3.ap-south-1.amazonaws.com/listing-legalDoc-49846f274bc69d6086334daa6b3e7005e662a356016c4fe17364ff4a78244e0f'
-//   ],
-//   room: {
-//     name: 'Deluxe Room',
-//     tag: 'Best for business travellers.',
-//     basePrice: 1000,
-//     totalRoomsAllocated: 50,
-//     maxOccupancy: 2,
-//     area: 100,
-//     beds: {
-//       type: 'King Size Bed',
-//       count: 1
-//     },
-//     isWifiAvailable: true,
-//     isAirConditioned: true,
-//     hasCityView: true,
-//     hasSeaView: false,
-//     perks: [
-//       'Free Welcome Drink'
-//     ],
-//     extras: [
-//       {
-//         name: 'No Extras',
-//         cost: 0
-//       },
-//       {
-//         name: 'Breakfast Buffet',
-//         cost: 650
-//       },
-//       {
-//         name: 'Lunch Buffet',
-//         cost: 750
-//       },
-//       {
-//         name: 'Dinner Buffet',
-//         cost: 850
-//       },
-//       {
-//         name: 'Breakfast + Lunch + Dinner Buffet',
-//         cost: 1550
-//       }
-//     ],
-//     images: [
-//       'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-2703c0883a35fd57dd173c648ea556c3ab82ea4ccd163978d4e56537cf380389',
-//       'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-c0786cd1e659981f197a9c88d6fe13daa08fd2b7fa749d1face4fd2de0aaf1f6',
-//       'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-952ebea588b8f19aa0fcd95824530df6a5b76f9ed3a1f6b0f57cfc6f85f3b50f',
-//       'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-f9ee081914fd0342c68ecf3e4aed78c6952edd95a57ee527b1d5b51a011df005',
-//       'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-b77df334c5f7003dd3fc1dce137e17f324eea1bca986857dfa9d65a1235cc891',
-//       'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-a382393ead658c63550fcbf2070379c7933c495e50b190eec9797c5606fcc8ac'
-//     ],
-//     coverImage: 'https://exploreinn-local.s3.ap-south-1.amazonaws.com/room-c0786cd1e659981f197a9c88d6fe13daa08fd2b7fa749d1face4fd2de0aaf1f6'
-//   },
-//   taxIN: 'NWDN2EREQNJKO2',
-//   taxRates: [
-//     {
-//       name: 'State Room Occupancy Excise Tax',
-//       rate: 5.7
-//     },
-//     {
-//       name: 'Local Option Room Occupancy Tax',
-//       rate: 2.5
-//     },
-//     {
-//       name: 'Convention Center Financing Fee',
-//       rate: 2.2
-//     },
-//     {
-//       name: 'Tourism Assessment Fee',
-//       rate: 4
-//     }
-//   ],
-//   checkInTime: '11:00',
-//   checkOutTime: '10:30',
-//   isBookNowPayLaterAllowed: true,
-//   checkInRulesAndRestrictions: '<p>Pellentesque ac leo nulla. Suspendisse et mattis eros, volutpat tempor velit. Aenean placerat eros eu dui porttitor sollicitudin. Sed eu convallis nisi. Vivamus bibendum enim quis ante lobortis, sit amet porttitor urna malesuada. Nunc faucibus malesuada ex consectetur convallis. In tellus mauris, pulvinar ut ipsum at, vestibulum commodo ipsum. Nulla non turpis mauris. Aliquam et risus et tellus malesuada accumsan. Nunc a ante sed tellus maximus interdum. Nam condimentum sollicitudin mi, eget rhoncus quam tincidunt porta. Aliquam dignissim ullamcorper dolor sit amet malesuada. Morbi eu est vehicula magna consectetur condimentum. Nam rutrum nec justo eu euismod.</p><p>Maecenas sit amet vehicula leo. Nulla rhoncus sodales eros. Cras placerat ut sapien nec efficitur. Donec magna purus, imperdiet in aliquam id, laoreet pharetra ex. Suspendisse vulputate eget arcu vel scelerisque. Cras nec lorem id odio ultricies vestibulum. Etiam luctus ut urna eget placerat. Morbi eu enim turpis. Morbi vel ultrices lacus. Sed in volutpat orci. Duis semper massa sed velit dapibus elementum. Nulla vel elementum nulla. Nullam vel elit eget neque vehicula dapibus in non eros. In non odio et odio commodo molestie.</p><p>Quisque commodo, ex eget auctor sollicitudin, diam arcu lobortis metus, a feugiat felis mi in mi. Suspendisse potenti. Nunc ornare volutpat felis in egestas. Nunc vitae quam congue velit iaculis scelerisque. Etiam aliquam libero ac eros rhoncus, in mattis justo fermentum. Nulla facilisi. Aliquam ac pellentesque enim, non pretium dui. Donec eget lectus auctor, ultrices augue vitae, vulputate ipsum. Etiam at aliquet enim. Aenean semper consectetur risus, non pharetra magna rutrum non. Duis justo lorem, semper sit amet lacus sit amet, vulputate pulvinar turpis.</p>',
-//   groundRulesAndRestrictions: '<p>Pellentesque ac leo nulla. Suspendisse et mattis eros, volutpat tempor velit. Aenean placerat eros eu dui porttitor sollicitudin. Sed eu convallis nisi. Vivamus bibendum enim quis ante lobortis, sit amet porttitor urna malesuada. Nunc faucibus malesuada ex consectetur convallis. In tellus mauris, pulvinar ut ipsum at, vestibulum commodo ipsum. Nulla non turpis mauris. Aliquam et risus et tellus malesuada accumsan. Nunc a ante sed tellus maximus interdum. Nam condimentum sollicitudin mi, eget rhoncus quam tincidunt porta. Aliquam dignissim ullamcorper dolor sit amet malesuada. Morbi eu est vehicula magna consectetur condimentum. Nam rutrum nec justo eu euismod.</p><p>Maecenas sit amet vehicula leo. Nulla rhoncus sodales eros. Cras placerat ut sapien nec efficitur. Donec magna purus, imperdiet in aliquam id, laoreet pharetra ex. Suspendisse vulputate eget arcu vel scelerisque. Cras nec lorem id odio ultricies vestibulum. Etiam luctus ut urna eget placerat. Morbi eu enim turpis. Morbi vel ultrices lacus. Sed in volutpat orci. Duis semper massa sed velit dapibus elementum. Nulla vel elementum nulla. Nullam vel elit eget neque vehicula dapibus in non eros. In non odio et odio commodo molestie.</p><p>Quisque commodo, ex eget auctor sollicitudin, diam arcu lobortis metus, a feugiat felis mi in mi. Suspendisse potenti. Nunc ornare volutpat felis in egestas. Nunc vitae quam congue velit iaculis scelerisque. Etiam aliquam libero ac eros rhoncus, in mattis justo fermentum. Nulla facilisi. Aliquam ac pellentesque enim, non pretium dui. Donec eget lectus auctor, ultrices augue vitae, vulputate ipsum. Etiam at aliquet enim. Aenean semper consectetur risus, non pharetra magna rutrum non. Duis justo lorem, semper sit amet lacus sit amet, vulputate pulvinar turpis.</p>',
-//   cancellationPolicy: '<p>Pellentesque ac leo nulla. Suspendisse et mattis eros, volutpat tempor velit. Aenean placerat eros eu dui porttitor sollicitudin. Sed eu convallis nisi. Vivamus bibendum enim quis ante lobortis, sit amet porttitor urna malesuada. Nunc faucibus malesuada ex consectetur convallis. In tellus mauris, pulvinar ut ipsum at, vestibulum commodo ipsum. Nulla non turpis mauris. Aliquam et risus et tellus malesuada accumsan. Nunc a ante sed tellus maximus interdum. Nam condimentum sollicitudin mi, eget rhoncus quam tincidunt porta. Aliquam dignissim ullamcorper dolor sit amet malesuada. Morbi eu est vehicula magna consectetur condimentum. Nam rutrum nec justo eu euismod.</p><p>Maecenas sit amet vehicula leo. Nulla rhoncus sodales eros. Cras placerat ut sapien nec efficitur. Donec magna purus, imperdiet in aliquam id, laoreet pharetra ex. Suspendisse vulputate eget arcu vel scelerisque. Cras nec lorem id odio ultricies vestibulum. Etiam luctus ut urna eget placerat. Morbi eu enim turpis. Morbi vel ultrices lacus. Sed in volutpat orci. Duis semper massa sed velit dapibus elementum. Nulla vel elementum nulla. Nullam vel elit eget neque vehicula dapibus in non eros. In non odio et odio commodo molestie.</p><p>Quisque commodo, ex eget auctor sollicitudin, diam arcu lobortis metus, a feugiat felis mi in mi. Suspendisse potenti. Nunc ornare volutpat felis in egestas. Nunc vitae quam congue velit iaculis scelerisque. Etiam aliquam libero ac eros rhoncus, in mattis justo fermentum. Nulla facilisi. Aliquam ac pellentesque enim, non pretium dui. Donec eget lectus auctor, ultrices augue vitae, vulputate ipsum. Etiam at aliquet enim. Aenean semper consectetur risus, non pharetra magna rutrum non. Duis justo lorem, semper sit amet lacus sit amet, vulputate pulvinar turpis.</p>',
-//   socialMediaLinks: [
-//     {
-//       name: 'Instagram',
-//       link: 'https://instagram/accounts/hotel-aloha-boston'
-//     },
-//     {
-//       name: 'Twitter',
-//       link: 'https://twitter/accounts/hotel-aloha-boston'
-//     }
-//   ],
-//   tags: [
-//     'Enchanting',
-//     'Modern',
-//     'Premium'
-//   ]
-// }
 
 export const registerListingSlice = createSlice({
   name: "new-listing",

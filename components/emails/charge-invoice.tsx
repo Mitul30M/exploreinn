@@ -19,8 +19,9 @@ import * as React from "react";
 
 const baseURL = process.env.NEXT_PUBLIC_ORIGIN as string;
 
-const Invoice = ({
+const ChargeInvoice = ({
   user,
+  booking,
   transaction,
 }: {
   user: User;
@@ -78,16 +79,16 @@ const Invoice = ({
                 !
               </Text>
               <Text className=" text-[16px] leading-[24px] px-5 ">
-                Your transaction of{" "}
+                Your late cancellation of booking with ID{" "}
+                <strong className="font-semibold">{booking.id}</strong> was
+                successful but has resulted in a cancellation fee of{" "}
                 <strong className="font-semibold">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",
-                  }).format(transaction.totalCost)}
-                </strong>{" "}
-                with ID{" "}
-                <strong className="font-semibold">{transaction.id}</strong> was
-                successful & securely processed!
+                  }).format(Math.floor(booking.totalCost * 0.05))}
+                </strong>
+                . Please find the invoice attached.
               </Text>
               <Text className=" text-[16px] leading-[24px] px-5 ">
                 Thank you for choosing ExploreInn as your travel companion.
@@ -154,4 +155,4 @@ const Invoice = ({
   );
 };
 
-export default Invoice;
+export default ChargeInvoice;

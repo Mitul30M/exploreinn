@@ -31,6 +31,7 @@ import { startTransition, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { createStripeCheckoutSession } from "@/lib/actions/stripe/stripe";
 import { createBookNowPayLaterBooking } from "@/lib/actions/bookings/bookings";
+import { Badge } from "@/components/ui/badge";
 
 interface PaymentConfirmationCardProps {
   className?: string;
@@ -88,7 +89,7 @@ const PaymentConfirmationCard = ({
     totalWithoutTaxes,
     isOfferApplied,
     couponCode,
-    offerId,
+    // offerId,
     offerDescription,
     offerType,
     discountedAmount,
@@ -200,23 +201,24 @@ const PaymentConfirmationCard = ({
                 style: "currency",
                 currency: "USD",
               }).format(extra.cost)}{" "}
-              x {guests} {guests === 1 ? "guest" : "guests"})
+              x {guests} {guests === 1 ? "guest" : "guests"}) x {nights}{" "}
+              {nights === 1 ? "night" : "nights"})
             </p>
             <p className="font-semibold text-[16px]">
               +
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
-              }).format(extra.cost * guests)}
+              }).format(extra.cost * guests * nights)}
             </p>
           </div>
         ))}
+
         {/* no offer */}
         {!isOfferApplied && (
           <>
-            <Separator className="my-6" />
-            <div className="w-full flex items-center justify-between mt-2">
-              <p className="text-sm">Total</p>
+            <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
+              <p className="text-sm">Gross Total</p>
               <p className="font-semibold text-[16px]">
                 {new Intl.NumberFormat("en-US", {
                   style: "currency",
@@ -231,10 +233,9 @@ const PaymentConfirmationCard = ({
         {isOfferApplied &&
           roomsTotal + extrasTotal < minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
-              <div className="w-full flex items-center justify-between mt-2">
-                <p className="font-semibold text-[16px] text-primary">
-                  Can't Apply Offer. Add More
+              <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
+                <Badge>
+                  Can&apos;t Apply Offer. Add More
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",
@@ -242,7 +243,7 @@ const PaymentConfirmationCard = ({
                     minBookingFeeToApplyOffer - roomsTotal + extrasTotal
                   )}{" "}
                   to apply offer & proceed with booking.
-                </p>
+                </Badge>
               </div>
             </>
           )}
@@ -250,10 +251,9 @@ const PaymentConfirmationCard = ({
         {/* flat discount offer*/}
         {isOfferApplied &&
           offerType === "Flat_Discount" &&
-          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+          roomsTotal + extrasTotal >= minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
-              <div className="w-full flex items-center justify-between mt-2">
+              <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
                   {new Intl.NumberFormat("en-US", {
@@ -264,7 +264,10 @@ const PaymentConfirmationCard = ({
               </div>
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">
-                  Discount <span className="text-primary">{couponCode}</span>
+                  Discount{" "}
+                  <span className="text-primary font-semibold">
+                    {couponCode}
+                  </span>
                 </p>
                 <p className="font-semibold text-[16px] text-primary">
                   {new Intl.NumberFormat("en-US", {
@@ -273,10 +276,8 @@ const PaymentConfirmationCard = ({
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
-              <Separator className="my-6" />
-
-              <div className="w-full flex items-center justify-between mt-2">
-                <p className="text-sm">Total</p>
+              <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
+                <p className="text-sm">Gross Total After Discount</p>
                 <p className="font-semibold text-[16px]">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
@@ -290,10 +291,9 @@ const PaymentConfirmationCard = ({
         {/* percentage discount offer*/}
         {isOfferApplied &&
           offerType === "Percentage_Discount" &&
-          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+          roomsTotal + extrasTotal >= minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
-              <div className="w-full flex items-center justify-between mt-2">
+              <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
                   {new Intl.NumberFormat("en-US", {
@@ -307,7 +307,9 @@ const PaymentConfirmationCard = ({
                   {discountPercentage}% Discount{" "}
                   {maxAllowedDiscountAmount &&
                     `(upto ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(maxAllowedDiscountAmount)})`}{" "}
-                  <span className="text-primary">{couponCode}</span>
+                  <span className="text-primary font-semibold">
+                    {couponCode}
+                  </span>
                 </p>
                 <p className="font-semibold text-[16px] text-primary">
                   {new Intl.NumberFormat("en-US", {
@@ -316,10 +318,9 @@ const PaymentConfirmationCard = ({
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
-              <Separator className="my-6" />
 
-              <div className="w-full flex items-center justify-between mt-2">
-                <p className="text-sm">Total</p>
+              <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
+                <p className="text-sm">Gross Total After Discount</p>
                 <p className="font-semibold text-[16px]">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
@@ -332,22 +333,15 @@ const PaymentConfirmationCard = ({
 
         {/* extra perks offer */}
         {isOfferApplied &&
-          offerType === "Flat_Discount" &&
-          roomsTotal + extrasTotal > minBookingFeeToApplyOffer && (
+          offerType === "Extra_Perks" &&
+          roomsTotal + extrasTotal >= minBookingFeeToApplyOffer && (
             <>
-              <Separator className="my-6" />
-              <div className="w-full flex items-center justify-between mt-2">
-                <p className="text-sm">
-                  Extra Perks <span className="text-primary">{couponCode}</span>
-                </p>
-                <p className="font-semibold text-[16px] text-primary">
-                  {offerDescription}
-                </p>
+              <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
+                <Badge>{offerDescription}</Badge>
               </div>
-              <Separator className="my-6" />
 
-              <div className="w-full flex items-center justify-between mt-2">
-                <p className="text-sm">Total</p>
+              <div className="w-full flex items-center justify-between mt-2 border-b-[1px] border-border/90 py-2">
+                <p className="text-sm">Gross Total</p>
                 <p className="font-semibold text-[16px]">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
@@ -468,7 +462,8 @@ const PaymentConfirmationCard = ({
               !checkIn ||
               !checkOut ||
               !totalPayable ||
-              (isOfferApplied && totalWithoutTaxes < minBookingFeeToApplyOffer)
+              (isOfferApplied &&
+                roomsTotal + extrasTotal < minBookingFeeToApplyOffer)
             }
           >
             {form.formState.isSubmitting ? (
