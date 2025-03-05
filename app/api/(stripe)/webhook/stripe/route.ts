@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { resend } from "@/lib/resend";
 import OnlinePaymentBookingComplete from "@/components/emails/online-payment-booking-complete";
 import Invoice from "@/components/emails/invoice";
+import ChargeInvoice from "@/components/emails/charge-invoice";
 
 export async function POST(req: Request) {
   console.log("Webhook received");
@@ -295,6 +296,35 @@ export async function POST(req: Request) {
         revalidatePath(`/users/${newTransaction.guestId}/billing`);
         revalidatePath(`/listings/${newTransaction.listingId}/bookings`);
         revalidatePath(`/listings/${newTransaction.listingId}/transactions`);
+        break;
+
+      case "invoice.sent":
+        console.log("Processing invoice.sent");
+        const invoice = event.data.object;
+        const transaction = await prisma.transaction.update({
+          where: {
+            paymentId: invoice.id,
+          },
+          data: {
+            receiptURL: invoice.hosted_invoice_url,
+          },
+          include: {
+            booking: true,
+            guest: true,
+          },
+        });
+        await resend.emails.send({
+          from: "exploreinn@mitul30m.in",
+          to: [transaction.guest.email],
+          subject: "Invoice for Late Cancellation Charge",
+          react: ChargeInvoice({
+            user: transaction.guest,
+            transaction: transaction,
+            booking: transaction.booking,
+          }),
+          scheduledAt: "in 1 minute",
+        });
+        console.log("Invoice sent successfully");
         break;
     }
   } catch (error) {

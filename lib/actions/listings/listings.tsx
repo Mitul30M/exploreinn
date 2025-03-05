@@ -21,9 +21,7 @@ import { dynamicallySetRoomPrice } from "../rooms/rooms";
  * @param data - a RegisterListing object
  * @returns a form state object with a message and a type
  */
-export async function enlistListing(
-  data: RegisterListing
-) {
+export async function enlistListing(data: RegisterListing) {
   console.log(data);
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)

@@ -141,7 +141,7 @@ export async function dynamicallySetRoomPrice(roomId: string) {
 
   // add the percentage increase to the new price in the high demand event
   finalPrice = roomHighDemandEvent
-    ? finalPrice * (1 + roomHighDemandEvent.priceIncrementPercentage)
+    ? finalPrice * (1 + roomHighDemandEvent.priceIncrementPercentage / 100)
     : finalPrice;
 
   if (room.isDynamicallyPriced) {

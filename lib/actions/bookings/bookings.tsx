@@ -617,7 +617,9 @@ export async function updateListingBookingStatus(
             refund_application_fee: true,
             reverse_transfer: true,
           });
-          console.log(`Refund ID: ${refund.id}\nRefunded: ${refund.charge}`);
+          console.log(
+            `Refund ID: ${refund.id}\nRefunded: ${refund.charge} $${refund.amount}`
+          );
         }
 
         console.log(
@@ -678,7 +680,7 @@ export async function updateListingBookingStatus(
           const invoice = await stripe.invoices.create({
             customer: customer.id,
             collection_method: "send_invoice",
-            due_date: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // Set due date to tomorrow
+            due_date: Math.floor(Date.now() / 1000) + 5 * 24 * 60 * 60, // Set due date to 5 days from now
             application_fee_amount: Math.round(
               updateBooking.totalCost * 0.05 * 0.05 * 100
             ),
@@ -732,18 +734,6 @@ export async function updateListingBookingStatus(
           console.log(
             `Booking ${updateBooking.id} opted for cancellation. \nCharged for late cancellation: ${chargedTransaction.id}`
           );
-
-          await resend.emails.send({
-            from: "exploreinn@mitul30m.in",
-            to: [updateBooking.guest.email],
-            subject: "Invoice for Late Cancellation Charge",
-            react: ChargeInvoice({
-              user: guest as User,
-              transaction: chargedTransaction,
-              booking: updateBooking,
-            }),
-            scheduledAt: "in 1 minute",
-          });
         }
       }
 
