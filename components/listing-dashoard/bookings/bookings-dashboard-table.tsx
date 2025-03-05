@@ -25,15 +25,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-
-
-
 import { BookingsDataTableToolbar } from "@/components/user-page/bookings/bookings-data-table-toolbar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import { ListingDashboardFloatingActionBar } from "./bookings-dashboard-table-action-bar";
-import { TDashboardBookingsColumns } from "./bookings-dashboard-table-colums";
-import { useRouter } from "next/navigation";
+// import { TDashboardBookingsColumns } from "./bookings-dashboard-table-colums";
+// import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -54,7 +51,7 @@ export function ListingBookingsDataTable<TData, TValue>({
   className,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const router = useRouter();
+  // const router = useRouter();
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -119,11 +116,11 @@ export function ListingBookingsDataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() =>
-                    router.push(
-                      `/listings/${(row.original as TDashboardBookingsColumns).listingId}/bookings/${(row.original as TDashboardBookingsColumns).id}`
-                    )
-                  }
+                  // onClick={() =>
+                  //   router.push(
+                  //     `/listings/${(row.original as TDashboardBookingsColumns).listingId}/bookings/${(row.original as TDashboardBookingsColumns).id}`
+                  //   )
+                  // }
                   className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (

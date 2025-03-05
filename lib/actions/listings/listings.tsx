@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma-client";
 import { RegisterListing } from "@/lib/redux-store/slices/register-listing-slice";
-import { FormState } from "@/lib/types/forms/form-state";
 import { auth } from "@clerk/nextjs/server";
 import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -23,10 +22,9 @@ import { dynamicallySetRoomPrice } from "../rooms/rooms";
  * @returns a form state object with a message and a type
  */
 export async function enlistListing(
-  prevState: FormState,
   data: RegisterListing
-): Promise<FormState> {
-  // console.log(data);
+) {
+  console.log(data);
   const { userId, sessionClaims } = await auth();
   const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
     .userDB_id;

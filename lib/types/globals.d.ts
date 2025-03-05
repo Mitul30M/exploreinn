@@ -44,5 +44,7 @@ declare global {
     totalWithoutTaxes: string;
     tax: string;
     totalPayable: string;
+    isOfferApplied?: string;
+    offerId?: string;
   };
 }

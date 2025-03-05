@@ -63,9 +63,10 @@ export function BookingFloatingActionBar({
                           value as BookingStatus
                         )
                       ) {
+                        console.log(value);
                         const error = await updateListingBookingStatus(
                           booking.id,
-                          booking.bookingStatus
+                          value as BookingStatus
                         );
 
                         if (error) {

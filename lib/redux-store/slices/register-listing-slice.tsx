@@ -496,28 +496,40 @@ export const registerListingSlice = createSlice({
       state,
       action: PayloadAction<{ name: string; distance: number }[]>
     ) => {
-      state.distanceFrom.touristDestinations = action.payload;
+      state.distanceFrom.touristDestinations = action.payload.map((item) => ({
+        name: item.name,
+        distance: parseFloat(item.distance.toString()),
+      }));
     },
     // to set distanceFrom.airport
     setDistanceFromAirport: (
       state,
       action: PayloadAction<{ name: string; distance: number }>
     ) => {
-      state.distanceFrom.airport = action.payload;
+      state.distanceFrom.airport = {
+        name: action.payload.name,
+        distance: parseFloat(action.payload.distance.toString()),
+      };
     },
     // to set distanceFrom.railwayStation
     setDistanceFromRailwayStation: (
       state,
       action: PayloadAction<{ name: string; distance: number }>
     ) => {
-      state.distanceFrom.railwayStation = action.payload;
+      state.distanceFrom.railwayStation = {
+        name: action.payload.name,
+        distance: parseFloat(action.payload.distance.toString()),
+      };
     },
     // to set distanceFrom.busStop
     setDistanceFromBusStop: (
       state,
       action: PayloadAction<{ name: string; distance: number }>
     ) => {
-      state.distanceFrom.busStop = action.payload;
+      state.distanceFrom.busStop = {
+        name: action.payload.name,
+        distance: parseFloat(action.payload.distance.toString()),
+      };
     },
     // to set address
     setAddress: (

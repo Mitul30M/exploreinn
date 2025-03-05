@@ -251,7 +251,6 @@ const RenderStep3 = () => {
           <Input
             defaultValue={address.state}
             type="text"
-            disabled
             id="state"
             placeholder=""
             className="!text-[16px] font-medium h-10 valid:bg-background rounded-lg px-4 shadow-sm"
@@ -327,7 +326,6 @@ const RenderStep3 = () => {
             defaultValue={address.country}
             type="text"
             id="country"
-            disabled
             placeholder=""
             className="!text-[16px] font-medium h-10 valid:bg-background rounded-lg px-4 shadow-sm"
             onChange={useDebouncedCallback((event) => {

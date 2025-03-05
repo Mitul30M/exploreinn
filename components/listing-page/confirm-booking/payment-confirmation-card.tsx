@@ -70,6 +70,8 @@ const bookingFormSchema = z.object({
   paymentMethod: z.enum(["book-now-pay-later", "online-payment"], {
     required_error: "Please a Payment Method",
   }),
+  isOfferApplied: z.boolean().optional(),
+  offerId: z.string().optional(),
 });
 
 const PaymentConfirmationCard = ({
@@ -89,7 +91,7 @@ const PaymentConfirmationCard = ({
     totalWithoutTaxes,
     isOfferApplied,
     couponCode,
-    // offerId,
+    offerId,
     offerDescription,
     offerType,
     discountedAmount,
@@ -120,6 +122,8 @@ const PaymentConfirmationCard = ({
       tax: tax,
       totalPayable: totalPayable,
       paymentMethod: "online-payment",
+      isOfferApplied: isOfferApplied,
+      offerId: offerId,
     },
   });
 

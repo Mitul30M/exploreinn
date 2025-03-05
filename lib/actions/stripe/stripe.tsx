@@ -36,6 +36,8 @@ const bookingFormSchema = z.object({
   paymentMethod: z.enum(["book-now-pay-later", "online-payment"], {
     required_error: "Please a Payment Method",
   }),
+  isOfferApplied: z.boolean().optional(),
+  offerId: z.string().optional(),
 }); /**
  * Creates a Stripe Checkout Session for a booking.
  *
@@ -77,11 +79,30 @@ export async function createStripeCheckoutSession(
     },
   });
 
+  const listing = await prisma.listing.findUnique({
+    where: {
+      id: bookingDetails.listingID,
+    },
+    select: {
+      id: true,
+      name: true,
+      address: true,
+      coverImage: true,
+      starRating: true,
+      overallRating: true,
+      exploreinnGrade: true,
+    },
+  });
+
   if (!user) {
     throw new Error("User not found");
     redirect("/sign-up");
   }
 
+  if (!listing) {
+    throw new Error("Listing not found");
+    redirect("/sign-up");
+  }
   const sellerStripeConnectID = await prisma.listing.findUnique({
     where: {
       id: bookingDetails.listingID,
@@ -103,64 +124,79 @@ export async function createStripeCheckoutSession(
     },
   });
 
-  const roomCart = bookingDetails.rooms.map((room) => {
-    // Calculate total for each room without taxes
-    const roomTotalWithoutTaxes =
-      room.rate * room.noOfRooms * bookingDetails.nights;
+  // const roomCart = bookingDetails.rooms.map((room) => {
+  //   // Calculate total for each room without taxes
+  //   const roomTotalWithoutTaxes =
+  //     room.rate * room.noOfRooms * bookingDetails.nights;
 
-    // Calculate total tax rate by summing all tax rates
-    const taxRate = bookingDetails.taxes.reduce((total, tax) => {
-      return total + tax.rate;
-    }, 0);
+  //   // Calculate total tax rate by summing all tax rates
+  //   const taxRate = bookingDetails.taxes.reduce((total, tax) => {
+  //     return total + tax.rate;
+  //   }, 0);
 
-    // Calculate tax amount
-    const tax = (taxRate * roomTotalWithoutTaxes) / 100;
+  //   // Calculate tax amount
+  //   const tax = (taxRate * roomTotalWithoutTaxes) / 100;
 
-    // Calculate total payable including tax
-    const totalPayable = roomTotalWithoutTaxes + tax;
+  //   // Calculate total payable including tax
+  //   const totalPayable = roomTotalWithoutTaxes + tax;
 
-    // For Stripe, we need per-room price, so divide totalPayable by number of rooms
-    // This ensures correct multiplication when Stripe applies the quantity
-    return {
+  //   // For Stripe, we need per-room price, so divide totalPayable by number of rooms
+  //   // This ensures correct multiplication when Stripe applies the quantity
+  //   return {
+  //     price_data: {
+  //       currency: "usd",
+  //       product_data: {
+  //         name: room.name,
+  //         description: `${room.noOfRooms}x ${room.name} ${bookingDetails.nights} nights`,
+  //         images: [rooms.find((r) => r.id === room.roomID)?.coverImage],
+  //       },
+  //       unit_amount: Math.round((totalPayable / room.noOfRooms) * 100),
+  //     },
+  //     quantity: room.noOfRooms,
+  //   };
+  // });
+
+  // const extrasCart = bookingDetails.extras.map((extra) => {
+  //   // Calculate total for each extra without taxes
+  //   const extraTotalWithoutTaxes =
+  //     extra.cost * bookingDetails.nights * bookingDetails.guests;
+  //   // Calculate total tax rate by summing all tax rates
+  //   const taxRate = bookingDetails.taxes.reduce((total, tax) => {
+  //     return total + tax.rate;
+  //   }, 0);
+  //   // Calculate tax amount
+  //   const tax = (taxRate * extraTotalWithoutTaxes) / 100;
+
+  //   // Calculate total payable including tax
+  //   const totalPayable = extraTotalWithoutTaxes + tax;
+
+  //   return {
+  //     price_data: {
+  //       currency: "usd",
+  //       product_data: {
+  //         name: extra.name,
+  //         description: `${bookingDetails.guests}x ${extra.name}`,
+  //       },
+  //       unit_amount: Math.round((totalPayable / bookingDetails.guests) * 100),
+  //     },
+  //     quantity: bookingDetails.guests,
+  //   };
+  // });
+
+  const cart = [
+    {
       price_data: {
         currency: "usd",
         product_data: {
-          name: room.name,
-          description: `${room.noOfRooms}x ${room.name} ${bookingDetails.nights} nights`,
-          images: [rooms.find((r) => r.id === room.roomID)?.coverImage],
+          name: `${user.firstName} ${user.lastName}'s ${listing.name} booking `,
+          description: `${user.firstName} ${user.lastName}'s ${listing.name} booking for ${bookingDetails.nights} nights`,
+          images: [listing.coverImage],
         },
-        unit_amount: Math.round((totalPayable / room.noOfRooms) * 100),
+        unit_amount: Math.round(bookingDetails.totalPayable * 100),
       },
-      quantity: room.noOfRooms,
-    };
-  });
-
-  const extrasCart = bookingDetails.extras.map((extra) => {
-    // Calculate total for each extra without taxes
-    const extraTotalWithoutTaxes =
-      extra.cost * bookingDetails.nights * bookingDetails.guests;
-    // Calculate total tax rate by summing all tax rates
-    const taxRate = bookingDetails.taxes.reduce((total, tax) => {
-      return total + tax.rate;
-    }, 0);
-    // Calculate tax amount
-    const tax = (taxRate * extraTotalWithoutTaxes) / 100;
-
-    // Calculate total payable including tax
-    const totalPayable = extraTotalWithoutTaxes + tax;
-
-    return {
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: extra.name,
-          description: `${bookingDetails.guests}x ${extra.name}`,
-        },
-        unit_amount: Math.round((totalPayable / bookingDetails.guests) * 100),
-      },
-      quantity: bookingDetails.guests,
-    };
-  });
+      quantity: 1,
+    },
+  ];
 
   // Create Stripe Checkout Session
   const session = await stripe.checkout.sessions.create({
@@ -177,7 +213,8 @@ export async function createStripeCheckoutSession(
     invoice_creation: {
       enabled: true,
     },
-    line_items: [...roomCart, ...extrasCart],
+    // line_items: [...roomCart, ...extrasCart],
+    line_items: cart,
     expires_at: Math.floor(Date.now() / 1000) + 1800, // 30 minutes (stripe checkout minimum expiration time)
     success_url: `${process.env.NEXT_PUBLIC_ORIGIN as string}/stripe/success`,
     cancel_url: `${process.env.NEXT_PUBLIC_ORIGIN as string}/stripe/cancel`,
@@ -195,6 +232,8 @@ export async function createStripeCheckoutSession(
       totalWithoutTaxes: bookingDetails.totalWithoutTaxes.toString(),
       tax: bookingDetails.tax.toString(),
       totalPayable: bookingDetails.totalPayable.toString(),
+      isOfferApplied: (bookingDetails.isOfferApplied ?? false).toString(),
+      offerId: bookingDetails.offerId,
     } as StripeCheckoutSessionMetaData,
   });
   return redirect(session.url as string);

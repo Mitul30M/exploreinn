@@ -123,6 +123,8 @@ export async function POST(req: Request) {
           }[],
           tax: parseFloat(checkoutSession.metadata.tax),
           totalCost: parseFloat(checkoutSession.metadata.totalPayable),
+          isOfferApplied: checkoutSession.metadata.isOfferApplied === "true",
+          offerId: checkoutSession.metadata.offerId,
         };
         console.log("creating new booking");
         console.log(bookingData);
@@ -147,6 +149,22 @@ export async function POST(req: Request) {
         });
 
         console.log("New Booking created successfully: ", newBooking);
+
+        if (
+          newBooking &&
+          bookingData.isOfferApplied &&
+          bookingData.offerId.length
+        ) {
+          await prisma.booking.update({
+            where: {
+              id: newBooking.id,
+            },
+            data: {
+              offerId: bookingData.offerId,
+            },
+          });
+        }
+
         // listing dashboard side revalidation
         revalidatePath(`/listings/${newBooking.listingId}/bookings`);
         revalidatePath(
