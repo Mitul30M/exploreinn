@@ -9,7 +9,7 @@ import {
 } from "@/lib/schemas/zod-schema";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import { resend } from "@/lib/resend";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 

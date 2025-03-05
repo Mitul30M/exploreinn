@@ -116,13 +116,13 @@ export async function createStripeCheckoutSession(
     },
   });
 
-  const rooms = await prisma.room.findMany({
-    where: {
-      id: {
-        in: bookingDetails.rooms.map((room) => room.roomID),
-      },
-    },
-  });
+  // const rooms = await prisma.room.findMany({
+  //   where: {
+  //     id: {
+  //       in: bookingDetails.rooms.map((room) => room.roomID),
+  //     },
+  //   },
+  // });
 
   // const roomCart = bookingDetails.rooms.map((room) => {
   //   // Calculate total for each room without taxes
