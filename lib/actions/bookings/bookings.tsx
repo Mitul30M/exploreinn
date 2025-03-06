@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { Booking, BookingStatus, Listing, User } from "@prisma/client";
+import { Booking, BookingStatus, Listing } from "@prisma/client";
 import { resend } from "@/lib/resend";
 import BookingConfirmationMail from "@/components/emails/booking-confirmation";
 import {
@@ -513,11 +513,7 @@ export async function updateListingBookingStatus(
   if (!updateBooking) {
     throw new Error("Failed to update booking status");
   }
-  const guest = await prisma.user.findUnique({
-    where: {
-      id: updateBooking.guestId,
-    },
-  });
+
   switch (status) {
     // skip "upcoming" status
 

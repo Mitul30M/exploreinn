@@ -43,7 +43,7 @@ export default function HomePage() {
           /listings/new
         </Link>
 
-        <p className="text-center text-primary p-4 w-max border-border/90 border-[1px] rounded">
+        <p className="text-center text-white bg-primary p-4 border-border/90 border-[1px] rounded w-[300px] text-wrap ">
           &apos;exploreinn&apos; is a platform that allows users to book
           listings seamlessly whilst providing a smooth and hassle-free
           experience to both the listing and the guests. This Web App is built

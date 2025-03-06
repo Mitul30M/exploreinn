@@ -12,7 +12,7 @@ import {
 import { getUser } from "@/lib/actions/user/user";
 import { currentUser } from "@clerk/nextjs/server";
 import { format } from "date-fns";
-import { ConciergeBell, Mail, Phone, UserPlus } from "lucide-react";
+import { ConciergeBell, Mail, Phone } from "lucide-react";
 import { notFound } from "next/navigation";
 
 const ListingRoomsPage = async ({

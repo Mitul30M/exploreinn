@@ -558,6 +558,7 @@ export async function addManagerToListing(
       }),
     ]);
   } catch (error) {
+    console.log(error);
     return {
       type: "error",
       message: "Failed to add manager to listing. Please try again.",
@@ -654,6 +655,7 @@ export async function removeManagerFromListing(
       },
     });
   } catch (error) {
+    console.log(error);
     return {
       type: "error",
       message: "Failed to remove manager from listing. Please try again.",
