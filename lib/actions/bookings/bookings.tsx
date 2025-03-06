@@ -761,6 +761,63 @@ export async function updateListingBookingStatus(
   revalidatePath(`/listings/${updateBooking.listingId}`);
 }
 
+/**
+ * Sets a booking's payment status to "completed".
+ * @param bookingId - The id of the booking to update.
+ * @returns A promise that resolves to an object with a type field set to either "success" or "error" and a message that describes the outcome of the operation.
+ * If the booking is not found, it will return an error with a message of "Booking not found".
+ * If the booking's payment status is already "completed", it will return an error with a message of "Booking's Payment is already completed".
+ * If the booking is successfully updated, it will return a success with a message of "Booking's Payment is completed".
+ */
+export async function setPaymentStatusCompleted(bookingId: string) {
+  const booking = await prisma.booking.findUnique({
+    where: {
+      id: bookingId,
+    },
+  });
+
+  if (!booking) {
+    return {
+      type: "error",
+      message: "Booking not found",
+    };
+  }
+
+  if (booking.paymentStatus === "completed") {
+    return {
+      type: "error",
+      message: "Booking's Payment is already completed",
+    };
+  }
+
+  const updateBooking = await prisma.booking.update({
+    where: {
+      id: bookingId,
+    },
+    data: {
+      paymentStatus: "completed",
+    },
+  });
+
+  if (!updateBooking) {
+    return {
+      type: "error",
+      message: "Booking not found",
+    };
+  }
+  // Send a notification & email to the guest
+  revalidatePath(`/users/${updateBooking.guestId}/bookings`);
+  revalidatePath(`/user/${updateBooking.guestId}/bookings/${updateBooking.id}`);
+  revalidatePath(`/listings/${updateBooking.listingId}/bookings`);
+  revalidatePath(
+    `/listings/${updateBooking.listingId}/bookings/${updateBooking.id}`
+  );
+  return {
+    type: "success",
+    message: "Booking's Payment is completed",
+  };
+}
+
 // to create invnvoice for late cancellation
 // await stripe.invoiceItems.create({
 //   customer: updateBooking.guest.stripeId as string,

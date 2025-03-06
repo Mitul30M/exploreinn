@@ -3,6 +3,7 @@ import * as React from "react";
 import { SelectTrigger } from "@radix-ui/react-select";
 import { type Table } from "@tanstack/react-table";
 import {
+  BadgeDollarSign,
   CheckCircle2,
   ConciergeBell,
   Download,
@@ -32,7 +33,10 @@ import { bookingStatus } from "@/lib/utils/types/status/booking-status";
 import { BookingStatusConfig } from "@/lib/utils/types/status/booking-status";
 import { Badge } from "@/components/ui/badge";
 import { TDashboardBookingsColumns } from "./bookings-dashboard-table-colums";
-import { updateListingBookingStatus } from "@/lib/actions/bookings/bookings";
+import {
+  setPaymentStatusCompleted,
+  updateListingBookingStatus,
+} from "@/lib/actions/bookings/bookings";
 import { BookingStatus } from "@prisma/client";
 
 interface TableFloatingBarProps<TData> {
@@ -189,7 +193,61 @@ export function ListingDashboardFloatingActionBar<TData>({
                     })}
                   </SelectGroup>
                 </SelectContent>
-              </Select>{" "}
+              </Select>
+              {/* to update payment status of book-now-pay-later bookings */}
+              {rows.length === 1 &&
+                (rows[0].original as TDashboardBookingsColumns)
+                  .paymentStatus === "pending" && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-7 border"
+                        onClick={() => {
+                          setAction("update-transaction-status");
+
+                          startTransition(async () => {
+                            const res = await setPaymentStatusCompleted(
+                              (rows[0].original as TDashboardBookingsColumns).id
+                            );
+
+                            if (res.type === "error") {
+                              toast({
+                                title: "Error Updating Payment Status",
+                                description: res.message,
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+
+                            toast({
+                              title: "Payment Status Updated",
+                              description: res.message,
+                            });
+                          });
+                        }}
+                        disabled={isPending || rows.length !== 1}
+                      >
+                        {isPending && action === "update-transaction-status" ? (
+                          <Loader
+                            className="size-3.5 animate-spin"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <BadgeDollarSign
+                            className="size-3.5"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+                      <p>Update Payment Status to Completed</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+
               {/* cancel a booking */}
               <Tooltip>
                 <TooltipTrigger asChild>
