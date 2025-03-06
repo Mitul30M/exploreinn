@@ -1,9 +1,4 @@
-import {
-  Archive,
-  Inbox,
-  Send,
-  Trash2,
-} from "lucide-react";
+import { Archive, Inbox, Send, Trash2 } from "lucide-react";
 
 // export seed mails
 // export const mails = [
@@ -488,7 +483,7 @@ export const mails = [
     read: false,
     archived: false,
     trashed: false,
-    labels: ["welcome", "onboarding","exploreinn"],
+    labels: ["welcome", "onboarding", "exploreinn"],
   },
 ];
 

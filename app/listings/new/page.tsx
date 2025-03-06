@@ -1,10 +1,25 @@
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
 import { Button } from "@/components/ui/button";
+import { isStripeConnectedAccount } from "@/lib/actions/stripe/stripe";
+import { currentUser } from "@clerk/nextjs/server";
 import { HotelIcon } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import React from "react";
 
-const NewListingPage = () => {
+const NewListingPage = async () => {
+  const user = await currentUser();
+  if (!user || !user.id) {
+    redirect("/");
+  }
+  const isStripeConnected = await isStripeConnectedAccount({
+    userId: user.id,
+  });
+  const userDbId = (user.publicMetadata as PublicMetadataType).userDB_id;
+  if (!isStripeConnected) {
+    redirect(`/users/${userDbId}/billing`);
+  }
+
   return (
     <main className="!min-h-screen bg-background border-border/90 border-x-[1px] max-w-7xl m-auto">
       <Navbar />

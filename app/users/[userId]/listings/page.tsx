@@ -1,12 +1,16 @@
 import { listingTableColumns } from "@/components/user-page/listings/listing-table-columns";
 import { UserListingsDataTable } from "@/components/user-page/listings/listings-data-table";
-import { getOwnedListings } from "@/lib/actions/listings/listings";
+import {
+  getManagedListings,
+  getOwnedListings,
+} from "@/lib/actions/listings/listings";
 import { currentUser } from "@clerk/nextjs/server";
 import { HandCoins } from "lucide-react";
 
 const UserListingsPage = async () => {
   const user = await currentUser();
   const ownedListings = await getOwnedListings();
+  const managedListing = await getManagedListings();
   // console.log(ownedListings);
 
   return (
@@ -15,7 +19,7 @@ const UserListingsPage = async () => {
       <div id="hotel-owner" className="space-y-4">
         <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <HandCoins size={22} className="text-primary" />
-          {user?.firstName}&apos;s Owned Listings
+          {user?.firstName}&apos;s Owned & Managed Listings
         </h1>
 
         {/* User's OwnedListings */}
@@ -26,6 +30,11 @@ const UserListingsPage = async () => {
         />
 
         {/* User Managed Listings */}
+        <UserListingsDataTable
+          columns={listingTableColumns}
+          data={managedListing}
+          className="mx-4"
+        />
       </div>
     </section>
   );

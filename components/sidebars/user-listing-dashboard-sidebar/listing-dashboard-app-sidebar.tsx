@@ -4,9 +4,11 @@ import { NavUser } from "@/components/sidebars/user-page-sidebar/nav-user";
 import {
   BedDouble,
   CalendarRange,
+  ConciergeBell,
   DoorOpen,
   HandCoins,
   Hotel,
+  Inbox,
   Tag,
 } from "lucide-react";
 import {
@@ -45,9 +47,19 @@ export function AppSidebar({
         icon: HandCoins,
       },
       {
+        title: "Inbox",
+        url: `/listings/${listingID}/inbox`,
+        icon: Inbox,
+      },
+      {
         title: "Rooms",
         url: `/listings/${listingID}/rooms`,
         icon: BedDouble,
+      },
+      {
+        title: "Managers",
+        url: `/listings/${listingID}/managers`,
+        icon: ConciergeBell,
       },
       {
         title: "Events",
@@ -70,7 +82,8 @@ export function AppSidebar({
             name: user?.fullName ?? "",
             email: user?.emailAddresses[0]?.emailAddress ?? "",
             avatar: user?.imageUrl ?? "",
-            userDB_id: userDB_id ?? "",          }}
+            userDB_id: userDB_id ?? "",
+          }}
         />
       </SidebarHeader>
       <ScrollArea className="h-[100vh] overflow-hidden whitespace-nowrap">

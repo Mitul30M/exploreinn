@@ -5,8 +5,20 @@ import { Inbox } from "lucide-react";
 import React from "react";
 import CurrentMail from "@/components/user-page/inbox/current-mail";
 import { Mail, mails } from "@/lib/utils/seed/user-inbox/mails";
+import { getListingById } from "@/lib/actions/listings/listings";
+import { notFound } from "next/navigation";
 
-const UserInboxPage = () => {
+const ListingInboxPage = async ({
+  params,
+}: {
+  params: Params;
+  searchParams?: SearchParams;
+}) => {
+  const listingID = (await params).listingId;
+  const listing = await getListingById(listingID);
+  if (!listing) {
+    return notFound();
+  }
   // fetch the user's inbox data from the server, sort them and then pass it to the InboxSidebar component
   // sort the mails by date in descending order
   const sortedMails = mails.sort((a, b) => {
@@ -20,7 +32,7 @@ const UserInboxPage = () => {
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       <h1 className="text-md  flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
         <Inbox size={22} className="text-primary" />
-        Mitul&apos;s Mails
+        {listing.name}&apos;s Mails
       </h1>
 
       <SidebarProvider
@@ -47,4 +59,4 @@ const UserInboxPage = () => {
   );
 };
 
-export default UserInboxPage;
+export default ListingInboxPage;

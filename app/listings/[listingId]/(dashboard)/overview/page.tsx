@@ -48,7 +48,7 @@ import Link from "next/link";
 import { ListingWeekWiseBookingsGraph } from "@/components/listing-dashoard/overview/bookings-graph";
 
 const ListingOverviewPage = async ({
-  params
+  params,
 }: {
   params: Promise<{ listingId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -185,9 +185,11 @@ const ListingOverviewPage = async ({
                 {user.firstName} {user.lastName}
                 <br />
                 <small className="text-[12px] font-medium text-accent-foreground/60">
+                  DOB:
                   {user.dob
                     ? format(new Date(user.dob), "dd MMM yyyy")
                     : "Not provided"}{" "}
+                  {user.gender}
                 </small>
               </p>
             </div>

@@ -15,7 +15,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhook/stripe(.*)",
   // "/listings(.*)",
   "/listings/:listingId",
-  "/listings/:listingId/confirm-booking"
+  "/listings/:listingId/confirm-booking",
 ]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isStripeRoute = createRouteMatcher([
@@ -24,7 +24,7 @@ const isStripeRoute = createRouteMatcher([
 ]);
 
 const listingDashboardRoute = createRouteMatcher([
-  "/listings/:listingId/(overview|bookings|transactions|inbox|events|rooms)",
+  "/listings/:listingId/(overview|bookings|transactions|inbox|events|rooms|managers|inbox)",
 ]);
 
 const isRegisterNewListingRoute = createRouteMatcher(["/listings/register"]);

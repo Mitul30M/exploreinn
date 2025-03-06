@@ -7,10 +7,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReduxStoreProvider>
       {/* <EdgeStoreProvider> */}
-        <main className="min-h-screen bg-background border-border/90 border-x-[1px] max-w-7xl m-auto">
-          <Navbar />
-          {children}
-        </main>
+      <main className="min-h-screen bg-background border-border/90 border-x-[1px] max-w-7xl m-auto">
+        <Navbar />
+        {children}
+      </main>
       {/* </EdgeStoreProvider> */}
     </ReduxStoreProvider>
   );

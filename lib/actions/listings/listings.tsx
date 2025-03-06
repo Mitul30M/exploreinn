@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma-client";
 import { RegisterListing } from "@/lib/redux-store/slices/register-listing-slice";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
@@ -379,6 +379,54 @@ export async function getOwnedListings(): Promise<TOwnedListing[]> {
 }
 
 /**
+ * Retrieves all listings that the currently authenticated user is a manager of.
+ * @returns A promise that resolves to an array of listings with their respective details.
+ * @throws {Error} If the user is not authenticated.
+ */
+export async function getManagedListings(): Promise<TOwnedListing[]> {
+  const { userId, sessionClaims } = await auth();
+  const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
+    .userDB_id;
+  if (!userId || !userDbId) {
+    throw new Error("User not authenticated");
+  }
+
+  const userManagedListings = await prisma.listing.findMany({
+    where: {
+      managerIds: {
+        has: userDbId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const listings = await prisma.listing.findMany({
+    select: {
+      id: true,
+      name: true,
+      address: true,
+      coverImage: true,
+      starRating: true,
+      overallRating: true,
+      exploreinnGrade: true,
+      rooms: {
+        select: {
+          totalRoomsAllocated: true,
+          currentlyAvailableRooms: true,
+        },
+      },
+      Booking: true,
+      Transaction: true,
+    },
+    where: { id: { in: userManagedListings.map((l) => l.id) } },
+  });
+
+  return listings as TOwnedListing[];
+}
+
+/**
  * Checks if a given user is the owner of a given listing.
  * @param userID - The id of the user to be checked.
  * @param listingId - The id of the listing to be checked.
@@ -410,4 +458,210 @@ export async function isListingManager(userID: string, listingId: string) {
   });
   if (!listing) return false;
   return listing.managerIds.includes(userID);
+}
+
+/**
+ * Retrieves all managers of a given listing.
+ * @param listingId - The id of the listing whose managers are to be retrieved.
+ * @returns A promise that resolves to an array of manager objects with their respective details.
+ * If the listing does not exist, the function returns an empty array.
+ */
+export async function getListingManagers(listingId: string) {
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id: listingId,
+    },
+    select: {
+      managerIds: true,
+    },
+  });
+  if (!listing) return [];
+  const managerIds = listing.managerIds;
+  const managers = await prisma.user.findMany({
+    where: {
+      id: {
+        in: managerIds,
+      },
+    },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phoneNo: true,
+      profileImg: true,
+      dob: true,
+      address: true,
+      gender: true,
+    },
+  });
+  return managers;
+}
+
+/**
+ * Adds a manager to a given listing.
+ * The function checks if the currently authenticated user is the owner of the given listing.
+ * If the user is not authenticated or is not the owner of the listing, the function returns an error.
+ * If the managerEmail is invalid, the function returns an error.
+ * If the function is successful, it returns a success message.
+ * @param listingId - The id of the listing to which the manager is to be added.
+ * @param managerEmail - The email of the manager to be added.
+ * @returns A promise that resolves to an object with a type and a message.
+ * The type can be either "success" or "error" and the message is a string that describes the result of the operation.
+ */
+export async function addManagerToListing(
+  listingId: string,
+  managerEmail: string
+) {
+  // check if current user is owner of listing
+  const user = await currentUser();
+  if (!user)
+    return {
+      type: "error",
+      message: "You are not Authenticated.",
+    };
+  const ownerID = (user?.publicMetadata as PublicMetadataType).userDB_id;
+
+  const userID = await prisma.user.findUnique({
+    where: {
+      email: managerEmail,
+    },
+    select: {
+      id: true,
+    },
+  });
+  if (!userID) {
+    return {
+      type: "error",
+      message: "No user found with this email. Ensure the email is correct.",
+    };
+  }
+  // add manager
+  try {
+    await prisma.$transaction([
+      prisma.listing.update({
+        where: {
+          id: listingId,
+          ownerId: ownerID,
+        },
+        data: {
+          managerIds: {
+            push: userID.id,
+          },
+        },
+      }),
+      prisma.user.update({
+        where: {
+          id: userID.id,
+        },
+        data: { managedListingIds: { push: listingId } },
+      }),
+    ]);
+  } catch (error) {
+    return {
+      type: "error",
+      message: "Failed to add manager to listing. Please try again.",
+    };
+  }
+  revalidatePath(`/listings/${listingId}/managers`);
+  return {
+    type: "success",
+    message: "New Manager added successfully.",
+  };
+}
+
+/**
+ * Removes a manager from a given listing.
+ * The function checks if the currently authenticated user is the owner of the given listing.
+ * If the user is not authenticated or is not the owner of the listing, the function returns an error.
+ * If the managerId is invalid, the function returns an error.
+ * If the function is successful, it returns a success message.
+ * @param listingId - The id of the listing from which the manager is to be removed.
+ * @param managerId - The id of the manager to be removed.
+ * @returns A promise that resolves to an object with a type and a message.
+ * The type can be either "success" or "error" and the message is a string that describes the result of the operation.
+ */
+export async function removeManagerFromListing(
+  listingId: string,
+  managerId: string
+) {
+  // check if current user is owner of listing
+  const user = await currentUser();
+  if (!user)
+    return {
+      type: "error",
+      message: "You are not Authenticated.",
+    };
+  const ownerID = (user?.publicMetadata as PublicMetadataType).userDB_id;
+
+  const userID = await prisma.user.findUnique({
+    where: {
+      id: managerId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  if (!userID) {
+    return {
+      type: "error",
+      message: "No user found with this userID. Ensure the userID is correct.",
+    };
+  }
+  // remove manager
+  try {
+    const listingManagers = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+        ownerId: ownerID,
+      },
+      select: {
+        managerIds: true,
+      },
+    });
+
+    const managerIds = listingManagers?.managerIds;
+    const updatedManagerIds = managerIds?.filter((id) => id !== managerId);
+    await prisma.listing.update({
+      where: {
+        id: listingId,
+        ownerId: ownerID,
+      },
+      data: {
+        managerIds: updatedManagerIds,
+      },
+    });
+
+    // remove listingID from removed manager's managedListings's array
+    const manager = await prisma.user.findUnique({
+      where: {
+        id: managerId,
+      },
+      select: {
+        id: true,
+        managedListingIds: true,
+      },
+    });
+    const updatedManagedListings = manager?.managedListingIds.filter(
+      (id) => id !== listingId
+    );
+    await prisma.user.update({
+      where: {
+        id: managerId,
+      },
+      data: {
+        managedListingIds: updatedManagedListings,
+      },
+    });
+  } catch (error) {
+    return {
+      type: "error",
+      message: "Failed to remove manager from listing. Please try again.",
+    };
+  }
+  revalidatePath(`/listings/${listingId}/managers`);
+  return {
+    type: "success",
+    message: "Manager removed successfully.",
+  };
 }

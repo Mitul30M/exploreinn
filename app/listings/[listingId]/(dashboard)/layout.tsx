@@ -16,15 +16,16 @@ export default async function Layout({
   children: React.ReactNode;
   params: Params;
 }) {
-  const listingID = (await params).listingId;
-  const listing = await getListingById(listingID);
-  if (!listing) {
-    return notFound();
-  }
   const clerkUser = await currentUser();
   const userDbID = (clerkUser?.publicMetadata as PublicMetadataType).userDB_id;
   const user = await getUser(userDbID);
-  if (!user) {
+  if (!user || !userDbID || !clerkUser) {
+    return notFound();
+  }
+
+  const listingID = (await params).listingId;
+  const listing = await getListingById(listingID);
+  if (!listing) {
     return notFound();
   }
 

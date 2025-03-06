@@ -18,7 +18,7 @@ import {
 } from "date-fns";
 import { stripe } from "@/lib/stripe";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
-import ChargeInvoice from "@/components/emails/charge-invoice";
+// import ChargeInvoice from "@/components/emails/charge-invoice";
 
 const _bookingFormSchema = z.object({
   listingID: z.string(),
