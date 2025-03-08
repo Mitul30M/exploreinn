@@ -1,12 +1,17 @@
 import BookingInfoCard from "@/components/listing-page/confirm-booking/booking-info-card";
 import PaymentConfirmationCard from "@/components/listing-page/confirm-booking/payment-confirmation-card";
 import { getListingById } from "@/lib/actions/listings/listings";
+import { auth } from "@clerk/nextjs/server";
 import { CalendarCheck, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
 
 const NewBookingConfirmationPage = async ({ params }: { params: Params }) => {
+  const user = await auth();
+  if (!user.userId) {
+    return notFound();
+  }
   const listingID = (await params).listingId;
   const listing = await getListingById(listingID);
 

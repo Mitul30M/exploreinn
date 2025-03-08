@@ -156,14 +156,26 @@ export async function POST(req: Request) {
           bookingData.isOfferApplied &&
           bookingData.offerId.length
         ) {
-          await prisma.booking.update({
-            where: {
-              id: newBooking.id,
-            },
-            data: {
-              offerId: bookingData.offerId,
-            },
-          });
+          await prisma.$transaction([
+            prisma.booking.update({
+              where: {
+                id: newBooking.id,
+              },
+              data: {
+                offerId: bookingData.offerId,
+              },
+            }),
+            prisma.offer.update({
+              where: {
+                id: bookingData.offerId,
+              },
+              data: {
+                bookingIds: {
+                  push: newBooking.id,
+                },
+              },
+            }),
+          ]);
         }
 
         // listing dashboard side revalidation

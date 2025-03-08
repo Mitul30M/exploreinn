@@ -23,6 +23,7 @@ import {
 } from "@/lib/redux-store/slices/new-booking-slice";
 import { useRouter } from "next/navigation";
 import { Badge } from "../ui/badge";
+import { useUser } from "@clerk/nextjs";
 
 interface BookingDetailsProps {
   className?: string;
@@ -31,8 +32,7 @@ interface BookingDetailsProps {
 }
 
 const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
-  // const user = useUser();
-
+  const user = useUser();
   useEffect(() => {
     dispatch(setTax(listing.taxRates));
   }, []);
@@ -431,6 +431,7 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         <Button
           className="w-full"
           disabled={
+            !user.isSignedIn ||
             !rooms.length ||
             !checkIn ||
             !checkOut ||

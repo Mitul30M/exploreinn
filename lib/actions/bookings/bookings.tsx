@@ -52,6 +52,8 @@ const _bookingFormSchema = z.object({
   paymentMethod: z.enum(["book-now-pay-later", "online-payment"], {
     required_error: "Please a Payment Method",
   }),
+  isOfferApplied: z.boolean().optional(),
+  offerId: z.string().optional(),
 });
 /**
  * Creates a new booking with the given details and a payment status of "pending".
@@ -120,6 +122,28 @@ export async function createBookNowPayLaterBooking(
   });
   if (!newBooking) {
     throw new Error("Error creating new booking");
+  }
+  if (newBooking && bookingDetails.isOfferApplied) {
+    await prisma.$transaction([
+      prisma.booking.update({
+        where: {
+          id: newBooking.id,
+        },
+        data: {
+          offerId: bookingDetails.offerId,
+        },
+      }),
+      prisma.offer.update({
+        where: {
+          id: bookingDetails.offerId,
+        },
+        data: {
+          bookingIds: {
+            push: newBooking.id,
+          },
+        },
+      }),
+    ]);
   }
   const listing = await prisma.listing.findUnique({
     where: {
