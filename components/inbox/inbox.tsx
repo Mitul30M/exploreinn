@@ -1,18 +1,34 @@
 "use client";
 
-import { Mail, mails } from "@/lib/utils/seed/user-inbox/mails";
 import { InboxSidebar } from "../sidebars/user-inbox-sidebar/inbox-sidebar";
 import { SidebarProvider } from "../ui/sidebar";
 import CurrentMail from "../user-page/inbox/current-mail";
 import { useState } from "react";
+import { Mail } from "@prisma/client";
 
-export const InboxContainer = () => {
-  const sortedMails = mails.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
-
+export type UserMails = Mail & {
+  sender?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    profileImg: string | null;
+  };
+  receiver: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    profileImg: string | null;
+  };
+  listing?: {
+    id: string;
+    name: string;
+    email: string;
+    coverImage: string;
+  };
+};
+export const InboxContainer = ({ mails }: { mails: UserMails[] }) => {
   // no need of this state, just use the redux for selected mail directly in the CurrentMail component
-  const [selectedMail, setSelectedMail] = useState<Mail | null>(null);
+  const [selectedMail, setSelectedMail] = useState<UserMails | null>(null);
 
   return (
     <SidebarProvider
@@ -24,7 +40,7 @@ export const InboxContainer = () => {
       className="max-h-[70vh] "
     >
       <InboxSidebar
-        data={sortedMails}
+        data={mails}
         onMailClick={setSelectedMail}
         className="flex items-start justify-start rounded-md"
       />

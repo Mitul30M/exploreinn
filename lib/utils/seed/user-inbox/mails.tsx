@@ -480,7 +480,7 @@ export const mails = [
     subject: "Welcome to Exploreinn!",
     text: "Hi Mitul, \nA warm welcome to Exploreinn! We're thrilled to have you on board. Exploreinn is your one-stop destination for booking the perfect hotel room for your next stay. Our platform offers a wide range of options to suit every taste and budget. \n\nTo get started, simply browse our collection of hotels, filter by location, price, and amenities, and book your dream room in just a few clicks. \n\nAs a valued member of our community, you can expect exclusive offers, discounts, and rewards. Our dedicated support team is always here to help you with any questions or concerns. \n\nThank you for choosing Exploreinn. We look forward to helping you create unforgettable memories. \n\nBest regards, \nExploreinn Support",
     date: new Date("2024-11-30T14:30:00.000Z").toISOString(),
-    read: false,
+    read: true,
     archived: false,
     trashed: false,
     labels: ["welcome", "onboarding", "exploreinn"],

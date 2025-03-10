@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Switch } from "@/components/ui/switch";
-import { inboxNav, Mail } from "@/lib/utils/seed/user-inbox/mails";
+import { inboxNav } from "@/lib/utils/seed/user-inbox/mails";
 import MailList from "@/components/user-page/inbox/mail-list";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -25,12 +25,13 @@ import { CheckCircle2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { useUser } from "@clerk/nextjs";
+import { UserMails } from "@/components/inbox/inbox";
 
 // This is sample data
 interface InboxSidebarProps {
-  data: Mail[];
+  data: UserMails[];
   // add a prop for the onMailClick function, keep it optional for now
-  onMailClick?: (mail: Mail) => void;
+  onMailClick?: (mail: UserMails) => void;
 }
 
 export function InboxSidebar({
@@ -72,14 +73,14 @@ export function InboxSidebar({
   };
 
   // add a logic to handle the onMailClick function using redux or context api
-  const handleMailClick = (mail: Mail) => {
+  const handleMailClick = (mail: UserMails) => {
     // ***add a logic to handle the onMailClick function using redux or context api
     // add a logic to handle the onMailClick function using redux or context api
     onMailClick?.(mail);
     toast({
       title: `${mail.subject}`,
-      description: `from: ${mail.sender.email}, ${format(
-        new Date(mail.date),
+      description: `from: ${mail.sender?.email}, ${format(
+        new Date(mail.createdAt),
         "dd MMM yyyy"
       )}`,
       action: (
@@ -105,7 +106,7 @@ export function InboxSidebar({
         collapsible="none"
         className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border border-x-0"
       >
-        <SidebarHeader>
+        {/* <SidebarHeader>
           <NavUser
             user={{
               name: user?.fullName ?? "",
@@ -116,7 +117,7 @@ export function InboxSidebar({
             }}
           />
         </SidebarHeader>
-        <Separator className="" />
+        <Separator className="" /> */}
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent className="px-0">

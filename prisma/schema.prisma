@@ -44,6 +44,8 @@ model User {
   Booking                  Booking[]
   Transaction              Transaction[]
   RoomEvent                RoomEvent[]
+  sentMails                Mail[]        @relation("SenderMails")
+  receivedMails            Mail[]        @relation("ReceiverMails")
 }
 
 enum Gender {
@@ -87,6 +89,7 @@ model Listing {
   checkInRulesAndRestrictions String
   groundRulesAndRestrictions  String
   cancellationPolicy          String
+  isDeleted                   Boolean            @default(false)
   // Relationships
   owner                       User               @relation("OwnedListings", fields: [ownerId], references: [id])
   ownerId                     String             @db.ObjectId
@@ -107,6 +110,7 @@ model Listing {
   socialMediaLinks            SocialMediaLinks[]
   tags                        String[]
   offers                      Offer[]
+  Mail                        Mail[]
 }
 
 // Transaction
@@ -169,6 +173,7 @@ model Booking {
   specialNote   String?       @default("")
   offer         Offer?        @relation("OfferBookings", fields: [offerId], references: [id])
   offerId       String?       @db.ObjectId
+  Mail          Mail[]
 }
 
 type BookedRooms {
@@ -377,4 +382,33 @@ enum offerType {
   Percentage_Discount
   Flat_Discount
   Extra_Perks
+}
+
+// Mails
+model Mail {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  subject     String
+  text        String
+  read        Boolean  @default(false)
+  type        MailType @default(Inquiry)
+  archived    Boolean  @default(false)
+  trashed     Boolean  @default(false)
+  labels      String[]
+  attachments String[]
+  bookingId   String   @db.ObjectId
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  senderId    String   @db.ObjectId
+  receiverId  String   @db.ObjectId
+  sender      User     @relation("SenderMails", fields: [senderId], references: [id])
+  receiver    User     @relation("ReceiverMails", fields: [receiverId], references: [id])
+  listingId   String   @db.ObjectId
+  listing     Listing  @relation(fields: [listingId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum MailType {
+  Inquiry
+  Complaint
+  Feedback
 }

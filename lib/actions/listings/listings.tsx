@@ -166,6 +166,9 @@ export async function getListingsPreview(
 ): Promise<TListingCard[]> {
   console.log("\nsearching for: ", query);
   const listings = await prisma.listing.findMany({
+    where: {
+      isDeleted: false,
+    },
     select: {
       id: true,
       name: true,
@@ -313,7 +316,7 @@ export async function getListingById(
       },
     },
   });
-  if (!listing) return null;
+  if (!listing || listing.isDeleted) return null;
   return listing;
 }
 

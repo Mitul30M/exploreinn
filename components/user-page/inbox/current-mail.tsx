@@ -10,14 +10,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Mail } from "@/lib/utils/seed/user-inbox/mails";
 import { Avatar } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
 import { Archive, Send, Trash2 } from "lucide-react";
 import React from "react";
+import { Mail } from "@prisma/client";
+import { UserMails } from "@/components/inbox/inbox";
 
 interface CurrentMailProps {
-  mail: Mail | null;
+  mail: UserMails | null;
   className?: string;
 }
 const CurrentMail = ({ mail, ...props }: CurrentMailProps) => {
@@ -74,24 +75,26 @@ const CurrentMail = ({ mail, ...props }: CurrentMailProps) => {
                   <Avatar className="h-10 w-10">
                     {/* <AvatarImage alt={mail.name} /> */}
                     <AvatarFallback className="rounded-full border font-semibold text-lg">
-                      {mail.sender.name
+                      {(mail.sender?.firstName + " " + mail.sender?.lastName)
                         .split(" ")
                         .map((chunk) => chunk[0])
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid gap-1">
-                    <div className="font-semibold">{mail.sender.name}</div>
+                    <div className="font-semibold">
+                      {mail.sender?.firstName + " " + mail.sender?.lastName}
+                    </div>
                     <div className="line-clamp-1 text-xs">{mail.subject}</div>
                     <div className="line-clamp-1 text-xs">
                       <span className="font-medium">Reply-To:</span>{" "}
-                      {mail.sender.email}
+                      {mail.sender?.email}
                     </div>
                   </div>
                 </div>
-                {mail.date && (
+                {mail.createdAt && (
                   <div className="ml-auto text-xs text-muted-foreground">
-                    {format(new Date(mail.date), "PPpp")}
+                    {format(new Date(mail.createdAt), "PPpp")}
                   </div>
                 )}
               </div>
@@ -105,7 +108,7 @@ const CurrentMail = ({ mail, ...props }: CurrentMailProps) => {
                   <div className="grid gap-4">
                     <Textarea
                       className="p-4"
-                      placeholder={`Reply ${mail.sender.name}...`}
+                      placeholder={`Reply ${mail.sender?.firstName}...`}
                     />
                     <div className="flex items-center">
                       <Button

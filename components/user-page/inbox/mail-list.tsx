@@ -1,15 +1,15 @@
 import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mail } from "@/lib/utils/seed/user-inbox/mails";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { UserMails } from "@/components/inbox/inbox";
 
 // add a interface for the mail prop for the mails array , each mail will be of type Mail, exported from the /seeds/user-inbox/mails.tsx file
 
 interface MailListProps {
-  mails: Mail[];
+  mails: UserMails[];
   // add a prop for the onMailClick function, keep it optional for now
-  onMailClick: (mail: Mail) => void;
+  onMailClick: (mail: UserMails) => void;
 }
 
 const MailList = ({ mails, onMailClick }: MailListProps) => {
@@ -23,9 +23,9 @@ const MailList = ({ mails, onMailClick }: MailListProps) => {
         >
           <div className="flex w-full items-center gap-2 ">
             <p className="font-semibold text-foreground/70 text-[12px]">
-              {mail.sender.name}
+              {mail.sender?.firstName} {mail.sender?.lastName}
             </p>
-            <p className="ml-auto text-xs">{formatDate(mail.date)}</p>
+            <p className="ml-auto text-xs">{formatDate(mail.createdAt)}</p>
           </div>
           <p className="font-semibold flex items-center gap-2 text-[14px] w-full">
             <span>{mail.subject}</span>
