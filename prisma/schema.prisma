@@ -395,14 +395,16 @@ model Mail {
   trashed     Boolean  @default(false)
   labels      String[]
   attachments String[]
-  bookingId   String   @db.ObjectId
-  booking     Booking  @relation(fields: [bookingId], references: [id])
+  bookingId   String?  @db.ObjectId
+  booking     Booking? @relation(fields: [bookingId], references: [id])
   senderId    String   @db.ObjectId
-  receiverId  String   @db.ObjectId
+  receiverId  String?  @db.ObjectId
   sender      User     @relation("SenderMails", fields: [senderId], references: [id])
-  receiver    User     @relation("ReceiverMails", fields: [receiverId], references: [id])
-  listingId   String   @db.ObjectId
-  listing     Listing  @relation(fields: [listingId], references: [id])
+  receiver    User?    @relation("ReceiverMails", fields: [receiverId], references: [id])
+  from        String
+  to          String
+  listingId   String?  @db.ObjectId
+  listing     Listing? @relation(fields: [listingId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -11,7 +11,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,16 +27,9 @@ import {
   Paperclip,
   Send,
 } from "lucide-react";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import {
   Select,
   SelectContent,
@@ -65,10 +57,10 @@ import { getSignedURLForMailAttachment } from "@/lib/actions/s3-buckets/s3-bucke
 import { computeSHA256 } from "@/lib/utils/seed/sha256";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { TagsInput } from "@/components/ui/tags-input";
 
 const formSchema = z.object({
-  receiver: z.union([z.literal("exploreinn"), z.literal("listing")]),
-  userId: z.string(),
+  intendedReceiver: z.union([z.literal("exploreinn"), z.literal("listing")]),
   subject: z.string().min(5, "Subject Cannot be Empty"),
   text: z.string().min(5, "Mail Body Cannot be Empty"),
   type: z.enum(["Inquiry", "Complaint", "Feedback", "Response"]),
@@ -98,9 +90,6 @@ const dropzone = {
 } satisfies DropzoneOptions;
 
 export const NewUserMailDialogForm = () => {
-  // const [receiver, setReceiver] = useState<"exploreinn" | "listing">(
-  //   "exploreinn"
-  // );
   const { user } = useUser();
   // Ensure that `user`, `publicMetadata`, and `userDB_id` exist before rendering
   const userDB_id = (user?.publicMetadata as PublicMetadataType)?.userDB_id;
@@ -108,13 +97,13 @@ export const NewUserMailDialogForm = () => {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      receiver: "listing",
-      userId: userDB_id ?? params.userId,
+      intendedReceiver: "listing",
       type: "Inquiry",
       subject: "",
       text: "",
-      labels: [""],
+      labels: [],
       email: "",
+      files: null,
       attachments: [""],
       bookingId: "",
       listingId: "",
@@ -209,8 +198,7 @@ export const NewUserMailDialogForm = () => {
       }
 
       const res = await sendMailfromUser({
-        userId: formData.userId ?? userDB_id,
-        receiver: formData.receiver,
+        intendedReceiver: formData.intendedReceiver,
         labels: formData.labels,
         subject: formData.subject,
         text: formData.text,
@@ -221,6 +209,34 @@ export const NewUserMailDialogForm = () => {
         attachments: formData.attachments,
       });
       console.log(res);
+
+      if (res.type === "success") {
+        toast({
+          title: `Mail Sent Successfully!`,
+          description: res.message,
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <Send className="size-4 text-primary" /> OK
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: `Failed to Send Mail!`,
+          description: res.message,
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="error"
+            >
+              <Send className="size-4 text-primary" /> Try Again
+            </ToastAction>
+          ),
+        });
+      }
     } catch (error) {
       toast({
         title: `Failed to process request`,
@@ -267,13 +283,23 @@ export const NewUserMailDialogForm = () => {
               <div className="space-y-2 my-4">
                 <FormField
                   control={form.control}
-                  name="receiver"
+                  name="intendedReceiver"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Select the Intended Receiver</FormLabel>
                       <FormControl>
                         <RadioGroup
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            if (value === "exploreinn") {
+                              form.setValue(
+                                "email",
+                                process.env
+                                  .NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
+                                  "support@exploreinn.com"
+                              );
+                            }
+                            field.onChange(value);
+                          }}
                           value={field.value}
                           className="flex flex-col space-y-1"
                         >
@@ -302,256 +328,279 @@ export const NewUserMailDialogForm = () => {
 
               <Separator className="my-4" />
 
-              {form.getValues("receiver") === "listing" && (
-                <>
-                  {/* select listing & booking */}
-                  <div className=" space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="bookingId"
-                      render={({ field }) => (
-                        <FormItem className="w-max">
-                          <FormLabel>
-                            Select the booking regarding which you want to send
-                            the mail.
-                          </FormLabel>
-                          <Select
-                            onValueChange={(value) => {
-                              const [listingId, bookingId, listingEmail] =
-                                value.split(" ");
-                              field.onChange(bookingId);
-                              form.setValue("listingId", listingId);
-                              form.setValue("email", listingEmail);
-                            }}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a Booking" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {userBookings?.map((booking) => (
-                                <SelectItem
-                                  key={booking.id}
-                                  value={
-                                    booking.listingId +
-                                    " " +
-                                    booking.id +
-                                    " " +
-                                    booking.listing.email
-                                  }
-                                >
-                                  {booking.listing.name} [
-                                  {format(
-                                    new Date(booking.checkInDate),
-                                    "dd MMM yy"
-                                  )}{" "}
-                                  to{" "}
-                                  {format(
-                                    new Date(booking.checkOutDate),
-                                    "dd MMM yy"
-                                  )}
-                                  ]{", "}
-                                  <span className="font-semibold text-primary">
-                                    {new Intl.NumberFormat("en-US", {
-                                      style: "currency",
-                                      currency: "USD",
-                                    }).format(booking.totalCost)}
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex flex-row gap-4 items-center">
-                      <FormField
-                        control={form.control}
-                        name="bookingId"
-                        render={({ field }) => (
-                          <FormItem className="w-[270px]">
-                            <FormLabel>BookingID</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="The ID of the booking"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="listingId"
-                        render={({ field }) => (
-                          <FormItem className="w-[270px]">
-                            <FormLabel>ListingID</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="The ID of the listing"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem className="w-[300px]">
-                          <FormLabel>Listing Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="info@listing.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  {/*mail type and text */}
-                  <div className="space-y-4">
-                    <div className="flex flex-row gap-4 items-center">
-                      {/* mail subject */}
-                      <FormField
-                        control={form.control}
-                        name="subject"
-                        render={({ field }) => (
-                          <FormItem className="w-[300px]">
-                            <FormLabel>Mail Subject</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Subject of the mail"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      {/* mail type */}
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem className="w-max">
-                            <FormLabel>Mail Type</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
+              {/* select listing & booking */}
+              <div className=" space-y-4">
+                <FormField
+                  control={form.control}
+                  name="bookingId"
+                  render={({ field }) => (
+                    <FormItem className="w-max">
+                      <FormLabel>
+                        Select the booking regarding which you want to send the
+                        mail.
+                      </FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          const [listingId, bookingId, listingEmail] =
+                            value.split(" ");
+                          field.onChange(bookingId);
+                          form.setValue("listingId", listingId);
+
+                          if (
+                            form.getValues("intendedReceiver") === "listing"
+                          ) {
+                            form.setValue("email", listingEmail);
+                          } else {
+                            form.setValue(
+                              "email",
+                              process.env
+                                .NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
+                                "support@exploreinn.com"
+                            );
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a Booking" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {userBookings?.map((booking) => (
+                            <SelectItem
+                              key={booking.id}
+                              value={
+                                booking.listingId +
+                                " " +
+                                booking.id +
+                                " " +
+                                booking.listing.email
+                              }
                             >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select mail type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Inquiry">Inquiry</SelectItem>
-                                <SelectItem value="Complaint">
-                                  Complaint
-                                </SelectItem>
-                                <SelectItem value="Feedback">
-                                  Feedback
-                                </SelectItem>
-                                <SelectItem value="Response">
-                                  Response
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    {/* mail text */}
-                    <FormField
-                      control={form.control}
-                      name="text"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col gap-2">
-                          <FormLabel className="text-[14px] text-accent-foreground">
-                            Mail Body
-                          </FormLabel>
+                              {booking.listing.name} [
+                              {format(
+                                new Date(booking.checkInDate),
+                                "dd MMM yy"
+                              )}{" "}
+                              to{" "}
+                              {format(
+                                new Date(booking.checkOutDate),
+                                "dd MMM yy"
+                              )}
+                              ]{", "}
+                              <span className="font-semibold text-primary">
+                                {new Intl.NumberFormat("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                                }).format(booking.totalCost)}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-row gap-4 items-center">
+                  <FormField
+                    control={form.control}
+                    name="bookingId"
+                    render={({ field }) => (
+                      <FormItem className="w-[270px]">
+                        <FormLabel>BookingID</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="The ID of the booking"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="listingId"
+                    render={({ field }) => (
+                      <FormItem className="w-[270px]">
+                        <FormLabel>ListingID</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="The ID of the listing"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="w-[300px]">
+                      <FormLabel>Recipient Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="info@account.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              {/*mail type and text */}
+              <div className="space-y-4">
+                <div className="flex flex-row gap-4 items-center">
+                  {/* mail subject */}
+                  <FormField
+                    control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem className="w-[300px]">
+                        <FormLabel>Mail Subject</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Subject of the mail" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* mail type */}
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem className="w-max">
+                        <FormLabel>Mail Type</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
-                            <TextEditor {...field} />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select mail type" />
+                            </SelectTrigger>
                           </FormControl>
-                          <FormMessage className="text-primary font-semibold" />
-                        </FormItem>
-                      )}
-                    />
-                    {/* attachments */}
-                    <FormField
-                      control={form.control}
-                      name="files"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FileUploader
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            dropzoneOptions={dropzone}
-                            reSelect={true}
-                            className="flex flex-col gap-4 items-center! justify-center"
-                          >
-                            <FileInput className="border-[1px] rounded h-max p-4 w-[400px] border-border/90 hover:bg-accent/50 hover:border-primary mx-auto">
-                              <div className="flex items-center justify-center flex-col p-4 max-w-[350px] h-max gap-4 mx-auto">
-                                {isLoading || form.formState.isSubmitting ? (
-                                  <Hourglass className="size-6 text-primary animate-spin" />
-                                ) : (
-                                  <Paperclip className="size-6 text-primary" />
-                                )}
-                                <div className="space-y-2 text-center">
-                                  <p className="text-lg font-semibold">
-                                    {isLoading ? "Uploading" : "Attachments"}
-                                  </p>
-                                  <p className="text-sm font-medium leading-none text-accent-foreground/80">
-                                    Add Attachments to the mail. Max 10 files
-                                  </p>
-                                </div>
-                              </div>
-                            </FileInput>
-                            {field.value && field.value.length > 0 && (
-                              <HoverCard>
-                                <FileUploaderContent className="p-2 rounded-b-none rounded-t-md flex flex-col gap-2 text-accent-foreground/80  max-w-[400px] border-[1px] border-border/90 mt-2 mx-auto">
-                                  {field.value.map((file, i) => (
-                                    <FileUploaderItem
-                                      key={i}
-                                      index={i}
-                                      aria-roledescription={`file ${i + 1} containing ${
-                                        file.name
-                                      }`}
-                                      className="p-1 h-max"
-                                    >
-                                      <Paperclip className="h-4 w-4 stroke-current text-primary" />
-                                      {/* <NextImage
+                          <SelectContent>
+                            <SelectItem value="Inquiry">Inquiry</SelectItem>
+                            <SelectItem value="Complaint">Complaint</SelectItem>
+                            <SelectItem value="Feedback">Feedback</SelectItem>
+                            <SelectItem value="Response">Response</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                {/* labels */}
+                <FormField
+                  control={form.control}
+                  name="labels"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-2 !max-w-[400px]">
+                      <FormLabel
+                        htmlFor="tags"
+                        className="text-[14px] text-accent-foreground"
+                      >
+                        Add Labels to the mail
+                      </FormLabel>
+                      <FormControl>
+                        <TagsInput
+                          className="w-[350px] border-[1px] "
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-primary font-semibold" />
+                    </FormItem>
+                  )}
+                />
+                {/* mail text */}
+                <FormField
+                  control={form.control}
+                  name="text"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-2">
+                      <FormLabel className="text-[14px] text-accent-foreground">
+                        Mail Body
+                      </FormLabel>
+                      <FormControl>
+                        <TextEditor {...field} />
+                      </FormControl>
+                      <FormMessage className="text-primary font-semibold" />
+                    </FormItem>
+                  )}
+                />
+                {/* attachments */}
+                <FormField
+                  control={form.control}
+                  name="files"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FileUploader
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        dropzoneOptions={dropzone}
+                        reSelect={true}
+                        className="flex flex-col gap-4 items-center! justify-center"
+                      >
+                        <FileInput className="border-[1px] rounded h-max p-4 w-[400px] border-border/90 hover:bg-accent/50 hover:border-primary mx-auto">
+                          <div className="flex items-center justify-center flex-col p-4 max-w-[350px] h-max gap-4 mx-auto">
+                            {isLoading || form.formState.isSubmitting ? (
+                              <Hourglass className="size-6 text-primary animate-spin" />
+                            ) : (
+                              <Paperclip className="size-6 text-primary" />
+                            )}
+                            <div className="space-y-2 text-center">
+                              <p className="text-lg font-semibold">
+                                {isLoading ? "Uploading" : "Attachments"}
+                              </p>
+                              <p className="text-sm font-medium leading-none text-accent-foreground/80">
+                                Add Attachments to the mail. Max 10 files
+                              </p>
+                            </div>
+                          </div>
+                        </FileInput>
+                        {field.value && field.value.length > 0 && (
+                          <HoverCard>
+                            <FileUploaderContent className="p-2 rounded-b-none rounded-t-md flex flex-col gap-2 text-accent-foreground/80  max-w-[400px] border-[1px] border-border/90 mt-2 mx-auto">
+                              {field.value.map((file, i) => (
+                                <FileUploaderItem
+                                  key={i}
+                                  index={i}
+                                  aria-roledescription={`file ${i + 1} containing ${
+                                    file.name
+                                  }`}
+                                  className="p-1 h-max"
+                                >
+                                  <Paperclip className="h-4 w-4 stroke-current text-primary" />
+                                  {/* <NextImage
                                                   src={URL.createObjectURL(file)}
                                                   alt={file.name}
                                                   width={50}
                                                   height={50}
                                                   className="object-contain"
                                                 /> */}
-                                      <span>{file.name}</span>
-                                      {progress[i] > 0 && (
-                                        <Progress
-                                          value={progress[i]}
-                                          className="max-w-[150px] h-[6px]  mx-2"
-                                        />
-                                      )}
-                                    </FileUploaderItem>
-                                  ))}
-                                </FileUploaderContent>
-                              </HoverCard>
-                            )}
-                          </FileUploader>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </>
-              )}
+                                  <span>{file.name}</span>
+                                  {progress[i] > 0 && (
+                                    <Progress
+                                      value={progress[i]}
+                                      className="max-w-[150px] h-[6px]  mx-2"
+                                    />
+                                  )}
+                                </FileUploaderItem>
+                              ))}
+                            </FileUploaderContent>
+                          </HoverCard>
+                        )}
+                      </FileUploader>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* {form.formState.errors && (
                 <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre>
               )} */}
@@ -560,8 +609,7 @@ export const NewUserMailDialogForm = () => {
                 size="sm"
                 className={" self-end w-max"}
                 disabled={
-                  form.formState.isSubmitting
-                  // ||
+                  form.formState.isSubmitting || isLoading
                   // isLoading ||
                   // form.formState.isDirty
                 }
