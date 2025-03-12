@@ -90,7 +90,6 @@ export async function getSignedURL({
   return { success: { url } };
 }
 
-
 /**
  * Deletes an object from AWS S3.
  *
@@ -106,11 +105,10 @@ export async function deleteFile(key: string) {
   await s3Client.send(
     new DeleteObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: key.split('/').pop()?.split('?')[0] || '',
+      Key: key.split("/").pop()?.split("?")[0] || "",
     })
   );
 }
-
 
 /**
  * Generates a signed URL for uploading legal documents to AWS S3.
@@ -150,6 +148,55 @@ export async function getSignedURLForLegalDocs({
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
     Key: `${prefix}-legalDoc-${generateFileName()}`,
+    ContentType: fileType,
+    ContentLength: fileSize,
+    ChecksumSHA256: checksum,
+    // Let's also add some metadata which is stored in s3.
+    Metadata: {
+      userId,
+    },
+  });
+
+  const url = await getSignedUrl(
+    s3Client,
+    putObjectCommand,
+    { expiresIn: 60 } // 60 seconds
+  );
+  return { success: { url } };
+}
+
+export async function getSignedURLForMailAttachment({
+  prefix,
+  fileType,
+  fileSize,
+  checksum,
+}: GetSignedURLParams): SignedURLResponse {
+  const { userId } = await auth();
+  if (!userId) {
+    return { error: "Not Authenticated" };
+  }
+  if (
+    ![
+      "application/pdf",
+      "applocation/docx",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+    ].includes(fileType)
+  ) {
+    return { error: "File type not allowed" };
+  }
+
+  if (fileSize > maxFileSize) {
+    return { error: "File size too large" };
+  }
+
+  const putObjectCommand = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: `${prefix}-${generateFileName()}`,
     ContentType: fileType,
     ContentLength: fileSize,
     ChecksumSHA256: checksum,

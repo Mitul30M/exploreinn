@@ -411,4 +411,5 @@ enum MailType {
   Inquiry
   Complaint
   Feedback
+  Response
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { NavUser } from "@/components/sidebars/user-page-sidebar/nav-user";
 import { Label } from "@/components/ui/label";
 import {
   Sidebar,
@@ -21,20 +20,22 @@ import { inboxNav } from "@/lib/utils/seed/user-inbox/mails";
 import MailList from "@/components/user-page/inbox/mail-list";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { CheckCircle2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { CheckCircle2, Edit2 } from "lucide-react";
 import { format } from "date-fns";
 import { useUser } from "@clerk/nextjs";
 import { UserMails } from "@/components/inbox/inbox";
+import { NewUserMailDialogForm } from "./new-mail";
 
 // This is sample data
 interface InboxSidebarProps {
+  userId: string;
   data: UserMails[];
   // add a prop for the onMailClick function, keep it optional for now
   onMailClick?: (mail: UserMails) => void;
 }
 
 export function InboxSidebar({
+  userId,
   data,
   onMailClick,
   ...props
@@ -169,7 +170,11 @@ export function InboxSidebar({
               />
             </Label>
           </div>
-          <SidebarInput placeholder="Type to search..." />
+          <div className="flex flex-row gap-3 items-center">
+            <SidebarInput placeholder="Type to search..." />
+
+            <NewUserMailDialogForm />
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0 overflow-y-hidden">

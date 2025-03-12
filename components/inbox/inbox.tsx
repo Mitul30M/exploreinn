@@ -26,7 +26,13 @@ export type UserMails = Mail & {
     coverImage: string;
   };
 };
-export const InboxContainer = ({ mails }: { mails: UserMails[] }) => {
+export const InboxContainer = ({
+  mails,
+  userId,
+}: {
+  mails: UserMails[];
+  userId: string;
+}) => {
   // no need of this state, just use the redux for selected mail directly in the CurrentMail component
   const [selectedMail, setSelectedMail] = useState<UserMails | null>(null);
 
@@ -40,6 +46,7 @@ export const InboxContainer = ({ mails }: { mails: UserMails[] }) => {
       className="max-h-[70vh] "
     >
       <InboxSidebar
+        userId={userId}
         data={mails}
         onMailClick={setSelectedMail}
         className="flex items-start justify-start rounded-md"

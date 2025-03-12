@@ -6,7 +6,7 @@ function ClientPage() {
   const { user } = useUser();
 
   // Ensure that `user`, `publicMetadata`, and `userDB_id` exist before rendering
-  //   const userDB_id = (user?.publicMetadata as PublicMetadataType)?.userDB_id;
+    const userDB_id = (user?.publicMetadata as PublicMetadataType)?.userDB_id;
 
   // If the user isn't loaded or doesn't exist, return null
   if (!isLoaded || !userId) {
