@@ -8,11 +8,12 @@ import { UserMails } from "@/components/inbox/inbox";
 
 interface MailListProps {
   mails: UserMails[];
+  userId: string;
   // add a prop for the onMailClick function, keep it optional for now
   onMailClick: (mail: UserMails) => void;
 }
 
-const MailList = ({ mails, onMailClick }: MailListProps) => {
+const MailList = ({ mails, userId, onMailClick }: MailListProps) => {
   return (
     <ScrollArea className="h-[calc(100vh-1rem)]">
       {mails.map((mail) => (
@@ -29,7 +30,7 @@ const MailList = ({ mails, onMailClick }: MailListProps) => {
           </div>
           <p className="font-semibold flex items-center gap-2 text-[14px] w-full">
             <span>{mail.subject}</span>
-            {!mail.read && (
+            {!mail.read && mail.receiverId === userId && (
               <span className="inline-flex rounded-full h-2 w-2 bg-primary"></span>
             )}
           </p>

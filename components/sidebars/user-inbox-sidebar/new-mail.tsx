@@ -58,6 +58,7 @@ import { computeSHA256 } from "@/lib/utils/seed/sha256";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { TagsInput } from "@/components/ui/tags-input";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   intendedReceiver: z.union([z.literal("exploreinn"), z.literal("listing")]),
@@ -527,7 +528,12 @@ export const NewUserMailDialogForm = () => {
                         Mail Body
                       </FormLabel>
                       <FormControl>
-                        <TextEditor {...field} />
+                        {/* <TextEditor {...field} showToolbar={false} /> */}
+                        <Textarea
+                          placeholder="Write your message here"
+                          className="h-[200px]"rows={15}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage className="text-primary font-semibold" />
                     </FormItem>

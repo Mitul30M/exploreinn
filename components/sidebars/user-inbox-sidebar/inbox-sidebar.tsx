@@ -49,21 +49,28 @@ export function InboxSidebar({
   const filteredMails = React.useCallback(() => {
     // Filter based on activeItem
     let filtered = [...data];
-
     // if activeItem is "sent", show all mails sent by the user
-    // ***add logic later here
-
-    if (activeItem.title.toLowerCase() === "archive") {
-      filtered = filtered.filter((mail) => mail.archived === true);
+    if (activeItem.title.toLowerCase() === "sent") {
+      filtered = filtered.filter((mail) => mail.senderId === userId);
+    } else if (activeItem.title.toLowerCase() === "archive") {
+      filtered = filtered.filter(
+        (mail) => mail.archived === true && mail.receiverId === userId
+      );
     } else if (activeItem.title.toLowerCase() === "trash") {
-      filtered = filtered.filter((mail) => mail.trashed === true);
+      filtered = filtered.filter(
+        (mail) => mail.trashed === true && mail.receiverId === userId
+      );
     } else {
-      filtered = filtered.filter((mail) => !mail.archived && !mail.trashed);
+      filtered = filtered.filter(
+        (mail) => !mail.archived && !mail.trashed && mail.receiverId === userId
+      );
     }
 
     // Filter based on readMails toggle
-    if (readMails) {
-      filtered = filtered.filter((mail) => !mail.read);
+    if (readMails && activeItem.title.toLowerCase() !== "sent") {
+      filtered = filtered.filter(
+        (mail) => mail.read && mail.receiverId === userId
+      );
     }
 
     return filtered;
@@ -180,6 +187,7 @@ export function InboxSidebar({
           <SidebarGroup className="px-0 overflow-y-hidden">
             <SidebarGroupContent className="overflow-y-hidden">
               <MailList
+                userId={userId}
                 mails={filteredMails()}
                 onMailClick={(mail) => handleMailClick(mail)}
               />

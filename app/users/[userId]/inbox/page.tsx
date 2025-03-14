@@ -1,4 +1,4 @@
-import { InboxContainer } from "@/components/inbox/inbox";
+import { InboxContainer, UserMails } from "@/components/inbox/inbox";
 import { getUserMails } from "@/lib/actions/mails/mails";
 import { getUser } from "@/lib/actions/user/user";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -35,7 +35,11 @@ const UserInboxPage = async ({
         <Inbox size={22} className="text-primary" />
         {user.firstName}&apos;s Mails
       </h1>
-      <InboxContainer mails={mails} />
+      <InboxContainer
+        mails={mails as UserMails[]}
+        userId={user.id}
+        userMail={user.email}
+      />
     </section>
   );
 };

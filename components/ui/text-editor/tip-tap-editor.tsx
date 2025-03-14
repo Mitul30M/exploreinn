@@ -14,9 +14,11 @@ import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
 
 const TextEditor = ({
+  showToolbar = true,
   value,
   onChange,
 }: {
+  showToolbar?: boolean;
   value: string;
   onChange: (value: string) => void;
 }) => {
@@ -62,7 +64,7 @@ const TextEditor = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <ToolBar editor={editor} />
+      {showToolbar && <ToolBar editor={editor} />}
       <EditorContent editor={editor} />
     </div>
   );
