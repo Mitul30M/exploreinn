@@ -19,9 +19,10 @@ import { Switch } from "@/components/ui/switch";
 import { inboxNav } from "@/lib/utils/seed/user-inbox/mails";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { CheckCircle2, Edit2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import ListingMailList from "./listing-inbox-maillist";
+import { NewListingMailDialogForm } from "./listing-new-mail-dialog";
 
 // This is sample data
 interface ListingInboxSidebarProps {
@@ -164,8 +165,7 @@ export function ListingInboxSidebar({
           </div>
           <div className="flex flex-row gap-3 items-center">
             <SidebarInput placeholder="Type to search..." />
-
-            {/* <NewUserMailDialogForm /> */}
+            <NewListingMailDialogForm />
           </div>
         </SidebarHeader>
         <SidebarContent>

@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma-client";
 import { auth } from "@clerk/nextjs/server";
 import { MailType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { isListingManager, isListingOwner } from "../listings/listings";
 
 /**
  * Retrieves all mail records for a given user.
@@ -139,6 +140,31 @@ export const getUserBookingIDs = async (userId: string) => {
   return userBookings;
 };
 
+export async function getListingBookings(listingId: string) {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      listingId: listingId,
+    },
+    select: {
+      id: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImg: true,
+        },
+      },
+      totalCost: true,
+      checkInDate: true,
+      checkOutDate: true,
+      createdAt: true,
+      listingId: true,
+    },
+  });
+  return bookings;
+}
+
 export async function sendMailfromUser(data: {
   intendedReceiver: "exploreinn" | "listing";
   subject: string;
@@ -232,6 +258,149 @@ export async function sendMailfromUser(data: {
     revalidatePath(`/listings/${mail.listingId}/inbox`);
     return {
       message: "Mail sent successfully to listing",
+      type: "success",
+    };
+  }
+
+  return {
+    message: "Internal server error",
+    type: "error",
+  };
+}
+
+export async function sendMailfromListing(data: {
+  intendedReceiver: "exploreinn" | "user";
+  subject: string;
+  text: string;
+  type: "Inquiry" | "Complaint" | "Feedback" | "Response";
+  labels: string[];
+  email: string;
+  attachments: string[];
+  bookingId?: string;
+  listingId?: string;
+}): Promise<{ message: string; type: "success" | "error" }> {
+  console.log(data);
+  const { userId, sessionClaims } = await auth();
+  const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
+    .userDB_id;
+
+  if (!userId || !userDbId) {
+    return {
+      message: "Unauthorized",
+      type: "error",
+    };
+  }
+
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id: data.listingId,
+    },
+    select: {
+      managerIds: true,
+      email: true,
+      id: true,
+    },
+  });
+
+  const sender = await prisma.user.findUnique({
+    where: {
+      id: userDbId,
+    },
+    select: {
+      firstName: true,
+      lastName: true,
+      email: true,
+      id: true,
+      profileImg: true,
+    },
+  });
+
+  if (
+    !listing ||
+    !sender ||
+    !(
+      (await isListingManager(sender.id, listing.id)) ||
+      (await isListingOwner(sender.id, listing.id))
+    )
+  ) {
+    return {
+      message: "Unauthorized",
+      type: "error",
+    };
+  }
+  // send mail to exploreinn support
+  if (data.intendedReceiver === "exploreinn") {
+    const mail = await prisma.mail.create({
+      data: {
+        from: listing.email,
+        to: data.email,
+        subject: data.subject,
+        text: data.text,
+        type: data.type,
+        attachments: data.attachments,
+        labels: data.labels,
+        senderId: sender.id,
+        bookingId: data.bookingId,
+        listingId: data.listingId,
+      },
+    });
+    console.log(mail);
+    if (!mail) {
+      return {
+        message:
+          "Internal server error. Error occurred while sending mail to exploreinn support",
+        type: "error",
+      };
+    }
+    revalidatePath(`/users/${mail.listingId}/inbox`);
+    // revalidatePath(`/admin/inbox`);
+    return {
+      message: "Mail sent successfully to exploreinn support",
+      type: "success",
+    };
+  }
+  // send mail to a listing
+  else if (data.intendedReceiver === "user") {
+    const receiver = await prisma.user.findUnique({
+      where: {
+        email: data.email,
+      },
+      select: {
+        firstName: true,
+        lastName: true,
+        email: true,
+        id: true,
+        profileImg: true,
+      },
+    });
+
+    if (!receiver) {
+      return {
+        message: "User not found. Pleease check the email address.",
+        type: "error",
+      };
+    }
+
+    const mail = await prisma.mail.create({
+      data: {
+        from: listing.email,
+        to: data.email,
+        subject: data.subject,
+        text: data.text,
+        type: data.type,
+        attachments: data.attachments,
+        labels: data.labels,
+        senderId: sender.id,
+        receiverId: receiver.id,
+        bookingId: data.bookingId,
+        listingId: data.listingId,
+      },
+    });
+    console.log(mail);
+    revalidatePath(`/users/${mail.receiverId}/inbox`);
+    revalidatePath(`/listings/${mail.listingId}/inbox`);
+    return {
+      message: "Mail sent successfully to the user",
       type: "success",
     };
   }
