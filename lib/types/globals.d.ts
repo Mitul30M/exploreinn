@@ -1,3 +1,5 @@
+import { Mail } from "@prisma/client";
+
 export {};
 
 declare global {
@@ -46,5 +48,26 @@ declare global {
     totalPayable: string;
     isOfferApplied?: string;
     offerId?: string;
+  };
+
+  export type TMails = Mail & {
+    sender?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      profileImg: string | null;
+    };
+    receiver: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      profileImg: string | null;
+    };
+    listing?: {
+      id: string;
+      name: string;
+      email: string;
+      coverImage: string;
+    };
   };
 }

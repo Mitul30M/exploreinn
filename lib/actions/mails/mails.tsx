@@ -58,6 +58,68 @@ export async function getUserMails(userId: string) {
   return userMails;
 }
 
+export async function getListingMails(listingId: string) {
+  const listing = await prisma.listing.findUnique({
+    where: {
+      id: listingId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      coverImage: true,
+    },
+  });
+
+  if (!listing) {
+    return [];
+  }
+
+  const listingMails = await prisma.mail.findMany({
+    where: {
+      OR: [
+        {
+          to: listing.email,
+        },
+        {
+          from: listing.email,
+        },
+      ],
+    },
+    include: {
+      sender: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImg: true,
+        },
+      },
+      receiver: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImg: true,
+        },
+      },
+      listing: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          coverImage: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return listingMails;
+}
+
 export const getUserBookingIDs = async (userId: string) => {
   const userBookings = await prisma.booking.findMany({
     where: {

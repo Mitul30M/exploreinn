@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import Form from "next/form";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
@@ -14,13 +12,12 @@ import { Avatar } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
 import { Archive, Send, Trash2, XCircle } from "lucide-react";
 import React from "react";
-import { UserMails } from "@/components/inbox/inbox";
 import { RenderHTML } from "@/components/listing-page/register-listing-page/multi-stepper-form/step4-render";
 import { Badge } from "@/components/ui/badge";
 
 interface CurrentMailProps {
-  mail: UserMails | null;
-  userMail: string;
+  mail: TMails | null;
+  mailAddress: string;
 
   className?: string;
   onMailClose: () => void;
@@ -28,7 +25,7 @@ interface CurrentMailProps {
 const CurrentMail = ({
   mail,
   onMailClose,
-  userMail,
+  mailAddress,
   ...props
 }: CurrentMailProps) => {
   return (
@@ -60,7 +57,7 @@ const CurrentMail = ({
                     </TooltipTrigger>
                     <TooltipContent>Close</TooltipContent>
                   </Tooltip>
-                  {mail.to === userMail && (
+                  {mail.to === mailAddress && (
                     <>
                       <Tooltip>
                         <TooltipTrigger asChild>

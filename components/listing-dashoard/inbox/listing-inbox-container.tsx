@@ -1,19 +1,18 @@
 "use client";
 
-import { InboxSidebar } from "../sidebars/user-inbox-sidebar/inbox-sidebar";
-import { SidebarProvider } from "../ui/sidebar";
-import CurrentMail from "../user-page/inbox/current-mail";
 import { useState } from "react";
-import { Mail } from "@prisma/client";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import CurrentMail from "@/components/user-page/inbox/current-mail";
+import { ListingInboxSidebar } from "./listing-inbox-sidebar";
 
-export const InboxContainer = ({
+export const ListingDashboardInboxContainer = ({
   mails,
-  userId,
-  userMail,
+  listingId,
+  listingMail,
 }: {
   mails: TMails[];
-  userMail: string;
-  userId: string;
+  listingMail: string;
+  listingId: string;
 }) => {
   // no need of this state, just use the redux for selected mail directly in the CurrentMail component
   const [selectedMail, setSelectedMail] = useState<TMails | null>(null);
@@ -30,8 +29,9 @@ export const InboxContainer = ({
       }
       className="max-h-[70vh] "
     >
-      <InboxSidebar
-        userId={userId}
+      <ListingInboxSidebar
+        listingId={listingId}
+        listingMail={listingMail}
         data={mails}
         onMailClick={setSelectedMail}
         className="flex items-start justify-start rounded-md"
@@ -41,7 +41,7 @@ export const InboxContainer = ({
       <CurrentMail
         onMailClose={onMailClose}
         mail={selectedMail}
-        mailAddress={userMail}
+        mailAddress={listingMail}
         className="max-h-[80%] w-full p-4 border border-border/90"
       />
     </SidebarProvider>

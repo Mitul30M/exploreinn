@@ -5,14 +5,20 @@ import { Badge } from "@/components/ui/badge";
 
 // add a interface for the mail prop for the mails array , each mail will be of type Mail, exported from the /seeds/user-inbox/mails.tsx file
 
-interface MailListProps {
+interface ListingMailListProps {
   mails: TMails[];
-  userId: string;
+  listingId: string;
+  listingMail: string;
   // add a prop for the onMailClick function, keep it optional for now
   onMailClick: (mail: TMails) => void;
 }
 
-const MailList = ({ mails, userId, onMailClick }: MailListProps) => {
+const ListingMailList = ({
+  mails,
+  // listingId,
+  listingMail,
+  onMailClick,
+}: ListingMailListProps) => {
   return (
     <ScrollArea className="h-[calc(100vh-1rem)]">
       {mails.map((mail) => (
@@ -23,17 +29,17 @@ const MailList = ({ mails, userId, onMailClick }: MailListProps) => {
         >
           <div className="flex w-full items-center gap-2 ">
             <p className="font-semibold text-foreground/70 text-[12px]">
-              {mail.from === mail.listing?.email
-                ? mail.listing.name
+              {mail.from === mail.sender?.email
+                ? mail.sender?.firstName + " " + mail.sender?.lastName
                 : mail.from === process.env.NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL
                   ? "ExploreInn Support"
-                  : mail.sender?.firstName + " " + mail.sender?.lastName}
+                  : mail.from}
             </p>
             <p className="ml-auto text-xs">{formatDate(mail.createdAt)}</p>
           </div>
           <p className="font-semibold flex items-center gap-2 text-[14px] w-full">
             <span>{mail.subject}</span>
-            {!mail.read && mail.receiverId === userId && (
+            {!mail.read && mail.to === listingMail && (
               <span className="inline-flex rounded-full h-2 w-2 bg-primary"></span>
             )}
           </p>
@@ -76,4 +82,4 @@ const MailList = ({ mails, userId, onMailClick }: MailListProps) => {
     </ScrollArea>
   );
 };
-export default MailList;
+export default ListingMailList;
