@@ -531,7 +531,8 @@ export const NewUserMailDialogForm = () => {
                         {/* <TextEditor {...field} showToolbar={false} /> */}
                         <Textarea
                           placeholder="Write your message here"
-                          className="h-[200px]"rows={15}
+                          className="h-[200px]"
+                          rows={15}
                           {...field}
                         />
                       </FormControl>

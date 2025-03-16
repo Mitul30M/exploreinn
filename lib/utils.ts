@@ -1,11 +1,9 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
-
-
 
 /**
  * Returns a random Date object within the range of January 1st, 2022 and December 31st, 2024.
@@ -53,8 +51,7 @@ export const formatDate = (date: string | Date): string => {
     return "Yesterday";
   } else if (diffInDays < 30) {
     return `${diffInDays} days ago`;
-  }
-  else if (diffInMonths < 1) {
+  } else if (diffInMonths < 1) {
     return `${diffInDays} days ago`;
   } else if (diffInYears < 1) {
     return messageDate.toLocaleDateString("en-US", {
@@ -70,7 +67,6 @@ export const formatDate = (date: string | Date): string => {
 export const lowerCase = (str: string): string => {
   return str.charAt(0).toLowerCase() + str.slice(1).toLowerCase();
 };
-
 
 export const convertUnicodeToFlag = (unicode: string) => {
   // Split the Unicode string into an array

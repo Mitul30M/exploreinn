@@ -68,7 +68,7 @@ export function InboxSidebar({
     // Filter based on readMails toggle
     if (readMails && activeItem.title.toLowerCase() !== "sent") {
       filtered = filtered.filter(
-        (mail) => mail.read && mail.receiverId === userId
+        (mail) => !mail.read && mail.receiverId === userId
       );
     }
 
@@ -102,8 +102,6 @@ export function InboxSidebar({
     });
   };
 
-  const { user } = useUser();
-
   return (
     <div className="flex-row bg-purple-400 !max-h-screen rounded-xl" {...props}>
       {/* This is the first sidebar */}
@@ -113,18 +111,6 @@ export function InboxSidebar({
         collapsible="none"
         className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border border-x-0"
       >
-        {/* <SidebarHeader>
-          <NavUser
-            user={{
-              name: user?.fullName ?? "",
-              email: user?.emailAddresses[0]?.emailAddress ?? "",
-              avatar: user?.imageUrl ?? "",
-              userDB_id:
-                (user?.publicMetadata as PublicMetadataType)?.userDB_id ?? "",
-            }}
-          />
-        </SidebarHeader>
-        <Separator className="" /> */}
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent className="px-0">
@@ -168,7 +154,7 @@ export function InboxSidebar({
               {activeItem.title}
             </div>
             <Label className="flex items-center gap-2 text-sm">
-              <span>Unreads </span>
+              <span>Unread</span>
               <Switch
                 className="shadow-none"
                 checked={readMails}

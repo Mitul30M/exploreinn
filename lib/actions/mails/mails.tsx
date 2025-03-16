@@ -410,3 +410,109 @@ export async function sendMailfromListing(data: {
     type: "error",
   };
 }
+
+export async function setMailArchived(mailId: string) {
+  const mail = await prisma.mail.update({
+    where: {
+      id: mailId,
+    },
+    data: {
+      archived: true,
+    },
+    select: {
+      id: true,
+      archived: true,
+      senderId: true,
+      receiverId: true,
+      listingId: true,
+    },
+  });
+  revalidatePath(`/users/${mail.receiverId}/inbox`);
+  revalidatePath(`/listings/${mail.listingId}/inbox`);
+  return mail!!;
+}
+
+export async function setMailUnarchived(mailId: string) {
+  const mail = await prisma.mail.update({
+    where: {
+      id: mailId,
+    },
+    data: {
+      archived: false,
+    },
+    select: {
+      id: true,
+      archived: true,
+      senderId: true,
+      receiverId: true,
+      listingId: true,
+    },
+  });
+  revalidatePath(`/users/${mail.receiverId}/inbox`);
+  revalidatePath(`/listings/${mail.listingId}/inbox`);
+  return mail!!;
+}
+
+export async function setMailTrash(mailId: string) {
+  const mail = await prisma.mail.update({
+    where: {
+      id: mailId,
+    },
+    data: {
+      trashed: true,
+    },
+    select: {
+      id: true,
+      archived: true,
+      senderId: true,
+      receiverId: true,
+      listingId: true,
+    },
+  });
+  revalidatePath(`/users/${mail.receiverId}/inbox`);
+  revalidatePath(`/listings/${mail.listingId}/inbox`);
+  return mail!!;
+}
+
+export async function setMailUnTrash(mailId: string) {
+  const mail = await prisma.mail.update({
+    where: {
+      id: mailId,
+    },
+    data: {
+      trashed: false,
+    },
+    select: {
+      id: true,
+      archived: true,
+      senderId: true,
+      receiverId: true,
+      listingId: true,
+    },
+  });
+  revalidatePath(`/users/${mail.receiverId}/inbox`);
+  revalidatePath(`/listings/${mail.listingId}/inbox`);
+  return mail!!;
+}
+
+export async function setMailRead(mailId: string) {
+  const mail = await prisma.mail.update({
+    where: {
+      id: mailId,
+    },
+    data: {
+      read: true,
+    },
+    select: {
+      id: true,
+      archived: true,
+      senderId: true,
+      receiverId: true,
+      listingId: true,
+    },
+  });
+  console.log("ok thts read");
+  revalidatePath(`/users/${mail.receiverId}/inbox`);
+  revalidatePath(`/listings/${mail.listingId}/inbox`);
+  return mail!!;
+}

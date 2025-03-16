@@ -9,21 +9,15 @@ export const links: {
 }[] = [
   {
     title: "Home",
-    href: "#",
+    href: "/",
     icon: <House size={18} />,
     description: "Exploreinn Home Page",
   },
   {
     title: "Discover",
-    href: "#",
+    href: "/discover",
     icon: <Telescope size={18} />,
     description: "Exploreinn Discover Page",
-  },
-  {
-    title: "Community",
-    href: "#",
-    icon: <BookHeart size={18} />,
-    description: "Exploreinn Community Page",
   },
   {
     title: "About",
