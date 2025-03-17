@@ -260,6 +260,9 @@ export async function getListingBookings(listingId: string) {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
   return bookings;
 }

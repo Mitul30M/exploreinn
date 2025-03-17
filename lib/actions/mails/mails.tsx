@@ -136,6 +136,9 @@ export const getUserBookingIDs = async (userId: string) => {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
   return userBookings;
 };
@@ -160,6 +163,9 @@ export async function getListingBookings(listingId: string) {
       checkOutDate: true,
       createdAt: true,
       listingId: true,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
   return bookings;
