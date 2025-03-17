@@ -429,7 +429,7 @@ export async function setMailArchived(mailId: string) {
   });
   revalidatePath(`/users/${mail.receiverId}/inbox`);
   revalidatePath(`/listings/${mail.listingId}/inbox`);
-  return mail!!;
+  return mail;
 }
 
 export async function setMailUnarchived(mailId: string) {
@@ -450,7 +450,7 @@ export async function setMailUnarchived(mailId: string) {
   });
   revalidatePath(`/users/${mail.receiverId}/inbox`);
   revalidatePath(`/listings/${mail.listingId}/inbox`);
-  return mail!!;
+  return mail;
 }
 
 export async function setMailTrash(mailId: string) {
@@ -471,7 +471,7 @@ export async function setMailTrash(mailId: string) {
   });
   revalidatePath(`/users/${mail.receiverId}/inbox`);
   revalidatePath(`/listings/${mail.listingId}/inbox`);
-  return mail!!;
+  return mail;
 }
 
 export async function setMailUnTrash(mailId: string) {
@@ -492,7 +492,7 @@ export async function setMailUnTrash(mailId: string) {
   });
   revalidatePath(`/users/${mail.receiverId}/inbox`);
   revalidatePath(`/listings/${mail.listingId}/inbox`);
-  return mail!!;
+  return mail;
 }
 
 export async function setMailRead(mailId: string) {
@@ -511,8 +511,7 @@ export async function setMailRead(mailId: string) {
       listingId: true,
     },
   });
-  console.log("ok thts read");
   revalidatePath(`/users/${mail.receiverId}/inbox`);
   revalidatePath(`/listings/${mail.listingId}/inbox`);
-  return mail!!;
+  return mail;
 }

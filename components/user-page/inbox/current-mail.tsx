@@ -16,7 +16,6 @@ import {
   ArchiveRestore,
   Paperclip,
   RefreshCw,
-  Send,
   Trash2,
   XCircle,
 } from "lucide-react";

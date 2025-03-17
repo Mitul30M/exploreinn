@@ -42,7 +42,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
-import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropzoneOptions } from "react-dropzone";
 import {
@@ -112,7 +111,7 @@ export const NewUserMailDialogForm = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [progress] = useState<number[]>([]);
-  const { data: userBookings, isLoading: queryLoading } = useQuery({
+  const { data: userBookings } = useQuery({
     queryKey: ["userBookingIDs", userDB_id ?? params.userId],
     queryFn: async () => await getUserBookingIDs(userDB_id ?? params.userId),
   });
@@ -251,6 +250,7 @@ export const NewUserMailDialogForm = () => {
           </ToastAction>
         ),
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

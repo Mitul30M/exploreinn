@@ -20,9 +20,8 @@ import { inboxNav } from "@/lib/utils/seed/user-inbox/mails";
 import MailList from "@/components/user-page/inbox/mail-list";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { CheckCircle2, Edit2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
-import { useUser } from "@clerk/nextjs";
 import { NewUserMailDialogForm } from "./new-mail";
 
 // This is sample data
@@ -73,7 +72,7 @@ export function InboxSidebar({
     }
 
     return filtered;
-  }, [data, activeItem, readMails]);
+  }, [data, activeItem, userId, readMails]);
 
   const handleReadMailsToggle = (checked: boolean) => {
     setReadMails(checked);

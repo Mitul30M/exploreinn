@@ -4,7 +4,6 @@ import { InboxSidebar } from "../sidebars/user-inbox-sidebar/inbox-sidebar";
 import { SidebarProvider } from "../ui/sidebar";
 import CurrentMail from "../user-page/inbox/current-mail";
 import { useState } from "react";
-import { Mail } from "@prisma/client";
 
 export const InboxContainer = ({
   mails,

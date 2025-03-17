@@ -1,4 +1,4 @@
-import { BookHeart, House, LibraryBig, Telescope } from "lucide-react";
+import {  House, LibraryBig, Telescope } from "lucide-react";
 import { ReactNode } from "react";
 
 export const links: {

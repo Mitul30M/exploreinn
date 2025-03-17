@@ -19,9 +19,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   getListingBookings,
-  getUserBookingIDs,
   sendMailfromListing,
-  sendMailfromUser,
 } from "@/lib/actions/mails/mails";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
@@ -45,9 +43,7 @@ import {
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
-import TextEditor from "@/components/ui/text-editor/tip-tap-editor";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropzoneOptions } from "react-dropzone";
 import {
@@ -115,7 +111,7 @@ export const NewListingMailDialogForm = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [progress] = useState<number[]>([]);
-  const { data: listingBookings, isLoading: queryLoading } = useQuery({
+  const { data: listingBookings } = useQuery({
     queryKey: ["listingBookings"],
     queryFn: async () => await getListingBookings(params.listingId),
   });
@@ -255,6 +251,7 @@ export const NewListingMailDialogForm = () => {
           </ToastAction>
         ),
       });
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
