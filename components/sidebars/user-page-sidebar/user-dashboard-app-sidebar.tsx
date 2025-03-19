@@ -121,12 +121,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Sent",
-            url: `/users/${userDB_id}/inbox/sent`,
+            url: `/users/${userDB_id}/inbox/#sent`,
             icon: Send,
           },
           {
             title: "Archive",
-            url: `/users/${userDB_id}/inbox/archive`,
+            url: `/users/${userDB_id}/inbox/#archive`,
             icon: ArchiveX,
           },
         ],
@@ -204,10 +204,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <NavUser
           user={{
-            name: user?.fullName ?? '',
-            email: user?.emailAddresses[0]?.emailAddress ?? '',
-            avatar: user?.imageUrl ?? '',
-            userDB_id: userDB_id?.toString() ?? '',
+            name: user?.fullName ?? "",
+            email: user?.emailAddresses[0]?.emailAddress ?? "",
+            avatar: user?.imageUrl ?? "",
+            userDB_id: userDB_id?.toString() ?? "",
           }}
         />
       </SidebarHeader>

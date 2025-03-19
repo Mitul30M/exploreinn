@@ -349,8 +349,15 @@ const ListingPage = async ({ params }: { params: Params }) => {
             overallRating={listing.overallRating}
             exploreinnGrade={listing.exploreinnGrade}
           />
-          {listing.reviews.length ? (
-            <ListingReviewsSection reviews={listing.reviews} />
+          <ListingReviewsSection
+            reviews={listing.reviews}
+            listingId={listing.id}
+          />
+          {/* {listing.reviews.length ? (
+            <ListingReviewsSection
+              reviews={listing.reviews}
+              listingId={listing.id}
+            />
           ) : (
             <div className="flex flex-col items-center m-4 justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
               <p className="">
@@ -364,7 +371,7 @@ const ListingPage = async ({ params }: { params: Params }) => {
                 No Reviews for this listing yet. Be the first to review
               </p>
             </div>
-          )}
+          )} */}
         </section>
 
         {/* Description */}

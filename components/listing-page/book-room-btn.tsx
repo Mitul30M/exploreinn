@@ -18,7 +18,6 @@ const BookRoomBtn = ({
   className?: string;
 }) => {
   const [showCounter, setShowCounter] = useState<boolean>(false);
-  console.log(showCounter);
   // const [rooms, setRooms] = useState<number>(1);
   const { rooms } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();

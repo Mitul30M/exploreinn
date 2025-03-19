@@ -13,6 +13,7 @@ import {
   DoorOpen,
   HandCoins,
   MapPinCheckInside,
+  MessageCircleHeart,
   MessageSquareText,
   Sparkles,
   Star,
@@ -29,6 +30,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { NewReviewDialogForm } from "./new-review-dialog";
 
 interface ListingReviewsSectionProps {
   reviews: {
@@ -51,8 +53,12 @@ interface ListingReviewsSectionProps {
     content: string;
     authorId: string;
   }[];
+  listingId: string;
 }
-const ListingReviewsSection = ({ reviews }: ListingReviewsSectionProps) => {
+const ListingReviewsSection = ({
+  reviews,
+  listingId,
+}: ListingReviewsSectionProps) => {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
@@ -60,13 +66,7 @@ const ListingReviewsSection = ({ reviews }: ListingReviewsSectionProps) => {
   return (
     <div className="w-full space-y-4 px-4 ">
       <div className="flex items-center gap-4">
-        <Button
-          variant={"outline"}
-          size={"sm"}
-          className="rounded shadow-none"
-        >
-          View All
-        </Button>
+        <NewReviewDialogForm listingId={listingId} />
         {/* review sort */}
         <Select>
           <SelectTrigger
@@ -86,104 +86,124 @@ const ListingReviewsSection = ({ reviews }: ListingReviewsSectionProps) => {
         </Select>
       </div>
       {/* reviews  */}
-      <Carousel className="cursor-grab w-full" plugins={[plugin.current]}>
-        <CarouselContent className="gap-4">
-          {reviews.map((review) => (
-            <CarouselItem key={review.authorId} className="basis-auto">
-              <div className="space-y-4 p-4 w-[350px] h-[214px] rounded-md border-border/90 border-[1px] overflow-x-hidden">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8 border-2">
-                      <AvatarImage src={review.author.profileImg} />
-                      <AvatarFallback className="text-sm text-primary bg-primary/10 dark:bg-muted">
-                        {review.author.firstName[0]}
-                        {review.author.lastName[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <p className="text-sm">
-                      {review.author.firstName} {review.author.lastName}
+      {reviews.length > 0 ? (
+        <Carousel className="cursor-grab w-full" plugins={[plugin.current]}>
+          <CarouselContent className="gap-4">
+            {reviews.map((review) => (
+              <CarouselItem key={review.authorId} className="basis-auto">
+                <div className="space-y-4 p-4 w-[350px] h-[214px] rounded-md border-border/90 border-[1px] overflow-x-hidden">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8 border-2">
+                        <AvatarImage src={review.author.profileImg} />
+                        <AvatarFallback className="text-sm text-primary bg-primary/10 dark:bg-muted">
+                          {review.author.firstName[0]}
+                          {review.author.lastName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <p className="text-sm">
+                        {review.author.firstName} {review.author.lastName}
+                      </p>
+                    </div>
+                    <p className="text-[12px] text-muted-foreground">
+                      1 day ago
                     </p>
                   </div>
-                  <p className="text-[12px] text-muted-foreground">1 day ago</p>
+                  {/* star rating */}
+                  <p className="text-xs text-muted-foreground flex items-center gap-2">
+                    Rated{" "}
+                    <span className="font-semibold text-[15px] text-foreground flex gap-1 items-center space-x-1">
+                      {review.stars}{" "}
+                      <Star
+                        strokeWidth={2.5}
+                        className="w-4 h-4 text-primary"
+                      />
+                    </span>
+                  </p>
+                  {/* review */}
+                  <p className="line-clamp-3 text-sm">{review.content}</p>
+                  {/* individual ratings */}
+                  <Carousel className="w-max">
+                    <CarouselContent className="-ml-1">
+                      <CarouselItem className="pl-1 basis-auto">
+                        <Badge
+                          variant={"secondary"}
+                          className="flex items-center gap-1 rounded w-max"
+                        >
+                          <ThumbsUp className="w-4 h-4" />
+                          {review.comfort}
+                        </Badge>
+                      </CarouselItem>
+                      <CarouselItem className="pl-1 basis-auto">
+                        <Badge
+                          variant={"secondary"}
+                          className="flex items-center gap-1 rounded w-max"
+                        >
+                          <HandCoins className="w-4 h-4" />
+                          {review.valueForMoney}
+                        </Badge>
+                      </CarouselItem>
+                      <CarouselItem className="pl-1 basis-auto">
+                        <Badge
+                          variant={"secondary"}
+                          className="flex items-center gap-1 rounded w-max"
+                        >
+                          <DoorOpen className="w-4 h-4" />
+                          {review.checkIn}
+                        </Badge>
+                      </CarouselItem>
+                      <CarouselItem className="pl-1 basis-auto">
+                        <Badge
+                          variant={"secondary"}
+                          className="flex items-center gap-1 rounded w-max"
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          {review.cleanliness}
+                        </Badge>
+                      </CarouselItem>
+                      <CarouselItem className="pl-1 basis-auto">
+                        <Badge
+                          variant={"secondary"}
+                          className="flex items-center gap-1 rounded w-max"
+                        >
+                          <MessageSquareText className="w-4 h-4" />
+                          {review.communication}
+                        </Badge>
+                      </CarouselItem>
+                      <CarouselItem className="pl-1 basis-auto">
+                        <Badge
+                          variant={"secondary"}
+                          className="flex items-center gap-1 rounded w-max"
+                        >
+                          <MapPinCheckInside className="w-4 h-4" />
+                          {review.location}
+                        </Badge>
+                      </CarouselItem>
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden" />
+                    <CarouselNext className="hidden" />
+                  </Carousel>
                 </div>
-                {/* star rating */}
-                <p className="text-xs text-muted-foreground flex items-center gap-2">
-                  Rated{" "}
-                  <span className="font-semibold text-[15px] text-foreground flex gap-1 items-center space-x-1">
-                    {review.stars}{" "}
-                    <Star strokeWidth={2.5} className="w-4 h-4 text-primary" />
-                  </span>
-                </p>
-                {/* review */}
-                <p className="line-clamp-3 text-sm">{review.content}</p>
-                {/* individual ratings */}
-                <Carousel className="w-max">
-                  <CarouselContent className="-ml-1">
-                    <CarouselItem className="pl-1 basis-auto">
-                      <Badge
-                        variant={"secondary"}
-                        className="flex items-center gap-1 rounded w-max"
-                      >
-                        <ThumbsUp className="w-4 h-4" />
-                        {review.comfort}
-                      </Badge>
-                    </CarouselItem>
-                    <CarouselItem className="pl-1 basis-auto">
-                      <Badge
-                        variant={"secondary"}
-                        className="flex items-center gap-1 rounded w-max"
-                      >
-                        <HandCoins className="w-4 h-4" />
-                        {review.valueForMoney}
-                      </Badge>
-                    </CarouselItem>
-                    <CarouselItem className="pl-1 basis-auto">
-                      <Badge
-                        variant={"secondary"}
-                        className="flex items-center gap-1 rounded w-max"
-                      >
-                        <DoorOpen className="w-4 h-4" />
-                        {review.checkIn}
-                      </Badge>
-                    </CarouselItem>
-                    <CarouselItem className="pl-1 basis-auto">
-                      <Badge
-                        variant={"secondary"}
-                        className="flex items-center gap-1 rounded w-max"
-                      >
-                        <Sparkles className="w-4 h-4" />
-                        {review.cleanliness}
-                      </Badge>
-                    </CarouselItem>
-                    <CarouselItem className="pl-1 basis-auto">
-                      <Badge
-                        variant={"secondary"}
-                        className="flex items-center gap-1 rounded w-max"
-                      >
-                        <MessageSquareText className="w-4 h-4" />
-                        {review.communication}
-                      </Badge>
-                    </CarouselItem>
-                    <CarouselItem className="pl-1 basis-auto">
-                      <Badge
-                        variant={"secondary"}
-                        className="flex items-center gap-1 rounded w-max"
-                      >
-                        <MapPinCheckInside className="w-4 h-4" />
-                        {review.location}
-                      </Badge>
-                    </CarouselItem>
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden" />
-                  <CarouselNext className="hidden" />
-                </Carousel>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>{" "}
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      ) : (
+        <div className="flex flex-col items-center m-4 justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
+          <p className="">
+            <MessageCircleHeart
+              size={40}
+              className="text-primary"
+              strokeWidth={1.6}
+            />
+          </p>
+          <p className="font-semibold text-primary">
+            No Reviews for this listing yet. Be the first to review
+          </p>
+        </div>
+      )}
     </div>
   );
 };
