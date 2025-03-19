@@ -277,21 +277,21 @@ const ListingOverviewPage = async ({
                 <Separator className="border-border/90" />
                 <div className="text-sm font-medium ">
                   Total Amount:{" "}
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(latestTransaction.totalCost)}
                   <p className="text-foreground/75">
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(
                       latestTransaction.totalCost - latestTransaction.tax
                     )}{" "}
                     +{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(latestTransaction.tax)}{" "}
                     (tax)
                   </p>
@@ -503,9 +503,9 @@ const ListingOverviewPage = async ({
                     {latestBooking.rooms.map((room) => (
                       <p key={room.roomId} className="w-max text-sm">
                         {room.noOfRooms}x {room.name} [at{" "}
-                        {new Intl.NumberFormat("en-US", {
+                        {new Intl.NumberFormat("en-IN", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "INR",
                         }).format(room.rate)}
                         /night]
                       </p>

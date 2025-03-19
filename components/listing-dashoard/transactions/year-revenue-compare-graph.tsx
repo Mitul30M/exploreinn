@@ -119,16 +119,16 @@ export function ListingYearlyRevenueCompare({
             <>
               <p>
                 Revenue this month:{" "}
-                {new Intl.NumberFormat("en-US", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
-                  currency: "USD",
+                  currency: "INR",
                 }).format(chartData[0].currentYear)}
               </p>
               <p>
                 Total Revenue this year:{" "}
-                {new Intl.NumberFormat("en-US", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
-                  currency: "USD",
+                  currency: "INR",
                 }).format(
                   chartData.reduce((sum, data) => sum + data.currentYear, 0)
                 )}
@@ -141,9 +141,9 @@ export function ListingYearlyRevenueCompare({
                 <div className="flex flex-col gap-2">
                   <p>
                     Revenue this month:{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(chartData[new Date().getMonth()].currentYear)}
                   </p>
                   <p className="flex items-center gap-2 ">
@@ -158,9 +158,9 @@ export function ListingYearlyRevenueCompare({
                   </p>
                   <p>
                     Avg Revenue this year:{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(
                       chartData.reduce(
                         (sum, data) => sum + data.currentYear,
@@ -173,9 +173,9 @@ export function ListingYearlyRevenueCompare({
                 <div className="flex flex-col gap-2">
                   <p>
                     Revenue this month:{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(chartData[new Date().getMonth()].currentYear)}
                   </p>
                   <p className="flex items-center gap-2">
@@ -191,9 +191,9 @@ export function ListingYearlyRevenueCompare({
                   </p>
                   <p>
                     Avg Revenue this year:{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(
                       chartData.reduce(
                         (sum, data) => sum + data.currentYear,

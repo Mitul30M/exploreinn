@@ -80,9 +80,9 @@ const Invoice = ({
               <Text className=" text-[16px] leading-[24px] px-5 ">
                 Your transaction of{" "}
                 <strong className="font-semibold">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(transaction.totalCost)}
                 </strong>{" "}
                 with ID{" "}

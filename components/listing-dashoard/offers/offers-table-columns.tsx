@@ -205,9 +205,9 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
     ),
     cell: ({ row }) => {
       return row.original.flatDiscount
-        ? new Intl.NumberFormat("en-US", {
+        ? new Intl.NumberFormat("en-IN", {
             style: "currency",
-            currency: "USD",
+            currency: "INR",
           }).format(row.original.flatDiscount)
         : "-";
     },
@@ -238,9 +238,9 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
       return (
         <p className="text-primary">
           {row.original.minimumBookingAmount
-            ? new Intl.NumberFormat("en-US", {
+            ? new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(row.original.minimumBookingAmount)
             : "-"}
         </p>
@@ -257,9 +257,9 @@ export const dashboardOffersTableColumns: ColumnDef<Offer>[] = [
       return (
         <p className="text-primary">
           {row.original.maxDiscountAmount
-            ? new Intl.NumberFormat("en-US", {
+            ? new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(row.original.maxDiscountAmount)
             : "-"}
         </p>

@@ -186,7 +186,7 @@ export async function createStripeCheckoutSession(
   const cart = [
     {
       price_data: {
-        currency: "usd",
+        currency: "inr",
         product_data: {
           name: `${user.firstName} ${user.lastName}'s ${listing.name} booking `,
           description: `${user.firstName} ${user.lastName}'s ${listing.name} booking for ${bookingDetails.nights} nights`,

@@ -302,9 +302,9 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
           ) : (
             <TrendingDown size={16} className="text-red-500" />
           )}{" "}
-          {new Intl.NumberFormat("en-US", {
+          {new Intl.NumberFormat("en-IN", {
             style: "currency",
-            currency: "USD",
+            currency: "INR",
           }).format(formattedToday)}
         </p>
       );
@@ -324,9 +324,9 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
       // fetch all today's bookings with payment status completed and then sum up the amount;
       // show in $ only, later inside dashboard can the user see the amount in his preferred currency
       // Reduce the totalCost by deducting a 5% from each totalCost.
-      const formatted = new Intl.NumberFormat("en-US", {
+      const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
       }).format(
         row.original.Transaction.reduce(
           (total, transaction) =>

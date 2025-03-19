@@ -178,17 +178,17 @@ const PaymentConfirmationCard = ({
           >
             <p className="text-sm">
               {room.noOfRooms}x {room.name} (
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(room.rate)}{" "}
               x {nights} {nights === 1 ? "night" : "nights"})
             </p>
             <p className="font-semibold text-[16px]">
               +
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(room.rate * nights * room.noOfRooms)}
             </p>
           </div>
@@ -201,18 +201,18 @@ const PaymentConfirmationCard = ({
           >
             <p className="text-sm">
               {extra.name} (
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(extra.cost)}{" "}
               x {guests} {guests === 1 ? "guest" : "guests"}) x {nights}{" "}
               {nights === 1 ? "night" : "nights"})
             </p>
             <p className="font-semibold text-[16px]">
               +
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(extra.cost * guests * nights)}
             </p>
           </div>
@@ -224,9 +224,9 @@ const PaymentConfirmationCard = ({
             <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
               <p className="text-sm">Gross Total</p>
               <p className="font-semibold text-[16px]">
-                {new Intl.NumberFormat("en-US", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
-                  currency: "USD",
+                  currency: "INR",
                 }).format(totalWithoutTaxes)}
               </p>
             </div>
@@ -240,9 +240,9 @@ const PaymentConfirmationCard = ({
               <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <Badge>
                   Can&apos;t Apply Offer. Add More
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(
                     minBookingFeeToApplyOffer - roomsTotal + extrasTotal
                   )}{" "}
@@ -260,9 +260,9 @@ const PaymentConfirmationCard = ({
               <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(roomsTotal + extrasTotal)}
                 </p>
               </div>
@@ -274,18 +274,18 @@ const PaymentConfirmationCard = ({
                   </span>
                 </p>
                 <p className="font-semibold text-[16px] text-primary">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
               <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <p className="text-sm">Gross Total After Discount</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(totalWithoutTaxes)}
                 </p>
               </div>
@@ -300,9 +300,9 @@ const PaymentConfirmationCard = ({
               <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(roomsTotal + extrasTotal)}
                 </p>
               </div>
@@ -310,15 +310,15 @@ const PaymentConfirmationCard = ({
                 <p className="text-sm">
                   {discountPercentage}% Discount{" "}
                   {maxAllowedDiscountAmount &&
-                    `(upto ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(maxAllowedDiscountAmount)})`}{" "}
+                    `(upto ${new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(maxAllowedDiscountAmount)})`}{" "}
                   <span className="text-primary font-semibold">
                     {couponCode}
                   </span>
                 </p>
                 <p className="font-semibold text-[16px] text-primary">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
@@ -326,9 +326,9 @@ const PaymentConfirmationCard = ({
               <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
                 <p className="text-sm">Gross Total After Discount</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(totalWithoutTaxes)}
                 </p>
               </div>
@@ -347,9 +347,9 @@ const PaymentConfirmationCard = ({
               <div className="w-full flex items-center justify-between mt-2 border-b-[1px] border-border/90 py-2">
                 <p className="text-sm">Gross Total</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(totalWithoutTaxes)}
                 </p>
               </div>
@@ -369,9 +369,9 @@ const PaymentConfirmationCard = ({
             </p>
             <p className="font-semibold text-[16px]">
               +
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(totalWithoutTaxes * (tax.rate / 100))}
             </p>
           </div>
@@ -379,9 +379,9 @@ const PaymentConfirmationCard = ({
         <div className="w-full flex items-center justify-between mt-2 border-y-[1px] border-border/90 py-2">
           <p className="text-sm">Total Taxes</p>
           <p className="font-semibold text-[16px]">
-            {new Intl.NumberFormat("en-US", {
+            {new Intl.NumberFormat("en-IN", {
               style: "currency",
-              currency: "USD",
+              currency: "INR",
             }).format(tax)}
           </p>
         </div>
@@ -391,9 +391,9 @@ const PaymentConfirmationCard = ({
       <div className="w-full flex items-center justify-between mt-4 border-y-[1px] border-border/90 py-2 ">
         <p className="text-sm">Total Payable</p>
         <p className="font-semibold text-[16px] capitalize text-primary">
-          {new Intl.NumberFormat("en-US", {
+          {new Intl.NumberFormat("en-IN", {
             style: "currency",
-            currency: "USD",
+            currency: "INR",
           }).format(totalPayable)}
         </p>
       </div>

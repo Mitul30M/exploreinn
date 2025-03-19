@@ -83,9 +83,9 @@ const ChargeInvoice = ({
                 <strong className="font-semibold">{booking.id}</strong> was
                 successful but has resulted in a cancellation fee of{" "}
                 <strong className="font-semibold">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(Math.floor(booking.totalCost * 0.05))}
                 </strong>
                 . Please find the invoice attached.

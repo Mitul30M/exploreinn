@@ -18,7 +18,7 @@ import {
 import { getListingById } from "@/lib/actions/listings/listings";
 import { hotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 // import { Listing, seedListing } from "@/lib/utils/seed/listing/listings";
-import { Review, Room } from "@prisma/client";
+import {  Room } from "@prisma/client";
 import {
   BusFront,
   ChevronLeft,

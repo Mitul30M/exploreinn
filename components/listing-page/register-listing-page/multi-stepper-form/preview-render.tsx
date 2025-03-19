@@ -91,7 +91,10 @@ const RenderPreviewStep = () => {
               <p className="text-xs text-muted-foreground font-normal mb-1">
                 Rooms starting from
               </p>
-              ${listing.room.basePrice}{" "}
+              {new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+              }).format(listing.room.basePrice)}{" "}
               <span className="text-sm font-normal text-muted-foreground">
                 /night
               </span>

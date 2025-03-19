@@ -31,7 +31,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
 import { NewReviewDialogForm } from "./new-review-dialog";
 import { formatDistanceToNow } from "date-fns";
-import { ScrollArea } from "../ui/scroll-area";
 import { useRouter } from "next/navigation";
 
 interface ListingReviewsSectionProps {

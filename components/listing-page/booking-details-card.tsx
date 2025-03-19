@@ -143,9 +143,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           >
             <p className="text-sm">{room.name}</p>
             <p className="font-semibold text-[16px]">
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency:"INR",
               }).format(room.rate)}
               /night
             </p>
@@ -164,9 +164,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           >
             <p className="text-sm">{extra.name}</p>
             <p className="font-semibold text-[16px]">
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency:"INR",
               }).format(extra.cost * nights * guests)}
             </p>
           </div>
@@ -189,17 +189,17 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
           >
             <p className="text-sm">
               {room.noOfRooms}x {room.name} (
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency:"INR",
               }).format(room.rate)}
               ) for {nights} night(s)
             </p>
             <p className="font-semibold text-[16px]">
               +
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency:"INR",
               }).format(room.noOfRooms * nights * room.rate)}
             </p>
           </div>
@@ -214,9 +214,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
             </p>
             <p className="font-semibold text-[16px]">
               +
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency:"INR",
               }).format(extra.cost * nights * guests)}
             </p>
           </div>
@@ -229,9 +229,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
             <div className="w-full flex items-center justify-between mt-2">
               <p className="text-sm">Total</p>
               <p className="font-semibold text-[16px]">
-                {new Intl.NumberFormat("en-US", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
-                  currency: "USD",
+                  currency:"INR",
                 }).format(totalWithoutTaxes)}
               </p>
             </div>
@@ -246,9 +246,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               <div className="w-full flex items-center justify-between mt-2">
                 <Badge>
                   Can&apos;t Apply Offer. Add More
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(
                     minBookingFeeToApplyOffer - roomsTotal + extrasTotal
                   )}{" "}
@@ -267,9 +267,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(roomsTotal + extrasTotal)}
                 </p>
               </div>
@@ -278,9 +278,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
                   Discount <span className="text-primary">{couponCode}</span>
                 </p>
                 <p className="font-semibold text-[16px] text-primary">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
@@ -289,9 +289,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(totalWithoutTaxes)}
                 </p>
               </div>
@@ -307,9 +307,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total Before Discount</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(roomsTotal + extrasTotal)}
                 </p>
               </div>
@@ -317,13 +317,13 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
                 <p className="text-sm">
                   {discountPercentage}% Discount{" "}
                   {maxAllowedDiscountAmount &&
-                    `(upto ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(maxAllowedDiscountAmount)})`}{" "}
+                    `(upto ${new Intl.NumberFormat("en-IN", { style: "currency", currency:"INR" }).format(maxAllowedDiscountAmount)})`}{" "}
                   <span className="text-primary">{couponCode}</span>
                 </p>
                 <p className="font-semibold text-[16px] text-primary">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(-discountedAmount)}
                 </p>{" "}
               </div>
@@ -332,9 +332,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(totalWithoutTaxes)}
                 </p>
               </div>
@@ -355,9 +355,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               <div className="w-full flex items-center justify-between mt-2">
                 <p className="text-sm">Total</p>
                 <p className="font-semibold text-[16px]">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency:"INR",
                   }).format(totalWithoutTaxes)}
                 </p>
               </div>
@@ -377,9 +377,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
               {tax.name} ({tax.rate.toLocaleString()}%)
             </p>
             <p className="font-semibold text-[16px]">
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency:"INR",
               }).format(totalWithoutTaxes * (tax.rate / 100))}
             </p>
           </div>
@@ -388,9 +388,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         <div className="w-full flex items-center justify-between mt-2">
           <p className="text-sm">Total Taxes</p>
           <p className="font-semibold text-[16px]">
-            {new Intl.NumberFormat("en-US", {
+            {new Intl.NumberFormat("en-IN", {
               style: "currency",
-              currency: "USD",
+              currency:"INR",
             }).format(tax)}
           </p>
         </div>
@@ -399,9 +399,9 @@ const BookingDetails = ({ listing, className }: BookingDetailsProps) => {
         <div className="w-full flex items-center justify-between mt-2">
           <p className="font-semibold text-[16px]">Total Booking Amount</p>
           <p className="font-semibold text-[16px]">
-            {new Intl.NumberFormat("en-US", {
+            {new Intl.NumberFormat("en-IN", {
               style: "currency",
-              currency: "USD",
+              currency:"INR",
             }).format(totalPayable)}
           </p>
         </div>

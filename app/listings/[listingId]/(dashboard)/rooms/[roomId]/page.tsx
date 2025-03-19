@@ -112,9 +112,9 @@ const RoomInfoPage = async ({
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 py-0 text-3xl font-semibold text-primary m-0">
-            {new Intl.NumberFormat("en-US", {
+            {new Intl.NumberFormat("en-IN", {
               style: "currency",
-              currency: "USD",
+              currency: "INR",
             }).format(room.price)}
           </CardContent>
           <CardFooter className="p-4 m-0 flex flex-col gap-4">

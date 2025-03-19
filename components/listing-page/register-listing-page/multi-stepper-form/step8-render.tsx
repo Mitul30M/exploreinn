@@ -326,7 +326,7 @@ const RenderStep8 = () => {
                     htmlFor="room-price"
                     className="text-[14px] text-accent-foreground"
                   >
-                    Base Room Price ($)
+                    Base Room Price (INR)
                   </FormLabel>
                   <FormControl>
                     <Input

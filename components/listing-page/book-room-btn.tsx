@@ -11,13 +11,9 @@ import {
   removeRoom,
 } from "@/lib/redux-store/slices/new-booking-slice";
 
-const BookRoomBtn = ({
-  room,
-}: {
-  room: Room;
-  className?: string;
-}) => {
+const BookRoomBtn = ({ room }: { room: Room; className?: string }) => {
   const [showCounter, setShowCounter] = useState<boolean>(false);
+  console.log("showCounter", showCounter);
   // const [rooms, setRooms] = useState<number>(1);
   const { rooms } = useAppSelector((state: RootState) => state.newBooking);
   const dispatch: AppDispatch = useAppDispatch();

@@ -263,9 +263,9 @@ export const dashboardBookingsTableColumns: ColumnDef<TDashboardBookingsColumns>
       ),
       cell: ({ row }) => {
         const amount = row.original.totalCost;
-        const formatted = new Intl.NumberFormat("en-US", {
+        const formatted = new Intl.NumberFormat("en-IN", {
           style: "currency",
-          currency: "USD",
+          currency: "INR",
         }).format(amount);
 
         return <p className="">{formatted}</p>;

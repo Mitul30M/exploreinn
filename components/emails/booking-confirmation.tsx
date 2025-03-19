@@ -86,9 +86,9 @@ const BookingConfirmationMail = ({
                 </strong>{" "}
                 has been successfully confirmed! A payment of{" "}
                 <strong className="font-semibold">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(booking.totalCost)}
                 </strong>{" "}
                 (inclusive of all taxes) needs to be processed during your check

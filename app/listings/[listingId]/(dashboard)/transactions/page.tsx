@@ -56,9 +56,9 @@ const ListingTransactionsPage = async ({
           <p className="font-medium tracking-tight text-sm">
             Net Revenue: {"   "}
             <strong className="text-primary text-lg">
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(revenue.overall)}
             </strong>
           </p>

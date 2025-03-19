@@ -170,9 +170,9 @@ const ListingEventPage = async ({
                             </span>
                             <span className="text-[15px] font-medium w-max flex items-center gap-1">
                               <ArrowUp size={16} />
-                              {new Intl.NumberFormat("en-US", {
+                              {new Intl.NumberFormat("en-IN", {
                                 style: "currency",
-                                currency: "USD",
+                                currency: "INR",
                               }).format(eventRoom.newPrice)}
                             </span>
                           </div>

@@ -185,7 +185,7 @@ export const NewReviewDialogForm = ({ listingId }: { listingId: string }) => {
                   render={({ field: { value, onChange } }) => (
                     <FormItem>
                       <FormLabel>
-                        Rate the listing's comfort level:{" "}
+                        Rate the listing&apos;s comfort level:{" "}
                         <span className="font-semibold flex flex-row items-center w-max gap-2">
                           {value}{" "}
                           <ThumbsUp className="text-primary" size={16} />
@@ -241,7 +241,7 @@ export const NewReviewDialogForm = ({ listingId }: { listingId: string }) => {
                   render={({ field: { value, onChange } }) => (
                     <FormItem>
                       <FormLabel>
-                        Rate the listing's check-in process:{" "}
+                        Rate the listing&apos;s check-in process:{" "}
                         <span className="font-semibold flex flex-row items-center w-max gap-2">
                           {value}{" "}
                           <DoorOpen className="text-primary" size={16} />
@@ -269,7 +269,7 @@ export const NewReviewDialogForm = ({ listingId }: { listingId: string }) => {
                   render={({ field: { value, onChange } }) => (
                     <FormItem>
                       <FormLabel>
-                        Rate the listing's cleanliness:{" "}
+                        Rate the listing&apos;s cleanliness:{" "}
                         <span className="font-semibold flex flex-row items-center w-max gap-2">
                           {value}{" "}
                           <Sparkles className="text-primary" size={16} />
@@ -297,7 +297,7 @@ export const NewReviewDialogForm = ({ listingId }: { listingId: string }) => {
                   render={({ field: { value, onChange } }) => (
                     <FormItem>
                       <FormLabel>
-                        Rate the listing's communication:{" "}
+                        Rate the listing&apos;s communication:{" "}
                         <span className="font-semibold flex flex-row items-center w-max gap-2">
                           {value}{" "}
                           <MessageSquareText
@@ -328,7 +328,7 @@ export const NewReviewDialogForm = ({ listingId }: { listingId: string }) => {
                   render={({ field: { value, onChange } }) => (
                     <FormItem>
                       <FormLabel>
-                        Rate the listing's location and neighborhood:{" "}
+                        Rate the listing&apos;s location and neighborhood:{" "}
                         <span className="font-semibold flex flex-row items-center w-max gap-2">
                           {value}{" "}
                           <MapPinCheckInside

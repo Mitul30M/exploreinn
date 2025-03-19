@@ -70,9 +70,9 @@ const ListingRoomsPage = async ({
                     <div>
                       Accepting Bookings at{" "}
                       <span className="font-semibold text-primary">
-                        {new Intl.NumberFormat("en-US", {
+                        {new Intl.NumberFormat("en-IN", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "INR",
                         }).format(room.price)}
                       </span>{" "}
                       per room per night
@@ -83,9 +83,9 @@ const ListingRoomsPage = async ({
                     <div>
                       Not Accepting Bookings at{" "}
                       <span className="font-semibold text-primary">
-                        {new Intl.NumberFormat("en-US", {
+                        {new Intl.NumberFormat("en-IN", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "INR",
                         }).format(room.price)}
                       </span>{" "}
                       per room per night

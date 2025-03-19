@@ -22,9 +22,9 @@ const ListingTodayRevenue = ({
         <CardDescription>{format(new Date(), "dd MMMM yyyy")}</CardDescription>
       </CardHeader>
       <CardContent className="p-4 text-3xl font-semibold text-primary m-0">
-        {new Intl.NumberFormat("en-US", {
+        {new Intl.NumberFormat("en-IN", {
           style: "currency",
-          currency: "USD",
+          currency: "INR",
         }).format(revenue)}
       </CardContent>
     </Card>

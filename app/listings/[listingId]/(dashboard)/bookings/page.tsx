@@ -237,9 +237,9 @@ const ListingBookingsPage = async ({
                     {latestBooking.rooms.map((room) => (
                       <p key={room.roomId} className="w-max text-sm">
                         {room.noOfRooms}x {room.name} [at{" "}
-                        {new Intl.NumberFormat("en-US", {
+                        {new Intl.NumberFormat("en-IN", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "INR",
                         }).format(room.rate)}
                         /night]
                       </p>

@@ -109,9 +109,9 @@ export function ListingMonthWiseRevenueGraph({
           {new Date().getMonth() === 0 ? (
             <>
               Total Revenue this month:{" "}
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(chartData[0].revenue)}
             </>
           ) : (
@@ -121,9 +121,9 @@ export function ListingMonthWiseRevenueGraph({
                 <div className="flex flex-col gap-2">
                   <p>
                     Total Revenue this month:{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(chartData[new Date().getMonth()].revenue)}
                   </p>
                   <p className="flex items-center gap-2">
@@ -141,9 +141,9 @@ export function ListingMonthWiseRevenueGraph({
                 <div className="flex flex-col gap-2">
                   <p>
                     Total Revenue this month:{" "}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(chartData[new Date().getMonth()].revenue)}
                   </p>
                   <p className="flex items-center gap-2">

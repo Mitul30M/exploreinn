@@ -55,7 +55,12 @@ export function Extras({ roomExtras }: AddOns) {
                 {extra.name}
               </span>
               {/* use the currency symbol as per users preferred currency */}
-              <span className="text-[15px] ">${extra.cost * guests}</span>
+              <span className="text-[15px] ">
+                {new Intl.NumberFormat("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                }).format(extra.cost * guests)}
+              </span>
             </div>
           </Label>
         ))}

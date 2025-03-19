@@ -107,9 +107,9 @@ const BookingInfoPage = async ({ params }: { params: Params }) => {
               {booking.rooms.map((room) => (
                 <p key={room.roomId} className="w-max text-sm">
                   {room.noOfRooms}x {room.name} [at{" "}
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(room.rate)}
                   /night]
                 </p>
@@ -229,28 +229,28 @@ const BookingInfoPage = async ({ params }: { params: Params }) => {
             <Separator className="border-border/90" />
             <div className="text-sm font-medium ">
               Total Amount:{" "}
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(booking.transaction.totalCost)}
               <p className="text-foreground/75 mb-4">
-                {new Intl.NumberFormat("en-US", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
-                  currency: "USD",
+                  currency: "INR",
                 }).format(
                   booking.transaction.totalCost - booking.transaction.tax
                 )}{" "}
                 +{" "}
-                {new Intl.NumberFormat("en-US", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
-                  currency: "USD",
+                  currency: "INR",
                 }).format(booking.transaction.tax)}{" "}
                 (tax)
               </p>
               Net Revenue:{" "}
-              {new Intl.NumberFormat("en-US", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
-                currency: "USD",
+                currency: "INR",
               }).format(await getRevenueFromTransaction(booking.transaction))}
             </div>
             <div className="space-y-2">

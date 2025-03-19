@@ -88,9 +88,9 @@ const OnlinePaymentBookingComplete = ({
                 </strong>{" "}
                 has been successfully confirmed! A payment of{" "}
                 <strong className="font-semibold">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
                   }).format(transaction.totalCost)}
                 </strong>{" "}
                 (inclusive of all taxes) has been securely processed.
@@ -128,8 +128,8 @@ const OnlinePaymentBookingComplete = ({
               </Text>
 
               <Text className=" text-[16px] leading-[24px] px-5 ">
-                We&apos;ll mail you the invoice & payment receipt as soon as it&apos;s
-                ready. Please ensure that you follow all the rules and
+                We&apos;ll mail you the invoice & payment receipt as soon as
+                it&apos;s ready. Please ensure that you follow all the rules and
                 regulations of the listing to help us maintain a safe and
                 pleasant environment for everyone.
               </Text>
@@ -194,6 +194,5 @@ const OnlinePaymentBookingComplete = ({
     </Html>
   );
 };
-
 
 export default OnlinePaymentBookingComplete;

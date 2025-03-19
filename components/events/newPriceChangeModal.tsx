@@ -207,7 +207,7 @@ export function NewPriceChangeEventModal({
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-2">
-                      <FormLabel>{room.roomName} (Price in USD $)</FormLabel>
+                      <FormLabel>{room.roomName} (Price in INR)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"

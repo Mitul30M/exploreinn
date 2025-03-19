@@ -34,7 +34,7 @@ const ListingCard = async ({ listing }: { listing: TListingCard }) => {
   const formattedCurrency = await convertCurrency({
     amount,
     toCurrency,
-    fromCurrency: "USD",
+    fromCurrency: "INR",
   });
 
   return (

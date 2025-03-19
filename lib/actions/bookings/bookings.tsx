@@ -653,9 +653,9 @@ export async function updateListingBookingStatus(
 
         console.log(
           `Booking ${updateBooking.id} opted for cancellation. \nRefunding full amount: `,
-          new Intl.NumberFormat("en-US", {
+          new Intl.NumberFormat("en-IN", {
             style: "currency",
-            currency: "USD",
+            currency: "INR",
           }).format(updateBooking.totalCost)
         );
 
@@ -722,7 +722,7 @@ export async function updateListingBookingStatus(
           const invoiceItem = await stripe.invoiceItems.create({
             customer: customer.id,
             amount: Math.round(updateBooking.totalCost * 0.05 * 100), // 5% of totalCost
-            currency: "usd", // Specify the currency
+            currency: "inr", // Specify the currency
             description: "Late cancellation fee. 5% of the total amount", // Description of the invoice item
             invoice: invoice.id,
           });
