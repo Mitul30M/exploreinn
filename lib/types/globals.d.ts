@@ -1,4 +1,4 @@
-import { Mail } from "@prisma/client";
+import { Mail, Review } from "@prisma/client";
 
 export {};
 
@@ -70,4 +70,15 @@ declare global {
       coverImage: string;
     };
   };
+
+  export type TReviews = Review & {
+    author: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      profileImg: string;
+    };
+  };
+
+  export type EReviewSort = "recent" | "top" | "low";
 }

@@ -40,11 +40,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import React, { cloneElement } from "react";
 
-const ListingPage = async ({ params }: { params: Params }) => {
+const ListingPage = async ({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) => {
   // get the listingId from the url and then fetch data using api or server action
   const listingID = (await params).listingId;
-  const listing = await getListingById(listingID);
-
+  const reviewSort = (await searchParams).reviewSort;
+  console.log(reviewSort);
+  const listing = await getListingById(
+    listingID,
+    reviewSort ? (reviewSort as EReviewSort) : "recent"
+  );
   if (!listing) {
     return notFound();
   }
@@ -345,33 +355,14 @@ const ListingPage = async ({ params }: { params: Params }) => {
             {listing.name} Ratings & Reviews
           </h1>
           <RatingsPanel
-            reviews={listing.reviews as unknown as Review[]}
+            reviews={listing.reviews as TReviews[]}
             overallRating={listing.overallRating}
             exploreinnGrade={listing.exploreinnGrade}
           />
           <ListingReviewsSection
-            reviews={listing.reviews}
+            reviews={listing.reviews as TReviews[]}
             listingId={listing.id}
           />
-          {/* {listing.reviews.length ? (
-            <ListingReviewsSection
-              reviews={listing.reviews}
-              listingId={listing.id}
-            />
-          ) : (
-            <div className="flex flex-col items-center m-4 justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
-              <p className="">
-                <MessageCircleHeart
-                  size={40}
-                  className="text-primary"
-                  strokeWidth={1.6}
-                />
-              </p>
-              <p className="font-semibold text-primary">
-                No Reviews for this listing yet. Be the first to review
-              </p>
-            </div>
-          )} */}
         </section>
 
         {/* Description */}

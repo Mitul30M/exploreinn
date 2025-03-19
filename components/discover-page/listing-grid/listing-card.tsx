@@ -79,7 +79,7 @@ const ListingCard = async ({ listing }: { listing: TListingCard }) => {
                   (listing.overallRating >= 9 ? "text-primary" : "")
                 }
               >
-                {listing.overallRating} {listing.exploreinnGrade}{" "}
+                {listing.overallRating.toFixed(1)} {listing.exploreinnGrade}{" "}
                 {listing.overallRating >= 9 && <ThumbsUp width={14} />}
                 {}
               </Badge>

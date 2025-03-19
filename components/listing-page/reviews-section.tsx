@@ -29,30 +29,13 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import { NewReviewDialogForm } from "./new-review-dialog";
+import { formatDistanceToNow } from "date-fns";
+import { ScrollArea } from "../ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 interface ListingReviewsSectionProps {
-  reviews: {
-    author: {
-      firstName: string;
-      lastName: string;
-      profileImg: string;
-    };
-    stars: number;
-    cleanliness: number;
-    comfort: number;
-    communication: number;
-    checkIn: number;
-    valueForMoney: number;
-    location: number;
-    overallRating: number;
-    createdAt: Date;
-    updatedAt: Date;
-    id: string;
-    content: string;
-    authorId: string;
-  }[];
+  reviews: TReviews[];
   listingId: string;
 }
 const ListingReviewsSection = ({
@@ -62,13 +45,20 @@ const ListingReviewsSection = ({
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
-
+  const { replace } = useRouter();
+  
   return (
     <div className="w-full space-y-4 px-4 ">
       <div className="flex items-center gap-4">
         <NewReviewDialogForm listingId={listingId} />
         {/* review sort */}
-        <Select>
+        <Select
+          onValueChange={(value) => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("reviewSort", value);
+            replace(url.pathname + url.search, { scroll: false });
+          }}
+        >
           <SelectTrigger
             id="sort-by"
             className="w-max flex justify-start gap-2 shadow-none"
@@ -83,14 +73,14 @@ const ListingReviewsSection = ({
               <SelectItem value="low">Lowest Rated Reviews</SelectItem>
             </SelectGroup>
           </SelectContent>
-        </Select>
+        </Select>{" "}
       </div>
       {/* reviews  */}
       {reviews.length > 0 ? (
         <Carousel className="cursor-grab w-full" plugins={[plugin.current]}>
           <CarouselContent className="gap-4">
             {reviews.map((review) => (
-              <CarouselItem key={review.authorId} className="basis-auto">
+              <CarouselItem key={review.id} className="basis-auto">
                 <div className="space-y-4 p-4 w-[350px] h-[214px] rounded-md border-border/90 border-[1px] overflow-x-hidden">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -106,7 +96,9 @@ const ListingReviewsSection = ({
                       </p>
                     </div>
                     <p className="text-[12px] text-muted-foreground">
-                      1 day ago
+                      {formatDistanceToNow(new Date(review.createdAt), {
+                        addSuffix: true,
+                      })}
                     </p>
                   </div>
                   {/* star rating */}
@@ -121,7 +113,7 @@ const ListingReviewsSection = ({
                     </span>
                   </p>
                   {/* review */}
-                  <p className="line-clamp-3 text-sm">{review.content}</p>
+                  <p className="text-sm">{review.content}</p>
                   {/* individual ratings */}
                   <Carousel className="w-max">
                     <CarouselContent className="-ml-1">
@@ -191,7 +183,7 @@ const ListingReviewsSection = ({
           <CarouselNext />
         </Carousel>
       ) : (
-        <div className="flex flex-col items-center m-4 justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
+        <div className="flex flex-col items-center m-4 mx-0 first:justify-center p-4 h-max rounded border-border/90 border-[1px] gap-2 py-8">
           <p className="">
             <MessageCircleHeart
               size={40}

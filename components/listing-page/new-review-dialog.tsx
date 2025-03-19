@@ -13,9 +13,11 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import {
+  CheckCircle2,
   DoorOpen,
   Edit,
   HandCoins,
+  Loader,
   MapPinCheckInside,
   MessageSquareText,
   PlusCircle,
@@ -27,6 +29,9 @@ import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Slider } from "../ui/slider";
 import { Textarea } from "../ui/textarea";
+import { addNewReview } from "@/lib/actions/reviews/reviews";
+import { ToastAction } from "../ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   content: z.string().min(10),
@@ -61,65 +66,65 @@ export const NewReviewDialogForm = ({ listingId }: { listingId: string }) => {
 
   const onSubmit = async (formData: FormSchema): Promise<void> => {
     console.log(formData);
-    // setIsLoading(true);
-    // try {
-    //   const res = await sendMailfromUser({
-    //     intendedReceiver: formData.intendedReceiver,
-    //     labels: formData.labels,
-    //     subject: formData.subject,
-    //     text: formData.text,
-    //     type: formData.type,
-    //     listingId: formData.listingId,
-    //     bookingId: formData.bookingId,
-    //     email: formData.email,
-    //     attachments: formData.attachments,
-    //   });
-    //   console.log(res);
+    setIsLoading(true);
+    try {
+      const res = await addNewReview({
+        content: formData.content,
+        stars: formData.stars,
+        cleanliness: formData.cleanliness,
+        comfort: formData.comfort,
+        communication: formData.communication,
+        checkIn: formData.checkIn,
+        valueForMoney: formData.valueForMoney,
+        location: formData.location,
+        listingId: formData.listingId,
+      });
+      console.log(res);
 
-    //   if (res.type === "success") {
-    //     toast({
-    //       title: `Mail Sent Successfully!`,
-    //       description: res.message,
-    //       action: (
-    //         <ToastAction
-    //           className="text-primary text-nowrap flex items-center gap-1 justify-center"
-    //           altText="success"
-    //         >
-    //           <Send className="size-4 text-primary" /> OK
-    //         </ToastAction>
-    //       ),
-    //     });
-    //   } else {
-    //     toast({
-    //       title: `Failed to Send Mail!`,
-    //       description: res.message,
-    //       action: (
-    //         <ToastAction
-    //           className="text-primary text-nowrap flex items-center gap-1 justify-center"
-    //           altText="error"
-    //         >
-    //           <Send className="size-4 text-primary" /> Try Again
-    //         </ToastAction>
-    //       ),
-    //     });
-    //   }
-    // } catch (error) {
-    //   toast({
-    //     title: `Failed to process request`,
-    //     description: "An error occurred while processing your request.",
-    //     action: (
-    //       <ToastAction
-    //         className="text-primary text-nowrap flex items-center gap-1 justify-center"
-    //         altText="error"
-    //       >
-    //         <HardDriveUpload className="size-4 text-primary" /> Try Again
-    //       </ToastAction>
-    //     ),
-    //   });
-    //   console.log(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (res.type === "success") {
+        toast({
+          title: `Review Added Successfully!`,
+          description: res.message,
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="success"
+            >
+              <CheckCircle2 className="size-4 text-primary" /> OK
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: `Failed to Send Mail!`,
+          description: res.message,
+          action: (
+            <ToastAction
+              className="text-primary text-nowrap flex items-center gap-1 justify-center"
+              altText="error"
+            >
+              <Loader className="size-4 text-primary" /> Try Again
+            </ToastAction>
+          ),
+        });
+      }
+    } catch (error) {
+      toast({
+        title: `Failed to process request`,
+        description: "An error occurred while processing your request.",
+        action: (
+          <ToastAction
+            className="text-primary text-nowrap flex items-center gap-1 justify-center"
+            altText="error"
+          >
+            <Loader className="size-4 text-primary" /> Try Again
+          </ToastAction>
+        ),
+      });
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

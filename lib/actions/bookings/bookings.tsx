@@ -123,27 +123,33 @@ export async function createBookNowPayLaterBooking(
   if (!newBooking) {
     throw new Error("Error creating new booking");
   }
-  if (newBooking && bookingDetails.isOfferApplied) {
-    await prisma.$transaction([
-      prisma.booking.update({
-        where: {
-          id: newBooking.id,
-        },
-        data: {
-          offerId: bookingDetails.offerId,
-        },
-      }),
-      prisma.offer.update({
-        where: {
-          id: bookingDetails.offerId,
-        },
-        data: {
-          bookingIds: {
-            push: newBooking.id,
+  if (newBooking && bookingDetails.isOfferApplied && bookingDetails.offerId) {
+    try {
+      await prisma.$transaction([
+        prisma.booking.update({
+          where: {
+            id: newBooking.id,
           },
-        },
-      }),
-    ]);
+          data: {
+            offerId: bookingDetails.offerId,
+          },
+        }),
+        prisma.offer.update({
+          where: {
+            id: bookingDetails.offerId,
+          },
+          data: {
+            bookingIds: {
+              push: newBooking.id,
+            },
+          },
+        }),
+      ]);
+      console.log("Offer updated successfully");
+    } catch (error) {
+      console.error("Failed to update offer details:", error);
+      // Continue execution even if offer update fails
+    }
   }
   const listing = await prisma.listing.findUnique({
     where: {

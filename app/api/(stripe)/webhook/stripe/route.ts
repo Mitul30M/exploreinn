@@ -151,11 +151,7 @@ export async function POST(req: Request) {
 
         console.log("New Booking created successfully: ", newBooking);
 
-        if (
-          newBooking &&
-          bookingData.isOfferApplied &&
-          bookingData.offerId.length
-        ) {
+        if (newBooking && bookingData.isOfferApplied && bookingData.offerId) {
           await prisma.$transaction([
             prisma.booking.update({
               where: {
@@ -177,7 +173,6 @@ export async function POST(req: Request) {
             }),
           ]);
         }
-
         // listing dashboard side revalidation
         revalidatePath(`/listings/${newBooking.listingId}/bookings`);
         revalidatePath(

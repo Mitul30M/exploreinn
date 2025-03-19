@@ -64,7 +64,7 @@ const RatingsPanel = ({
                     {exploreinnGrade}
                   </span>
                   <span className="text-3xl font-semibold text-card-foreground">
-                    {overallRating}
+                    {overallRating.toFixed(1)}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
