@@ -206,3 +206,74 @@ export async function deleteOffer(offerId: string) {
     return false;
   }
 }
+
+export async function redeemOffer(offerId: string, userId: string) {
+  try {
+    console.log("Redeeming offer: ", offerId, " for user: ", userId);
+    const offer = await prisma.offer.findUnique({
+      where: { id: offerId },
+    });
+    if (!offer) {
+      return {
+        type: "error",
+        message: "Offer not found",
+      };
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { rewardPoints: true, id: true },
+    });
+    if (!user) {
+      return {
+        type: "error",
+        message: "Unauthorized.",
+      };
+    }
+
+    if (typeof offer.redeemForPoints === "number") {
+      if (offer.redeemForPoints > user.rewardPoints) {
+        return {
+          type: "error",
+          message: "Insufficient reward points to redeem this offer.",
+        };
+      }
+
+      // Update the user's reward points and redeem the offer in a transaction
+      const [updatedUser] = await prisma.$transaction([
+        prisma.user.update({
+          where: { id: userId },
+          data: {
+            rewardPoints: { decrement: offer.redeemForPoints },
+            redeemedOfferIds: { push: offerId },
+          },
+          select: { rewardPoints: true, id: true },
+        }),
+        prisma.offer.update({
+          where: { id: offerId },
+          data: { redeemerIds: { push: userId } },
+          select: { redeemerIds: true },
+        }),
+      ]);
+      console.log(
+        "User updated:",
+        updatedUser,
+        " with reward points balance: ",
+        updatedUser.rewardPoints
+      );
+      return {
+        type: "success",
+        message: "Offer redeemed successfully.",
+      };
+    }
+    return {
+      type: "error",
+      message: "This offer cannot be redeemed for points.",
+    };
+  } catch (error) {
+    console.error("Error redeeming offer:", error);
+    return {
+      type: "error",
+      message: "An error occurred while redeeming the offer. Please try again.",
+    };
+  }
+}

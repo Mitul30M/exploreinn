@@ -190,6 +190,45 @@ export async function getListingsPreview(
   return listings as TListingCard[];
 }
 
+export async function getWishListedListings(userId: string) {
+  const userWishlistedListings = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      wishlistIds: true,
+    },
+  });
+  if (!userWishlistedListings) {
+    return [];
+  }
+  const listings = await prisma.listing.findMany({
+    where: {
+      isDeleted: false,
+      id: {
+        in: userWishlistedListings.wishlistIds,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      address: true,
+      coverImage: true,
+      starRating: true,
+      overallRating: true,
+      exploreinnGrade: true,
+      amenities: true,
+      reviews: true,
+      rooms: {
+        select: {
+          price: true,
+        },
+      },
+    },
+  });
+
+  return listings as TListingCard[];
+}
 /**
  * Retrieves a listing by its id.
  * The function returns the listing with all of its rooms and reviews.

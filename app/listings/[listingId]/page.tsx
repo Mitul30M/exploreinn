@@ -5,6 +5,7 @@ import RatingsPanel from "@/components/listing-page/ratings-panel";
 import { RenderHTML } from "@/components/listing-page/register-listing-page/multi-stepper-form/step4-render";
 import ListingReviewsSection from "@/components/listing-page/reviews-section";
 import { RoomTypesCarousel } from "@/components/listing-page/room-carousel";
+import { WishlistBtn } from "@/components/listing-page/wishlist-btn";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,15 +17,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getListingById } from "@/lib/actions/listings/listings";
+import { isListingWishlisted } from "@/lib/actions/user/user";
 import { hotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
+import { currentUser } from "@clerk/nextjs/server";
 // import { Listing, seedListing } from "@/lib/utils/seed/listing/listings";
-import {  Room } from "@prisma/client";
+import { Room } from "@prisma/client";
 import {
   BusFront,
   ChevronLeft,
   DoorOpen,
   HandPlatter,
-  Heart,
   Info,
   List,
   MessageCircleHeart,
@@ -55,6 +57,7 @@ const ListingPage = async ({
     listingID,
     reviewSort ? (reviewSort as EReviewSort) : "recent"
   );
+  const user = await currentUser();
   if (!listing) {
     return notFound();
   }
@@ -102,20 +105,21 @@ const ListingPage = async ({
                   <p>Share Listing</p>
                 </TooltipContent>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    className="w-8 h-8 rounded-full text-primary"
-                  >
-                    <Heart strokeWidth={2.5} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Save to Wishlist</p>
-                </TooltipContent>
-              </Tooltip>
+              {user &&
+                (user.publicMetadata as PublicMetadataType).userDB_id && (
+                  <WishlistBtn
+                    listingId={listing.id}
+                    userId={
+                      (user.publicMetadata as PublicMetadataType)
+                        .userDB_id as string
+                    }
+                    isWishlisted={await isListingWishlisted(
+                      listingID,
+                      (user.publicMetadata as PublicMetadataType)
+                        .userDB_id as string
+                    )}
+                  />
+                )}
             </div>
           </TooltipProvider>
         </header>

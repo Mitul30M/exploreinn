@@ -195,10 +195,7 @@ export const NewListingOfferDialog = ({ listingId }: { listingId: string }) => {
                 <FormItem>
                   <FormLabel>Offer Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      className="resize h-max"
-                      {...field}
-                    />
+                    <Textarea className="resize h-max" {...field} />
                   </FormControl>
                   <FormDescription>
                     Describe your offer. Include T&Cs to avoid any confusion.

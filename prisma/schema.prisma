@@ -34,12 +34,16 @@ model User {
   gender                   Gender?
   country                  String?
   address                  Address? // Grouped address fields
+  rewardPoints             Int           @default(0)
   createdAt                DateTime      @default(now())
   updatedAt                DateTime      @updatedAt
   // Relationships
   ownedListings            Listing[]     @relation("OwnedListings")
   managedListingIds        String[]      @default([]) @db.ObjectId
   managedListings          Listing[]     @relation("ManagedListings", fields: [managedListingIds], references: [id])
+  wishlistIds              String[]      @default([])
+  redeemedOffers           Offer[]       @relation("OfferRedeemers", fields: [redeemedOfferIds], references: [id])
+  redeemedOfferIds         String[]      @default([]) @db.ObjectId
   reviews                  Review[]
   Booking                  Booking[]
   Transaction              Transaction[]
@@ -369,6 +373,8 @@ model Offer {
   bookingIds           String[]   @default([]) @db.ObjectId
   listingId            String?    @db.ObjectId
   listing              Listing?   @relation(fields: [listingId], references: [id])
+  redeemers            User[]     @relation("OfferRedeemers", fields: [redeemerIds], references: [id])
+  redeemerIds          String[]   @default([]) @db.ObjectId
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
 }

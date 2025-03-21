@@ -602,6 +602,17 @@ export async function updateListingBookingStatus(
           },
         });
       }
+      // gift the guest with 100 reward points
+      await prisma.user.update({
+        where: {
+          id: completedBooking.guestId,
+        },
+        data: {
+          rewardPoints: {
+            increment: 100,
+          },
+        },
+      });
       // Send a notification & email to the guest
       // Send a notification & email to the host
       break;

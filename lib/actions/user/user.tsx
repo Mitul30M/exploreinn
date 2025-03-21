@@ -305,3 +305,86 @@ export async function updateResidentialInfo(
     };
   }
 }
+
+export async function addListingToWishlist(listingId: string, userId: string) {
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      wishlistIds: {
+        push: listingId,
+      },
+    },
+    select: {
+      wishlistIds: true,
+    },
+  });
+  if (!user) {
+    return {
+      message: "User not found",
+      type: "error",
+    };
+  }
+  revalidatePath(`/listings/${listingId}`);
+  revalidatePath(`/users/${userId}/wishlist`);
+  return {
+    message: "Listing added to wishlist successfully",
+    type: "success",
+  };
+}
+
+export async function removeListingFromWishlist(
+  listingId: string,
+  userId: string
+) {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    select: {
+      wishlistIds: true,
+    },
+  });
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      wishlistIds: {
+        set: user?.wishlistIds.filter((id) => id !== listingId),
+      },
+    },
+    select: {
+      wishlistIds: true,
+    },
+  });
+  if (!user || !updatedUser) {
+    return {
+      message: "User not found",
+      type: "error",
+    };
+  }
+  revalidatePath(`/listings/${listingId}`);
+  revalidatePath(`/users/${userId}/wishlist`);
+  return {
+    message: "Listing removed from wishlist successfully",
+    type: "success",
+  };
+}
+
+export async function isListingWishlisted(listingId: string, userId: string) {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    select: {
+      wishlistIds: true,
+    },
+  });
+  if (!user) {
+    return false;
+  }
+  return user.wishlistIds.includes(listingId);
+}
