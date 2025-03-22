@@ -4,9 +4,10 @@ import { headers } from "next/headers";
 import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user/user";
 import { User } from "@prisma/client";
-import { generateStripeId } from "@/lib/actions/stripe/stripe";
-import { stripe } from "@/lib/stripe";
+// import { generateStripeId } from "@/lib/actions/stripe/stripe";
+// import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/prisma-client";
+// import { redirect } from "next/dist/server/api-utils";
 
 /**
  * Handles incoming Clerk webhooks and processes user-related events.
@@ -61,8 +62,15 @@ export async function POST(req: Request) {
 
   switch (eventType) {
     case "user.created": {
-      const existingUser = await prisma.user.findUnique({
-        where: { email: evt.data.email_addresses[0].email_address },
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          AND: [
+            { clerkId: id },
+            { email: evt.data.email_addresses[0].email_address },
+            { phoneNo: evt.data.phone_numbers[0].phone_number },
+            { isDeleted: false },
+          ],
+        },
         select: {
           id: true,
         },
@@ -85,11 +93,11 @@ export async function POST(req: Request) {
       const phone = phone_numbers[0]?.phone_number ?? "";
       const firstName = first_name || ""; // Default to an empty string if null
       const lastName = last_name || ""; // Default to an empty string if null
-      const stripeId = await generateStripeId(email);
+      // const stripeId = await generateStripeId(email);
 
       const { user }: { user: User } = await createUser({
         clerkId,
-        stripeId,
+        // stripeId,
         email,
         phone,
         firstName,
@@ -107,12 +115,13 @@ export async function POST(req: Request) {
           await client.users.updateUser(clerkId, {
             publicMetadata: {
               userDB_id: user.id,
-              onboardingComplete: false,
+              onboardingComplete:
+                user.address && user.dob && user.gender ? true : false,
             },
           });
           await client.users.updateUserMetadata(clerkId, {
             privateMetadata: {
-              stripeId: stripeId,
+              stripeId: user.stripeId,
             },
           });
         } catch (err) {
@@ -154,9 +163,9 @@ export async function POST(req: Request) {
     case "user.deleted": {
       const { id: clerkId } = evt.data;
       const deletedUser = await deleteUser(clerkId);
-      console.log(`User deleted: ${deletedUser.id}`);
-      console.log("Deleting stripe account: ", deletedUser.stripeId);
-      await stripe.accounts.del(deletedUser.stripeId);
+      console.log(`User soft-deleted: ${deletedUser.id}`);
+      // console.log("Deleting stripe account: ", deletedUser.stripeId);
+      // await stripe.accounts.del(deletedUser.stripeId);
       break;
     }
 

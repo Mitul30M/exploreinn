@@ -35,6 +35,8 @@ model User {
   country                  String?
   address                  Address? // Grouped address fields
   rewardPoints             Int           @default(0)
+  isDeleted                Boolean       @default(false)
+  deletedAt                DateTime?
   createdAt                DateTime      @default(now())
   updatedAt                DateTime      @updatedAt
   // Relationships
@@ -77,6 +79,8 @@ model Listing {
   description                 String
   checkInTime                 String
   checkOutTime                String
+  isDeleted                   Boolean            @default(false)
+  deletedAt                   DateTime?
   createdAt                   DateTime           @default(now())
   updatedAt                   DateTime           @updatedAt
   // Geometry & address
@@ -93,7 +97,6 @@ model Listing {
   checkInRulesAndRestrictions String
   groundRulesAndRestrictions  String
   cancellationPolicy          String
-  isDeleted                   Boolean            @default(false)
   // Relationships
   owner                       User               @relation("OwnedListings", fields: [ownerId], references: [id])
   ownerId                     String             @db.ObjectId

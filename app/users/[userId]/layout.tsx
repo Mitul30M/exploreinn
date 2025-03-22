@@ -1,8 +1,24 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebars/user-page-sidebar/user-dashboard-app-sidebar";
 import Navbar from "@/components/discover-page/navbar/home-page-navbar";
+import { currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/actions/user/user";
+import { notFound } from "next/navigation";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const clerkUser = await currentUser();
+  const userDbID = (clerkUser?.publicMetadata as PublicMetadataType).userDB_id;
+  if (!userDbID || !clerkUser) {
+    return notFound();
+  }
+  const user = await getUser(userDbID);
+  if (!user) {
+    return notFound();
+  }
   return (
     <SidebarProvider className="m-auto max-w-7xl relative">
       <AppSidebar
@@ -17,4 +33,3 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-

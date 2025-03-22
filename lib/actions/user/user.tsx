@@ -12,20 +12,45 @@ import { revalidatePath } from "next/cache";
 // import { redirect } from "next/navigation";
 import { resend } from "@/lib/resend";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
+import { generateStripeId } from "../stripe/stripe";
 
 export async function createUser(data: {
   clerkId: string;
-  stripeId: string;
+  // stripeId: string;
   phone: string;
   email: string;
   firstName: string;
   lastName: string;
   profileImg: string;
 }) {
+  // Check if the user already exists in the database albeit deleted
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      email: data.email,
+      // phoneNo: data.phone,
+      isDeleted: true,
+    },
+  });
+  if (existingUser) {
+    console.log("User already exists in the database. Restoring user...");
+    // If the user exists, update the user's isDeleted field to false
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        isDeleted: false,
+        clerkId: data.clerkId,
+      },
+    });
+    return { user: updatedUser };
+  }
+  // Create a user in the database if not previously deleted
+  const stripeId = await generateStripeId(data.email);
   const user = await prisma.user.create({
     data: {
       clerkId: data.clerkId,
-      stripeId: data.stripeId,
+      stripeId: stripeId,
       email: data.email,
       phoneNo: data.phone,
       firstName: data.firstName,
@@ -139,7 +164,7 @@ export async function onboardUser(
 }
 
 export async function getUser(userDbId?: string) {
-  const whereClause = { id: userDbId };
+  const whereClause = { id: userDbId, isDeleted: false };
 
   const user = await prisma.user.findUnique({
     where: whereClause,
@@ -176,11 +201,24 @@ export async function updateUser(
 
 export async function deleteUser(clerkId?: string, userId?: string) {
   const whereClause = clerkId ? { clerkId } : { id: userId };
-
-  const user = await prisma.user.delete({
+  //soft delete user
+  const user = await prisma.user.update({
     where: whereClause,
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
   });
-
+  // soft delete user's listings
+  await prisma.listing.updateMany({
+    where: {
+      ownerId: user.id,
+    },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
+  });
   return user;
 }
 

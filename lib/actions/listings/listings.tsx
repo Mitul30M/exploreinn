@@ -6,6 +6,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
+import { redirect } from "next/navigation";
 
 /**
  * Creates a new listing and a room in the database.
@@ -420,7 +421,9 @@ export async function getOwnedListings(): Promise<TOwnedListing[]> {
       Booking: true,
       Transaction: true,
     },
-    where: { ownerId: userDbId },
+    where: {
+      AND: [{ ownerId: userDbId }, { isDeleted: false }],
+    },
   });
 
   return listings as TOwnedListing[];
@@ -468,7 +471,10 @@ export async function getManagedListings(): Promise<TOwnedListing[]> {
       Booking: true,
       Transaction: true,
     },
-    where: { id: { in: userManagedListings.map((l) => l.id) } },
+    where: {
+      id: { in: userManagedListings.map((l) => l.id) },
+      isDeleted: false,
+    },
   });
 
   return listings as TOwnedListing[];
@@ -713,5 +719,51 @@ export async function removeManagerFromListing(
   return {
     type: "success",
     message: "Manager removed successfully.",
+  };
+}
+
+export async function deleteListing(listingId: string) {
+  // check if current user is owner of listing
+  const user = await currentUser();
+  if (!user)
+    return {
+      type: "error",
+      message: "You are not Authenticated.",
+    };
+  const ownerID = (user.publicMetadata as PublicMetadataType).userDB_id;
+  if (!ownerID) {
+    return {
+      type: "error",
+      message: "You are not Authenticated.",
+    };
+  }
+  if (!(await isListingOwner(ownerID, listingId))) {
+    return {
+      type: "error",
+      message: "Unauthorized. Only the owner can delete this listing.",
+    };
+  }
+  try {
+    await prisma.listing.update({
+      where: {
+        id: listingId,
+        ownerId: ownerID,
+      },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return {
+      type: "error",
+      message: "Failed to delete listing. Please try again.",
+    };
+  }
+  redirect(`/users/${ownerID}`);
+  return {
+    type: "success",
+    message: "Listing deleted successfully.",
   };
 }
