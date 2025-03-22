@@ -40,6 +40,7 @@ export async function createUser(data: {
       },
       data: {
         isDeleted: false,
+        deletedAt: null,
         clerkId: data.clerkId,
       },
     });
