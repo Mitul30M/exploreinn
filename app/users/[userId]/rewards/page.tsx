@@ -1,10 +1,4 @@
-import {
-  BadgeCent,
-  GalleryVerticalEnd,
-  Gift,
-  HandCoins,
-  TicketCheck,
-} from "lucide-react";
+import { BadgeCent, Gift, HandCoins, TicketCheck } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -16,18 +10,48 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { userRewardPointsHistory } from "@/lib/utils/seed/user-rewards/user-reward-points-history";
-import { format } from "date-fns";
+// import { userRewardPointsHistory } from "@/lib/utils/seed/user-rewards/user-reward-points-history";
+// import { format } from "date-fns";
 import RewardsGrid from "@/components/user-page/rewards/rewards-grid";
 import RedeemedOffers from "@/components/user-page/rewards/redeemed-offers";
+import { notFound } from "next/navigation";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/actions/user/user";
+import {
+  getExploreinnOffers,
+  getUserRedeemedOffers,
+} from "@/lib/actions/offers/offers";
 
-export default function RewardsPage() {
+export default async function RewardsPage({
+  params,
+}: {
+  params: Params;
+  searchParams?: SearchParams;
+}) {
+  const { userId } = await auth();
+  const clerkUser = await currentUser();
+  // this has been implemented so tht no one other than the one authorized can see their profile. to safeguard the user's data
+  const userID = (await params).userId;
+  if (
+    userID != (clerkUser?.publicMetadata as PublicMetadataType).userDB_id ||
+    !userId
+  ) {
+    notFound();
+  }
+  const user = await getUser(userID);
+
+  if (!user) {
+    notFound();
+  }
+
+  const userRedeemedOffers = await getUserRedeemedOffers(user.id);
+  const exploreinnOffers = await getExploreinnOffers(true);
   return (
     <section className="w-full pb-4 overscroll-y-none space-y-4 mb-8 border-border/90 border-y-[1px]">
       {/* User's Reward Points and Offers */}
       <h1 className="text-md rounded-none flex justify-start items-center gap-2 font-semibold tracking-tight w-full px-4 py-2 border-b-[1px] border-border/90 text-foreground/90">
         <Gift size={22} className="text-primary" />
-        Mitul&apos;s Rewards
+        {user.firstName}&apos;s Rewards
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] gap-4 h-full w-full px-4">
@@ -44,8 +68,7 @@ export default function RewardsPage() {
                   <HandCoins className="h-5 w-5 text-primary" />
                   <AlertTitle>Heads up!</AlertTitle>
                   <AlertDescription className="text-muted-foreground">
-                    Reward Points Can be Collected by Booking Hotels, Leaving
-                    Reviews or Engaing with Community.
+                    Reward Points Can be Collected by Booking Hotels.
                   </AlertDescription>
                 </Alert>
               </CardDescription>
@@ -58,7 +81,7 @@ export default function RewardsPage() {
                   Reward Points Balance
                 </p>
                 <p className="text-2xl font-semibold tracking-tight">
-                  1016{" "}
+                  {user.rewardPoints}{" "}
                   <span className="text-sm font-semibold tracking-tight text-primary">
                     pts
                   </span>
@@ -69,36 +92,10 @@ export default function RewardsPage() {
 
             <CardFooter className="p-4 mt-0 flex flex-col gap-4">
               {/* All the offers the user has redeemed */}
-              <RedeemedOffers className="h-[250px] w-full rounded-md border p-4" />
-
-              {/* show only if user has reward points and the history of how they were earned */}
-              <ScrollArea className="h-[250px] w-full rounded-md border p-4">
-                <h2 className="text-[14px] font-medium flex justify-start items-center gap-1">
-                  <GalleryVerticalEnd size={18} className="text-primary" />
-                  Reward Points History
-                </h2>
-                <Separator className="my-4" />
-
-                {/* Reward Points History */}
-                {userRewardPointsHistory.map((history) => (
-                  <div
-                    key={history.date.toString()}
-                    className="flex justify-between items-start mb-4 border-b-[1px] border-border/90 pb-2 "
-                  >
-                    <p className="text-[14px] leading-none text-secondary-foreground font-medium">
-                      {history.description}
-                      <br />
-                      <span className="text-sm text-muted-foreground">
-                        {format(history.date.toISOString(), "dd MMM yyyy")}
-                      </span>
-                    </p>
-                    <p className="text-[16px] font-medium tracking-tight">
-                      {history.points}{" "}
-                      <span className="text-xs text-primary">pts</span>
-                    </p>
-                  </div>
-                ))}
-              </ScrollArea>
+              <RedeemedOffers
+                offers={userRedeemedOffers}
+                className="h-max w-full rounded-md border p-4"
+              />
             </CardFooter>
           </Card>
         </div>
@@ -118,12 +115,17 @@ export default function RewardsPage() {
             <AlertDescription className="text-muted-foreground">
               Reward Points Can be Redeemed for Discount Coupons which can be
               used during your next Booking*. Each Redeemed Coupon can be used
-              only once and has a validity of specified number of days*.
+              only once and has a validity*.
             </AlertDescription>
           </Alert>
 
           {/* create a div of grid cols-2 and gap-4, make this a separate component */}
-          <RewardsGrid className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4 h-full w-full" />
+          <RewardsGrid
+            offers={exploreinnOffers}
+            userId={user.id}
+            userRewardPoints={user.rewardPoints}
+            className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4 h-full w-full"
+          />
         </ScrollArea>
       </div>
     </section>

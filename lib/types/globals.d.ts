@@ -1,4 +1,4 @@
-import { Mail, Review } from "@prisma/client";
+import { Mail, Review, Role } from "@prisma/client";
 
 export {};
 
@@ -14,6 +14,7 @@ declare global {
 
   export type PrivateMetadataType = {
     stripeId?: string;
+    role?: Role;
   };
 
   export type MessageType = {

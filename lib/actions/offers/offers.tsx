@@ -140,6 +140,62 @@ export async function toggleIsActive(offerId: string, isActive: boolean) {
   }
 }
 
+export async function getUserRedeemedOffers(userId: string) {
+  const userRedeemedOffers = await prisma.user.findUnique({
+    where: {
+      id: userId,
+      redeemedOffers: { every: { scope: { equals: "AppWide" } } },
+    },
+    select: {
+      redeemedOffers: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          couponCode: true,
+          type: true,
+          isActive: true,
+          flatDiscount: true,
+          percentageDiscount: true,
+          minimumBookingAmount: true,
+          maxDiscountAmount: true,
+          redeemForPoints: true,
+          startDate: true,
+          endDate: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  const userBookingsWithOffers = await prisma.booking.findMany({
+    where: {
+      guestId: userId,
+      offerId: {
+        in: userRedeemedOffers?.redeemedOffers.map((offer) => offer.id),
+      },
+    },
+    select: {
+      offerId: true,
+      id: true,
+      createdAt: true,
+    },
+  });
+
+  return userRedeemedOffers?.redeemedOffers
+    ? userRedeemedOffers.redeemedOffers.map((offer) => {
+        const bookingWithOffer = userBookingsWithOffers.find(
+          (booking) => booking.offerId === offer.id
+        );
+        return {
+          ...offer,
+          bookingId: bookingWithOffer?.id,
+          redeemedAt: bookingWithOffer?.createdAt,
+        };
+      })
+    : [];
+}
+
 /**
  * Retrieves all offers for a given listing.
  * @param listingId - The id of the listing whose offers are to be retrieved.
@@ -151,7 +207,17 @@ export async function getListingOffers(
   activeOnly?: boolean
 ) {
   const whereClause = activeOnly
-    ? { listingId, isActive: true, scope: "ListingWide" as offerScope }
+    ? {
+        listingId,
+        isActive: true,
+        scope: "ListingWide" as offerScope,
+        startDate: {
+          lte: new Date(),
+        },
+        endDate: {
+          gte: new Date(),
+        },
+      }
     : { listingId, scope: "ListingWide" as offerScope };
   const offers = await prisma.offer.findMany({
     where: whereClause,
@@ -171,7 +237,16 @@ export async function getListingOffers(
  */
 export async function getExploreinnOffers(activeOnly?: boolean) {
   const whereClause = activeOnly
-    ? { scope: "AppWide" as offerScope, isActive: true }
+    ? {
+        scope: "AppWide" as offerScope,
+        isActive: true,
+        startDate: {
+          lte: new Date(),
+        },
+        endDate: {
+          gte: new Date(),
+        },
+      }
     : { scope: "AppWide" as offerScope };
   const offers = await prisma.offer.findMany({
     where: whereClause,
@@ -221,7 +296,7 @@ export async function redeemOffer(offerId: string, userId: string) {
     }
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { rewardPoints: true, id: true },
+      select: { rewardPoints: true, id: true, redeemedOfferIds: true },
     });
     if (!user) {
       return {
@@ -239,6 +314,25 @@ export async function redeemOffer(offerId: string, userId: string) {
       }
 
       // Update the user's reward points and redeem the offer in a transaction
+
+      const existingActiveOffer = await prisma.offer.findFirst({
+        where: {
+          id: { in: user.redeemedOfferIds || [] },
+          isActive: true,
+          startDate: { lte: new Date() },
+          endDate: { gte: new Date() },
+          type: offer.type,
+        },
+      });
+
+      if (existingActiveOffer) {
+        return {
+          type: "error",
+          message:
+            "You already have an active offer of this type. Please wait for it to expire before redeeming another.",
+        };
+      }
+
       const [updatedUser] = await prisma.$transaction([
         prisma.user.update({
           where: { id: userId },

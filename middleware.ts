@@ -5,6 +5,7 @@ import {
   isListingOwner,
 } from "./lib/actions/listings/listings";
 import { isStripeConnectedAccount } from "./lib/actions/stripe/stripe";
+import { Role } from "@prisma/client";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -22,7 +23,7 @@ const isStripeRoute = createRouteMatcher([
   "/api/stripe(.*)",
   "/users/(.*)/billing(.*)",
 ]);
-
+const adminDashboardRoute = createRouteMatcher(["/admin"]);
 const listingDashboardRoute = createRouteMatcher([
   "/listings/:listingId/(overview|bookings|transactions|inbox|events|rooms|managers|inbox)",
 ]);
@@ -31,11 +32,11 @@ const isRegisterNewListingRoute = createRouteMatcher(["/listings/register"]);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
+
   // For users visiting /onboarding, don't try to redirect
   if (userId && isOnboardingRoute(req)) {
     return NextResponse.next();
   }
-
   // If the user isn't signed in and the route is private, redirect to sign-in
   if (!userId && !isPublicRoute(req))
     return redirectToSignIn({ returnBackUrl: req.url });
@@ -50,35 +51,6 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(onboardingUrl);
   }
 
-  // // comment out when testing locally since prisma client cant run on edge middleware & runtime
-  // if (userId && isRegisterNewListingRoute(req)) {
-  //   if (await isStripeConnectedAccount({ userId })) {
-  //     return NextResponse.next();
-  //   } else {
-  //     const billingUrl = new URL(
-  //       `/users/${
-  //         (sessionClaims.public_metadata as PublicMetadataType).userDB_id
-  //       }/billing`,
-  //       req.url
-  //     );
-  //     return NextResponse.redirect(billingUrl);
-  //   }
-  // }
-
-  // // check if user is either owner or manager.if yes only then allow to view the listing dashboard
-  // if (userId && listingDashboardRoute(req)) {
-  //   const listingId = req.nextUrl.pathname.split("/")[2];
-
-  //   if (
-  //     (await isListingManager(userId, listingId)) ||
-  //     (await isListingOwner(userId, listingId))
-  //   ) {
-  //     return NextResponse.next();
-  //   }
-  //   return NextResponse.redirect(new URL(`/listings/${listingId}`, req.url));
-
-  // }
-
   // If the user is logged in and the route is protected, let them view.
   if (userId && !isPublicRoute(req)) return NextResponse.next();
 });
@@ -90,3 +62,32 @@ export const config = {
     "/(api|trpc)(.*)",
   ],
 };
+
+// // comment out when testing locally since prisma client cant run on edge middleware & runtime
+// if (userId && isRegisterNewListingRoute(req)) {
+//   if (await isStripeConnectedAccount({ userId })) {
+//     return NextResponse.next();
+//   } else {
+//     const billingUrl = new URL(
+//       `/users/${
+//         (sessionClaims.public_metadata as PublicMetadataType).userDB_id
+//       }/billing`,
+//       req.url
+//     );
+//     return NextResponse.redirect(billingUrl);
+//   }
+// }
+
+// // check if user is either owner or manager.if yes only then allow to view the listing dashboard
+// if (userId && listingDashboardRoute(req)) {
+//   const listingId = req.nextUrl.pathname.split("/")[2];
+
+//   if (
+//     (await isListingManager(userId, listingId)) ||
+//     (await isListingOwner(userId, listingId))
+//   ) {
+//     return NextResponse.next();
+//   }
+//   return NextResponse.redirect(new URL(`/listings/${listingId}`, req.url));
+
+// }
