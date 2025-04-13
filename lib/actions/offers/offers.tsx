@@ -140,14 +140,28 @@ export async function toggleIsActive(offerId: string, isActive: boolean) {
   }
 }
 
-export async function getUserRedeemedOffers(userId: string) {
+export async function getUserRedeemedOffers(
+  userId: string,
+  activeOnly?: boolean
+) {
   const userRedeemedOffers = await prisma.user.findUnique({
     where: {
       id: userId,
-      redeemedOffers: { every: { scope: { equals: "AppWide" } } },
     },
     select: {
       redeemedOffers: {
+        where: activeOnly
+          ? {
+              isActive: true,
+              scope: "AppWide",
+              startDate: {
+                lte: new Date(),
+              },
+              endDate: {
+                gte: new Date(),
+              },
+            }
+          : { scope: "AppWide" },
         select: {
           id: true,
           name: true,
@@ -195,7 +209,6 @@ export async function getUserRedeemedOffers(userId: string) {
       })
     : [];
 }
-
 /**
  * Retrieves all offers for a given listing.
  * @param listingId - The id of the listing whose offers are to be retrieved.
