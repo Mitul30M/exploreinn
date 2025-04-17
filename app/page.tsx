@@ -27,10 +27,12 @@ export default function HomePage() {
         >
           /protected/client
         </Link>
+        <Link href="/admin" className="text-primary hover:text-foreground">
+          /admin
+        </Link>
         <Link href="/discover" className="text-primary hover:text-foreground">
           /discover
         </Link>
-
         <Link
           href="/listings/new"
           className="text-primary hover:text-foreground"

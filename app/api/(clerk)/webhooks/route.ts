@@ -122,6 +122,7 @@ export async function POST(req: Request) {
           await client.users.updateUserMetadata(clerkId, {
             privateMetadata: {
               stripeId: user.stripeId,
+              role: user.role,
             },
           });
         } catch (err) {
