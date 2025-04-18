@@ -24,8 +24,8 @@ const RedeemedOffers = ({ offers, className }: RedeemedOffersProps) => {
       {/* Reward Points History */}
       {offers.map((offer) => (
         <div
-          key={offer.id}
-          className="flex justify-between items-center  gap-2 border-[1px] rounded border-border/90 p-4 mb-4"
+          key={offer.id + new Date().toISOString()}
+          className="space-y-2 border-[1px] rounded border-border/90 p-4 mb-4"
         >
           <p className="text-[15px] font-medium tracking-tight">{offer.name}</p>
           <div className="text-[14px] leading-none text-secondary-foreground font-medium">
@@ -40,7 +40,7 @@ const RedeemedOffers = ({ offers, className }: RedeemedOffersProps) => {
           </div>
           <p className="text-[16px] font-medium tracking-tight">
             <Button
-              className="hover:text-primary bg-accent rounded-full"
+              className="hover:text-primary bg-accent rounded"
               variant={"outline"}
               size={"sm"}
               disabled={

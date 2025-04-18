@@ -59,12 +59,10 @@ const RewardsGrid = ({
               {offer.name}
             </CardTitle>
           </CardHeader>
-          <Separator className="" />
 
-          <CardContent className="p-2 px-4 mt-0 text-[12px]">
+          <CardContent className="p-2 px-4 mt-0 text-[14px]">
             {offer.description}*
           </CardContent>
-          <Separator className="" />
 
           <CardFooter className="p-4 flex justify-between items-center  mt-0 text-md font-medium text-foreground/90">
             <p className="text-xs text-muted-foreground">
@@ -75,7 +73,7 @@ const RewardsGrid = ({
             <Button
               variant="outline"
               size={"sm"}
-              className="rounded-full"
+              className="rounded"
               disabled={
                 (typeof offer.redeemForPoints === "number" &&
                   offer.redeemForPoints > userRewardPoints) ||

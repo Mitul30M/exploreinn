@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "../../prisma-client";
-import { offerScope } from "@prisma/client";
+import { Offer, offerScope } from "@prisma/client";
+import { isAdmin } from "../user/admin/admin";
 
 /**
  * Creates a new offer for a listing with the given details.
@@ -86,6 +87,11 @@ export async function createAppWideOffer(data: {
   endDate: Date;
 }) {
   try {
+    const isAuthorized = await isAdmin();
+    if (!isAuthorized) {
+      throw new Error("Unauthorized");
+    }
+
     console.log("Creating an AppWide Offer:", data);
     const newAppWideOffer = await prisma.offer.create({
       data: {
@@ -105,6 +111,7 @@ export async function createAppWideOffer(data: {
     });
     console.log("New AppWide Offer created:", newAppWideOffer);
     revalidatePath(`/listings`);
+    revalidatePath(`/admin/offers`);
     return true;
   } catch (error) {
     console.error("Error creating AppWide Offer:", error);
@@ -133,6 +140,10 @@ export async function toggleIsActive(offerId: string, isActive: boolean) {
     );
     revalidatePath(`/listing/${updatedOffer.listingId}`);
     revalidatePath(`/listing/${updatedOffer.listingId}/offers`);
+    if (updatedOffer.scope === "AppWide") {
+      revalidatePath(`/discover`);
+      revalidatePath(`/admin/offers`);
+    }
     return true;
   } catch (error) {
     console.error("Error toggling isActive:", error);
@@ -140,75 +151,6 @@ export async function toggleIsActive(offerId: string, isActive: boolean) {
   }
 }
 
-export async function getUserRedeemedOffers(
-  userId: string,
-  activeOnly?: boolean
-) {
-  const userRedeemedOffers = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      redeemedOffers: {
-        where: activeOnly
-          ? {
-              isActive: true,
-              scope: "AppWide",
-              startDate: {
-                lte: new Date(),
-              },
-              endDate: {
-                gte: new Date(),
-              },
-            }
-          : { scope: "AppWide" },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          couponCode: true,
-          type: true,
-          isActive: true,
-          flatDiscount: true,
-          percentageDiscount: true,
-          minimumBookingAmount: true,
-          maxDiscountAmount: true,
-          redeemForPoints: true,
-          startDate: true,
-          endDate: true,
-          createdAt: true,
-        },
-      },
-    },
-  });
-
-  const userBookingsWithOffers = await prisma.booking.findMany({
-    where: {
-      guestId: userId,
-      offerId: {
-        in: userRedeemedOffers?.redeemedOffers.map((offer) => offer.id),
-      },
-    },
-    select: {
-      offerId: true,
-      id: true,
-      createdAt: true,
-    },
-  });
-
-  return userRedeemedOffers?.redeemedOffers
-    ? userRedeemedOffers.redeemedOffers.map((offer) => {
-        const bookingWithOffer = userBookingsWithOffers.find(
-          (booking) => booking.offerId === offer.id
-        );
-        return {
-          ...offer,
-          bookingId: bookingWithOffer?.id,
-          redeemedAt: bookingWithOffer?.createdAt,
-        };
-      })
-    : [];
-}
 /**
  * Retrieves all offers for a given listing.
  * @param listingId - The id of the listing whose offers are to be retrieved.
@@ -242,25 +184,37 @@ export async function getListingOffers(
 }
 
 /**
- * Retrieves all active "AppWide" offers.
- * The function returns a promise that resolves to an array of active offers
- * with a scope of "AppWide", ordered by their creation date in descending order.
+ * Retrieves all Exploreinn offers with optional filters.
  *
- * @returns A promise that resolves to an array of active "AppWide" offers.
+ * This function fetches offers that are available on the Exploreinn platform,
+ * with options to filter by active status and whether they are free to redeem.
+ *
+ * @param activeOnly - If true, only retrieves offers that are currently active.
+ * @param freeOnly - If true, only retrieves offers that can be redeemed for free.
+ * @returns A promise that resolves to an array of offer objects sorted by
+ *          creation date in descending order.
  */
-export async function getExploreinnOffers(activeOnly?: boolean) {
-  const whereClause = activeOnly
-    ? {
-        scope: "AppWide" as offerScope,
-        isActive: true,
-        startDate: {
-          lte: new Date(),
-        },
-        endDate: {
-          gte: new Date(),
-        },
-      }
-    : { scope: "AppWide" as offerScope };
+
+export async function getExploreinnOffers(
+  activeOnly?: boolean,
+  freeOnly?: boolean
+) {
+  const whereClause = {
+    scope: "AppWide" as offerScope,
+    ...(activeOnly && {
+      isActive: true,
+      startDate: {
+        lte: new Date(),
+      },
+      endDate: {
+        gte: new Date(),
+      },
+    }),
+    ...(freeOnly && {
+      redeemForPoints: 0,
+    }),
+  };
+
   const offers = await prisma.offer.findMany({
     where: whereClause,
     orderBy: {
@@ -288,12 +242,32 @@ export async function deleteOffer(offerId: string) {
     console.log("Offer deleted:", deletedOffer);
     revalidatePath(`/listing/${deletedOffer.listingId}`);
     revalidatePath(`/listing/${deletedOffer.listingId}/offers`);
+    if (deletedOffer.scope === "AppWide") {
+      revalidatePath("/admin/offers");
+    }
     return true;
   } catch (error) {
     console.error("Error deleting offer:", error);
     return false;
   }
 }
+
+/**
+ * Redeems an offer for a user based on the given offerId and userId.
+ *
+ * This function checks the validity of the offer and the user's eligibility to redeem it.
+ *
+ * @param offerId - The ID of the offer to be redeemed.
+ * @param userId - The ID of the user attempting to redeem the offer.
+ *
+ * @returns A promise that resolves to an object containing a status type ("success" or "error") and a message.
+ *          On success, the message indicates successful redemption of the offer.
+ *          On error, the message provides the reason for failure, such as insufficient reward points, unauthorized access,
+ *          offer not found, or an existing active offer.
+ *
+ * The function updates the user's reward points and redeemed offer IDs if the offer is redeemed successfully.
+ * It also logs relevant information and errors during the process.
+ */
 
 export async function redeemOffer(offerId: string, userId: string) {
   try {
@@ -309,7 +283,12 @@ export async function redeemOffer(offerId: string, userId: string) {
     }
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { rewardPoints: true, id: true, redeemedOfferIds: true },
+      select: {
+        rewardPoints: true,
+        id: true,
+        redeemedOfferIds: true,
+        Booking: true,
+      },
     });
     if (!user) {
       return {
@@ -326,23 +305,33 @@ export async function redeemOffer(offerId: string, userId: string) {
         };
       }
 
-      // Update the user's reward points and redeem the offer in a transaction
-
-      const existingActiveOffer = await prisma.offer.findFirst({
+      const userBookingsWithOffers = await prisma.booking.findMany({
         where: {
-          id: { in: user.redeemedOfferIds || [] },
-          isActive: true,
-          startDate: { lte: new Date() },
-          endDate: { gte: new Date() },
-          type: offer.type,
+          guestId: user.id,
+          offerId: { in: user.redeemedOfferIds || [] },
+        },
+        include: {
+          offer: true,
         },
       });
 
-      if (existingActiveOffer) {
+      const existingUnusedOffer = userBookingsWithOffers.filter(
+        (booking) =>
+          booking.offerId === offerId &&
+          booking.offer!.isActive &&
+          booking.offer!.startDate <= new Date() &&
+          booking.offer!.endDate >= new Date()
+      ).length;
+
+      const timesOfferRedeemed = user.redeemedOfferIds.filter(
+        (id) => id === offerId
+      ).length;
+
+      if (existingUnusedOffer < timesOfferRedeemed) {
         return {
           type: "error",
           message:
-            "You already have an active offer of this type. Please wait for it to expire before redeeming another.",
+            "You already have an active offer. You cannot redeem this offer until your current offer expires or you use it up. ",
         };
       }
 
@@ -367,6 +356,7 @@ export async function redeemOffer(offerId: string, userId: string) {
         " with reward points balance: ",
         updatedUser.rewardPoints
       );
+      revalidatePath(`/users/${userId}`);
       return {
         type: "success",
         message: "Offer redeemed successfully.",
@@ -383,4 +373,71 @@ export async function redeemOffer(offerId: string, userId: string) {
       message: "An error occurred while redeeming the offer. Please try again.",
     };
   }
+}
+
+type OfferWithExtras = Offer & {
+  redeemedAt?: Date;
+  bookingId?: string;
+};
+
+export async function getUserRedeemedOffers(
+  userId: string,
+  activeOnly?: boolean
+): Promise<OfferWithExtras[]> {
+  const userRedeemedOffers = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      redeemedOffers: {
+        where: activeOnly
+          ? {
+              isActive: true,
+              scope: "AppWide",
+              startDate: { lte: new Date() },
+              endDate: { gte: new Date() },
+            }
+          : { scope: "AppWide" },
+      },
+    },
+  });
+
+  const userBookingsWithOffers = await prisma.booking.findMany({
+    where: {
+      guestId: userId,
+      offerId: {
+        in: userRedeemedOffers?.redeemedOffers.map((offer) => offer.id) ?? [],
+      },
+    },
+    select: {
+      offerId: true,
+      id: true,
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  let userBookings = [...userBookingsWithOffers];
+  let userOffers = [...(userRedeemedOffers?.redeemedOffers ?? [])];
+  const enrichedUserRedeemedOffers: OfferWithExtras[] = [];
+
+  for (const booking of userBookings) {
+    const offerIndex = userOffers.findIndex(
+      (offer) => offer.id === booking.offerId
+    );
+    if (offerIndex !== -1) {
+      const offer = userOffers[offerIndex];
+      enrichedUserRedeemedOffers.push({
+        ...offer,
+        bookingId: booking.id,
+        redeemedAt: booking.createdAt,
+      });
+      userOffers.splice(offerIndex, 1); // remove matched offer
+    }
+  }
+
+  // Append unmatched offers (not associated with bookings)
+  enrichedUserRedeemedOffers.push(...userOffers);
+
+  return enrichedUserRedeemedOffers;
 }

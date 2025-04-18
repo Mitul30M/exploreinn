@@ -21,9 +21,11 @@ import { Separator } from "../ui/separator";
 export function OffersList({
   userRedeemedOffers,
   listingOffers,
+  exploreinnOffers = [],
   listingName,
 }: {
   listingOffers: Offer[];
+  exploreinnOffers?: Offer[];
   userRedeemedOffers: Awaited<ReturnType<typeof getUserRedeemedOffers>>;
   listingName: string;
   listingId: string;
@@ -41,6 +43,7 @@ export function OffersList({
       </h1>
       {/* scrollable offers list */}
       <ScrollArea className="w-full h-[300px] space-y-4 ">
+        {/* listing offers */}
         <div className="p-4 flex flex-col gap-2">
           <h1 className="text-[16px] font-semibold tracking-tight mb-2 text-primary ">
             Offers from {listingName}
@@ -107,6 +110,82 @@ export function OffersList({
             </div>
           ))}
         </div>
+        {/* exploreinn offers */}
+        {exploreinnOffers.length > 0 && (
+          <>
+            <Separator className="w-full border-border/90" />
+            <div className="p-4 flex flex-col gap-2">
+              <h1 className="text-[16px] font-semibold tracking-tight mb-2 text-primary ">
+                Exploreinn Offers
+              </h1>
+              {exploreinnOffers.map((offer) => (
+                <div
+                  className="flex items-center justify-between gap-2 p-2 px-3 border-[1px]  border-border/90 rounded"
+                  key={offer.id}
+                >
+                  <div className="space-y-1 text-left">
+                    <h1 className="text-[15px] font-semibold tracking-tight ">
+                      {offer.name}
+                    </h1>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <p className="w-[200px] truncate text-[13px]">
+                          {offer.description}
+                        </p>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-72 p-4">
+                        <div className="w-full text-[13px] text-wrap">
+                          {offer.description}
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                  <Button
+                    size={"sm"}
+                    variant={
+                      isOfferApplied && offer.id === offerId
+                        ? "outline"
+                        : "default"
+                    }
+                    onClick={() => {
+                      if (isOfferApplied && offer.id === offerId) {
+                        // If the current offer is already applied, remove it
+                        dispatch(removeDiscount());
+                      } else {
+                        // Remove any currently applied discount
+                        dispatch(removeDiscount());
+                        // Apply the new discount
+                        dispatch(
+                          setDiscount({
+                            couponCode: offer.couponCode,
+                            offerId: offer.id,
+                            discountPercentage: offer.percentageDiscount!,
+                            offerType: offer.type,
+                            offerName: offer.name,
+                            offerDescription: offer.description,
+                            maxAllowedDiscountAmount:
+                              offer.type === "Flat_Discount"
+                                ? offer.flatDiscount!
+                                : offer.type === "Percentage_Discount"
+                                  ? offer.maxDiscountAmount!
+                                  : 0,
+                            minBookingFeeToApplyOffer:
+                              offer.minimumBookingAmount!,
+                          })
+                        );
+                      }
+                    }}
+                  >
+                    {isOfferApplied && offer.id === offerId
+                      ? "Remove"
+                      : offer.couponCode.toUpperCase()}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {/* user redeemed offers */}
         {userRedeemedOffers.length > 0 && (
           <>
             <Separator className="w-full border-border/90" />

@@ -17,7 +17,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getListingById } from "@/lib/actions/listings/listings";
-import { getUserRedeemedOffers } from "@/lib/actions/offers/offers";
+import {
+  getExploreinnOffers,
+  getUserRedeemedOffers,
+} from "@/lib/actions/offers/offers";
 import { isListingWishlisted } from "@/lib/actions/user/user";
 import { hotelAmenities } from "@/lib/utils/hotel-ammenities/hotel-amenities";
 import { currentUser } from "@clerk/nextjs/server";
@@ -65,6 +68,8 @@ const ListingPage = async ({
 
   const userRedeemedOffers: Awaited<ReturnType<typeof getUserRedeemedOffers>> =
     [];
+
+  const exploreinnOffers = await getExploreinnOffers(true, true);
 
   if (user && (user.publicMetadata as PublicMetadataType)?.userDB_id) {
     userRedeemedOffers.push(
@@ -312,6 +317,7 @@ const ListingPage = async ({
                 listingName={listing.name}
                 listingOffers={listing.offers}
                 userRedeemedOffers={userRedeemedOffers}
+                exploreinnOffers={exploreinnOffers}
               />
             </div>
             {/* listing amenities */}

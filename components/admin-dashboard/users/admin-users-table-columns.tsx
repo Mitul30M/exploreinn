@@ -145,7 +145,7 @@ export const adminDashboardUsersColumns: ColumnDef<TAdminDashboardUsersColumns>[
     },
     // user clerkId
     {
-      accessorKey: "id",
+      accessorKey: "clerkId",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}

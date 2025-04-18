@@ -33,7 +33,7 @@ export default async function Layout({
       <main className="min-h-screen bg-background border-border/90 border-x-[1px] absolute top-0 left-0 w-full shrink-0">
         <Navbar />
         <p className="font-semibold text-sm py-[2px] text-white text-center bg-primary w-full">
-          Admin Dashboard
+          Admin Access
         </p>
 
         <SidebarTrigger className="mx-4 my-2" />

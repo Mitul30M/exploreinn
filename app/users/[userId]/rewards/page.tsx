@@ -45,7 +45,7 @@ export default async function RewardsPage({
   }
 
   const userRedeemedOffers = await getUserRedeemedOffers(user.id);
-  const exploreinnOffers = await getExploreinnOffers(true);
+  const exploreinnOffers = await getExploreinnOffers(true,false);
   return (
     <section className="w-full pb-4 overscroll-y-none space-y-4 mb-8 border-border/90 border-y-[1px]">
       {/* User's Reward Points and Offers */}
