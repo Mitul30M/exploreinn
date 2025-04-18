@@ -2,14 +2,13 @@
 import * as React from "react";
 import { NavUser } from "@/components/sidebars/user-page-sidebar/nav-user";
 import {
-  BedDouble,
-  CalendarRange,
-  ConciergeBell,
   DoorOpen,
   HandCoins,
   Hotel,
   Inbox,
+  LayoutDashboard,
   Tag,
+  UserCircle2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -22,53 +21,47 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { useUser } from "@clerk/nextjs";
 import { NavMain } from "../user-page-sidebar/nav-main";
 
-export function AppSidebar({
-  listingID,
+export function AppAdminSidebar({
   ...props
-}: React.ComponentProps<typeof Sidebar> & { listingID: string }) {
+}: React.ComponentProps<typeof Sidebar> & {}) {
   const { user } = useUser();
   const userDB_id = (user?.publicMetadata as PublicMetadataType)?.userDB_id;
 
-  const listingDashboardNavData = {
+  const adminDashboardNavData = {
     menu: [
       {
         title: `Overview`,
-        url: `/listings/${listingID}/overview`,
+        url: `/admin`,
+        icon: LayoutDashboard,
+      },
+      {
+        title: `Users`,
+        url: `/admin/users`,
+        icon: UserCircle2,
+      },
+      {
+        title: `Listings`,
+        url: `/admin/listings`,
         icon: Hotel,
       },
       {
         title: "Bookings",
-        url: `/listings/${listingID}/bookings`,
+        url: `/admin/bookings`,
         icon: DoorOpen,
       },
       {
         title: "Transactions",
-        url: `/listings/${listingID}/transactions`,
+        url: `/admin/transactions`,
         icon: HandCoins,
       },
       {
         title: "Inbox",
-        url: `/listings/${listingID}/inbox`,
+        url: `/admin/inbox`,
         icon: Inbox,
       },
       {
-        title: "Rooms",
-        url: `/listings/${listingID}/rooms`,
-        icon: BedDouble,
-      },
-      {
-        title: "Managers",
-        url: `/listings/${listingID}/managers`,
-        icon: ConciergeBell,
-      },
-      {
-        title: "Events",
-        url: `/listings/${listingID}/events`,
-        icon: CalendarRange,
-      },
-      {
         title: "Offers",
-        url: `/listings/${listingID}/offers`,
+        url: `/admin/offers`,
         icon: Tag,
       },
     ],
@@ -88,7 +81,7 @@ export function AppSidebar({
       </SidebarHeader>
       <ScrollArea className="h-[100vh] overflow-hidden whitespace-nowrap">
         <SidebarContent className="border-t-[1px] border-border/90">
-          <NavMain items={listingDashboardNavData.menu} label="Listing Dashboard" />
+          <NavMain items={adminDashboardNavData.menu} label="Admin Dashboard" />
         </SidebarContent>
       </ScrollArea>
       <SidebarFooter></SidebarFooter>

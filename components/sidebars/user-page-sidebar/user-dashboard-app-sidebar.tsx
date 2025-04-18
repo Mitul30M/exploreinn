@@ -213,7 +213,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <ScrollArea className="h-[100vh] overflow-hidden whitespace-nowrap">
         <SidebarContent className="border-t-[1px] border-border/90">
-          <NavMain items={userAccountNavData.account} label="Account" />
+          <NavMain items={userAccountNavData.account} label={`${user?.fullName ?? ""}'s Account`} />
           <NavMain
             items={userAccountNavData.security}
             label="Security & Support"

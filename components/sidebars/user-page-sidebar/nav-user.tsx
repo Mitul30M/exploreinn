@@ -86,10 +86,16 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link
+                href={`/users/${user.userDB_id}`}
+                className="hover:cursor-pointer"
+              >
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Account
+                </DropdownMenuItem>
+              </Link>
+
               <Link
                 href={`/users/${user.userDB_id}/billing`}
                 className="hover:cursor-pointer"
@@ -99,16 +105,7 @@ export function NavUser({
                   Billing
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

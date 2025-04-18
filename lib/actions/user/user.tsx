@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 import { resend } from "@/lib/resend";
 import OnboardCompleteEmail from "@/components/emails/onboarding";
 import { generateStripeId } from "../stripe/stripe";
+import { isAdmin } from "./admin/admin";
 
 export async function createUser(data: {
   clerkId: string;
@@ -202,6 +203,7 @@ export async function updateUser(
 
 export async function deleteUser(clerkId?: string, userId?: string) {
   const whereClause = clerkId ? { clerkId } : { id: userId };
+  const client = await clerkClient();
   //soft delete user
   const user = await prisma.user.update({
     where: whereClause,
@@ -210,6 +212,7 @@ export async function deleteUser(clerkId?: string, userId?: string) {
       deletedAt: new Date(),
     },
   });
+  await client.users.deleteUser(user.clerkId);
   // soft delete user's listings
   await prisma.listing.updateMany({
     where: {
@@ -220,6 +223,7 @@ export async function deleteUser(clerkId?: string, userId?: string) {
       deletedAt: new Date(),
     },
   });
+  revalidatePath("/admin/users");
   return user;
 }
 
@@ -426,4 +430,21 @@ export async function isListingWishlisted(listingId: string, userId: string) {
     return false;
   }
   return user.wishlistIds.includes(listingId);
+}
+
+// App Admin Actions
+export async function getUsers() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+  const users = await prisma.user.findMany({
+    include: {
+      Booking: true,
+      Transaction: true,
+      ownedListings: true,
+      managedListings: true,
+    },
+  });
+  return users;
 }
