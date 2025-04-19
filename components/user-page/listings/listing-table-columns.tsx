@@ -117,6 +117,7 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => row.original.starRating,
   },
 
   {
@@ -129,6 +130,7 @@ export const listingTableColumns: ColumnDef<TOwnedListing>[] = [
         className="flex items-center gap-2 ms-4"
       />
     ),
+    cell: ({ row }) => row.original.overallRating,
   },
 
   {

@@ -7,6 +7,7 @@ import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
 import { redirect } from "next/navigation";
+import { isAdmin } from "../user/admin/admin";
 
 /**
  * Creates a new listing and a room in the database.
@@ -285,6 +286,7 @@ export async function getListingById(
   const listing = await prisma.listing.findUnique({
     where: {
       id: listingId,
+      isDeleted: false,
     },
     include: {
       rooms: {
@@ -737,10 +739,10 @@ export async function deleteListing(listingId: string) {
       message: "You are not Authenticated.",
     };
   }
-  if (!(await isListingOwner(ownerID, listingId))) {
+  if (!(await isListingOwner(ownerID, listingId)) || !(await isAdmin())) {
     return {
       type: "error",
-      message: "Unauthorized. Only the owner can delete this listing.",
+      message: "Unauthorized. Only the owner or admin can delete this listing.",
     };
   }
   try {
@@ -761,9 +763,37 @@ export async function deleteListing(listingId: string) {
       message: "Failed to delete listing. Please try again.",
     };
   }
-  redirect(`/users/${ownerID}`);
+  // redirect(`/users/${ownerID}`);
   return {
     type: "success",
     message: "Listing deleted successfully.",
   };
+}
+
+// admin actions
+export async function getAllListings() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+
+  const listing = await prisma.listing.findMany({
+    include: {
+      owner: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+          stripeId: true,
+        },
+      },
+      Transaction: true,
+      Booking: true,
+    },
+  });
+
+  return listing;
 }
