@@ -38,6 +38,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createListingSpecificOffer } from "@/lib/actions/offers/offers";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const formSchema = z.object({
   listingID: z.string(),
@@ -152,287 +153,307 @@ export const NewListingOfferDialog = ({ listingId }: { listingId: string }) => {
           New Listing Offer
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[650px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 mb-2">
-            <Tag className="text-primary" />
-            Create New Listing Offer
-          </DialogTitle>
-          <DialogDescription>
-            Create a new offer for your listing. This will help you to increase
-            your booking and revenue. An Offer can be a percentage discount, a
-            flat amount discount or adding extra perks to the booking.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[600px]">
+        <ScrollArea className="h-[650px] pe-3">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 mb-2">
+              <Tag className="text-primary" />
+              Create New Listing Offer
+            </DialogTitle>
+            <DialogDescription>
+              Create a new offer for your listing. This will help you to
+              increase your booking and revenue. An Offer can be a percentage
+              discount, a flat amount discount or adding extra perks to the
+              booking.
+            </DialogDescription>
+          </DialogHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-2 w-full gap-8 mt-4"
-          >
-            {/* name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Offer Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Summer Sale" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Give your offer a name. This will be visible to your guests.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Offer Description</FormLabel>
-                  <FormControl>
-                    <Textarea className="resize h-max" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Describe your offer. Include T&Cs to avoid any confusion.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* start and end date */}
-            <FormField
-              control={form.control}
-              name={`dateRange`}
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date Range</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value?.from ? (
-                            field.value.to ? (
-                              <>
-                                {formatDate(field.value.from, "PPP")} -{" "}
-                                {formatDate(field.value.to, "PPP")}
-                              </>
-                            ) : (
-                              formatDate(field.value.from, "PPP")
-                            )
-                          ) : (
-                            <span>Pick a date range</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        initialFocus
-                        mode="range"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date() || date > addMonths(new Date(), 3)
-                        }
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* coupon code */}
-            <FormField
-              control={form.control}
-              name="couponCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Offer Coupon Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="HOTSUMMER10" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Give your offer a Code (capitalized).
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* select offer type */}
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Select Offer Type</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setOfferType(value as offerType);
-                      }}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Percentage_Discount" />
-                        </FormControl>
-                        <FormLabel className="font-medium">
-                          Percentage Discount on Booking Amount
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Flat_Discount" />
-                        </FormControl>
-                        <FormLabel className="font-medium">
-                          Flat Amount Discount on Booking Amount
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Extra_Perks" />
-                        </FormControl>
-                        <FormLabel className="font-medium">
-                          Extra Perks with Booking
-                        </FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* percentage discount & max discount */}
-            {offerType === "Percentage_Discount" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="percentageDiscount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <FormLabel>
-                          Set Percentage Discount on the booking fee.(%)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="maxDiscountAmount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <FormLabel>
-                          Set Max Discount Amount on the booking fee when using
-                          this offer.($)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-            {/* flat discount */}
-            {offerType === "Flat_Discount" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="flatDiscount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-2">
-                        <FormLabel>
-                          Set a Fixed Discount Amount on the booking fee.($)
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-            {/* minimum booking amount */}
-            <FormField
-              control={form.control}
-              name="minimumBookingAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-2">
-                    <FormLabel>
-                      Set Min Booking Amount to use this offer.($)
-                    </FormLabel>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Offer Name</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        placeholder="Summer Sale"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        className="max-w-[300px]"
                       />
                     </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              size="sm"
-              className={" self-end w-max"}
-              disabled={form.formState.isSubmitting}
-            >
-              <Save
-                className={
-                  form.formState.isSubmitting || isLoading ? "animate-spin" : ""
-                }
+                    <FormDescription>
+                      Give your offer a name. This will be visible to your
+                      guests.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {isLoading ? "Creating..." : "Create Offer"}
-            </Button>
-          </form>
-        </Form>
+              {/* description */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Offer Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="resize h-max max-w-[500px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Describe your offer. Include T&Cs to avoid any confusion.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* start and end date */}
+              <FormField
+                control={form.control}
+                name={`dateRange`}
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date Range</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "max-w-[300px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value?.from ? (
+                              field.value.to ? (
+                                <>
+                                  {formatDate(field.value.from, "PPP")} -{" "}
+                                  {formatDate(field.value.to, "PPP")}
+                                </>
+                              ) : (
+                                formatDate(field.value.from, "PPP")
+                              )
+                            ) : (
+                              <span>Pick a date range</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          initialFocus
+                          mode="range"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date < new Date() || date > addMonths(new Date(), 3)
+                          }
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* coupon code */}
+              <FormField
+                control={form.control}
+                name="couponCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Offer Coupon Code</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="HOTSUMMER10"
+                        className="max-w-[300px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Give your offer a Code (capitalized).
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* select offer type */}
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Select Offer Type</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setOfferType(value as offerType);
+                        }}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Percentage_Discount" />
+                          </FormControl>
+                          <FormLabel className="font-medium">
+                            Percentage Discount on Booking Amount
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Flat_Discount" />
+                          </FormControl>
+                          <FormLabel className="font-medium">
+                            Flat Amount Discount on Booking Amount
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="Extra_Perks" />
+                          </FormControl>
+                          <FormLabel className="font-medium">
+                            Extra Perks with Booking
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* percentage discount & max discount */}
+              {offerType === "Percentage_Discount" && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="percentageDiscount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormLabel className="max-w-[250px]">
+                            Set Percentage Discount on the booking fee.(%)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              className="max-w-[250px]"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="maxDiscountAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormLabel className="max-w-[250px]">
+                            Set Max Discount Amount on the booking fee when
+                            using this offer.($)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              className="max-w-[250px]"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+              {/* flat discount */}
+              {offerType === "Flat_Discount" && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="flatDiscount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2">
+                          <FormLabel className="max-w-[250px]">
+                            Set a Fixed Discount Amount on the booking fee.($)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              className="max-w-[250px]"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+              {/* minimum booking amount */}
+              <FormField
+                control={form.control}
+                name="minimumBookingAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-2">
+                      <FormLabel className="max-w-[250px]">
+                        Set Min Booking Amount to use this offer.($)
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="max-w-[250px]"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                size="sm"
+                className={" self-end w-max"}
+                disabled={form.formState.isSubmitting}
+              >
+                <Save
+                  className={
+                    form.formState.isSubmitting || isLoading
+                      ? "animate-spin"
+                      : ""
+                  }
+                />
+                {isLoading ? "Creating..." : "Create Offer"}
+              </Button>
+            </form>
+          </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

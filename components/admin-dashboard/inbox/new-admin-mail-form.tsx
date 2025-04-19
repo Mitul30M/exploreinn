@@ -17,7 +17,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { getUserBookingIDs, sendMailfromUser } from "@/lib/actions/mails/mails";
+import {
+  getAllBookings,
+  getListingBookings,
+  sendMailfromExploreinn,
+  sendMailfromListing,
+} from "@/lib/actions/mails/mails";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -40,7 +45,6 @@ import {
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropzoneOptions } from "react-dropzone";
@@ -60,7 +64,7 @@ import { TagsInput } from "@/components/ui/tags-input";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  intendedReceiver: z.union([z.literal("exploreinn"), z.literal("listing")]),
+  intendedReceiver: z.union([z.literal("listing"), z.literal("user")]),
   subject: z.string().min(5, "Subject Cannot be Empty"),
   text: z.string().min(5, "Mail Body Cannot be Empty"),
   type: z.enum(["Inquiry", "Complaint", "Feedback", "Response"]),
@@ -89,16 +93,12 @@ const dropzone = {
   maxSize: 4 * 1024 * 1024,
 } satisfies DropzoneOptions;
 
-export const NewUserMailDialogForm = () => {
-  const { user } = useUser();
-  // Ensure that `user`, `publicMetadata`, and `userDB_id` exist before rendering
-  const userDB_id = (user?.publicMetadata as PublicMetadataType)?.userDB_id;
-  const params = useParams<{ userId: string }>();
+export const NewAdminMailDialogForm = () => {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      intendedReceiver: "listing",
-      type: "Inquiry",
+      intendedReceiver: "user",
+      type: "Response",
       subject: "",
       text: "",
       labels: [],
@@ -111,9 +111,9 @@ export const NewUserMailDialogForm = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [progress] = useState<number[]>([]);
-  const { data: userBookings } = useQuery({
-    queryKey: ["userBookingIDs", userDB_id ?? params.userId],
-    queryFn: async () => await getUserBookingIDs(userDB_id ?? params.userId),
+  const { data: applicationBookings } = useQuery({
+    queryKey: ["applicationBookings"],
+    queryFn: async () => await getAllBookings(),
   });
 
   const onSubmit = async (formData: FormSchema): Promise<void> => {
@@ -197,7 +197,7 @@ export const NewUserMailDialogForm = () => {
         }
       }
 
-      const res = await sendMailfromUser({
+      const res = await sendMailfromExploreinn({
         intendedReceiver: formData.intendedReceiver,
         labels: formData.labels,
         subject: formData.subject,
@@ -208,6 +208,7 @@ export const NewUserMailDialogForm = () => {
         email: formData.email,
         attachments: formData.attachments,
       });
+
       console.log(res);
 
       if (res.type === "success") {
@@ -250,7 +251,7 @@ export const NewUserMailDialogForm = () => {
           </ToastAction>
         ),
       });
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -271,8 +272,7 @@ export const NewUserMailDialogForm = () => {
               Send a New Mail
             </DialogTitle>
             <DialogDescription>
-              Send a new mail to either one of your booked listings or to the
-              exploreinn support team.
+              Send a new mail to either one of your users or to a listing
             </DialogDescription>
           </DialogHeader>
 
@@ -291,14 +291,6 @@ export const NewUserMailDialogForm = () => {
                       <FormControl>
                         <RadioGroup
                           onValueChange={(value) => {
-                            if (value === "exploreinn") {
-                              form.setValue(
-                                "email",
-                                process.env
-                                  .NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
-                                  "support@exploreinn.com"
-                              );
-                            }
                             field.onChange(value);
                           }}
                           value={field.value}
@@ -306,18 +298,18 @@ export const NewUserMailDialogForm = () => {
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="exploreinn" />
+                              <RadioGroupItem value="listing" />
                             </FormControl>
                             <FormLabel className="font-medium">
-                              exploreinn support team
+                              Listing registered on exploreinn
                             </FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="listing" />
+                              <RadioGroupItem value="user" />
                             </FormControl>
                             <FormLabel className="font-medium">
-                              listing that I booked in the past/present/future.
+                              User registered on exploreinn
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
@@ -342,23 +334,11 @@ export const NewUserMailDialogForm = () => {
                       </FormLabel>
                       <Select
                         onValueChange={(value) => {
-                          const [listingId, bookingId, listingEmail] =
+                          const [listingId, bookingId, receiverEmail] =
                             value.split(" ");
                           field.onChange(bookingId);
                           form.setValue("listingId", listingId);
-
-                          if (
-                            form.getValues("intendedReceiver") === "listing"
-                          ) {
-                            form.setValue("email", listingEmail);
-                          } else {
-                            form.setValue(
-                              "email",
-                              process.env
-                                .NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
-                                "support@exploreinn.com"
-                            );
-                          }
+                          form.setValue("email", receiverEmail);
                         }}
                       >
                         <FormControl>
@@ -367,17 +347,21 @@ export const NewUserMailDialogForm = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {userBookings?.map((booking) => (
+                          {applicationBookings?.map((booking) => (
                             <SelectItem
-                              key={booking.id}
+                              key={booking.id + booking.createdAt.toString()}
                               value={
-                                booking.listingId +
-                                " " +
-                                booking.id +
-                                " " +
-                                booking.listing.email
+                                `${booking.listingId} ${booking.id} ${
+                                  form.getValues("intendedReceiver") === "user"
+                                    ? booking.guest.email
+                                    : form.getValues("intendedReceiver") === "listing"
+                                    ? booking.listing.email
+                                    : ""
+                                }`
                               }
                             >
+                              {booking.guest.firstName} {booking.guest.lastName}{" "}
+                              {", "}
                               {booking.listing.name} [
                               {format(
                                 new Date(booking.checkInDate),

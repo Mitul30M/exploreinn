@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { MailType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { isListingManager, isListingOwner } from "../listings/listings";
+import { isAdmin } from "../user/admin/admin";
 
 /**
  * Retrieves all mail records for a given user.
@@ -121,6 +122,61 @@ export async function getListingMails(listingId: string) {
   return listingMails;
 }
 
+export async function getExploreinnAdminMails() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+
+  const mails = await prisma.mail.findMany({
+    where: {
+      OR: [
+        {
+          to:
+            process.env.NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
+            "support@exploreinn.com",
+        },
+        {
+          from:
+            process.env.NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
+            "support@exploreinn.com",
+        },
+      ],
+    },
+    include: {
+      sender: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImg: true,
+        },
+      },
+      receiver: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImg: true,
+        },
+      },
+      listing: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          coverImage: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return mails;
+}
+
 export const getUserBookingIDs = async (userId: string) => {
   const userBookings = await prisma.booking.findMany({
     where: {
@@ -163,6 +219,44 @@ export async function getListingBookings(listingId: string) {
       checkOutDate: true,
       createdAt: true,
       listingId: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return bookings;
+}
+
+export async function getAllBookings() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+
+  const bookings = await prisma.booking.findMany({
+    select: {
+      id: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          profileImg: true,
+        },
+      },
+      totalCost: true,
+      checkInDate: true,
+      checkOutDate: true,
+      createdAt: true,
+      listingId: true,
+      listing: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          coverImage: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -407,6 +501,126 @@ export async function sendMailfromListing(data: {
     revalidatePath(`/listings/${mail.listingId}/inbox`);
     return {
       message: "Mail sent successfully to the user",
+      type: "success",
+    };
+  }
+
+  return {
+    message: "Internal server error",
+    type: "error",
+  };
+}
+
+export async function sendMailfromExploreinn(data: {
+  intendedReceiver: "listing" | "user";
+  subject: string;
+  text: string;
+  type: "Inquiry" | "Complaint" | "Feedback" | "Response";
+  labels: string[];
+  email: string;
+  attachments: string[];
+  bookingId?: string;
+  listingId?: string;
+}): Promise<{ message: string; type: "success" | "error" }> {
+  console.log(data);
+  const isAuthorized = await isAdmin();
+
+  if (!isAuthorized) {
+    return {
+      message: "Unauthorized",
+      type: "error",
+    };
+  }
+
+  const { sessionClaims } = await auth();
+  const userDbId = (sessionClaims?.public_metadata as PublicMetadataType)
+    .userDB_id;
+
+  const sender = await prisma.user.findUnique({
+    where: {
+      id: userDbId,
+    },
+    select: {
+      firstName: true,
+      lastName: true,
+      email: true,
+      id: true,
+      profileImg: true,
+    },
+  });
+
+  // send mail to exploreinn support
+  if (data.intendedReceiver === "user") {
+    const receiver = await prisma.user.findUnique({
+      where: {
+        email: data.email,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!receiver) {
+      return {
+        message: "User not found. Please check the email address.",
+        type: "error",
+      };
+    }
+    const mail = await prisma.mail.create({
+      data: {
+        from:
+          process.env.NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
+          "support@exploreinn.com",
+        to: data.email,
+        subject: data.subject,
+        text: data.text,
+        type: data.type,
+        attachments: data.attachments,
+        labels: data.labels,
+        senderId: sender!.id,
+        receiverId: receiver.id,
+        bookingId: data.bookingId,
+        listingId: data.listingId,
+      },
+    });
+    console.log(mail);
+    if (!mail) {
+      return {
+        message:
+          "Internal server error. Error occurred while sending mail to exploreinn support",
+        type: "error",
+      };
+    }
+    revalidatePath(`/users/${mail.listingId}/inbox`);
+    revalidatePath(`/admin/inbox`);
+    return {
+      message: "Mail sent successfully to exploreinn support",
+      type: "success",
+    };
+  }
+  // send mail to a listing
+  else if (data.intendedReceiver === "listing") {
+    const mail = await prisma.mail.create({
+      data: {
+        from:
+          process.env.NEXT_PUBLIC_EXPLOREINN_SUPPORT_EMAIL ??
+          "support@exploreinn.com",
+        to: data.email,
+        subject: data.subject,
+        text: data.text,
+        type: data.type,
+        attachments: data.attachments,
+        labels: data.labels,
+        senderId: sender!.id,
+        bookingId: data.bookingId,
+        listingId: data.listingId,
+      },
+    });
+    console.log(mail);
+    revalidatePath(`/admin/inbox`);
+    revalidatePath(`/listings/${mail.listingId}/inbox`);
+    return {
+      message: "Mail sent successfully to the listing",
       type: "success",
     };
   }

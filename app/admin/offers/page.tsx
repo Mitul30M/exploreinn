@@ -20,7 +20,7 @@ const AdminUsersPage = async ({}: {
   return (
     <section className="w-full space-y-4 mb-8 pb-4 border-border/90 border-b-[1px]">
       {/*  Info */}
-      <div id="hotel-owner" className="space-y-4">
+      <div className="space-y-4">
         <div className="text-md rounded-none items-center gap-2  w-full px-4 py-2 border-y-[1px] border-border/90 text-foreground/90">
           <h1 className="flex justify-start rounded-none items-center gap-2 font-semibold tracking-tight">
             <Tag size={22} className="text-primary" />

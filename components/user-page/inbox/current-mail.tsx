@@ -216,7 +216,7 @@ const CurrentMail = ({
               <Separator />
               <div className="flex flex-row gap-2 items-center p-4">
                 {mail.labels.length &&
-                  mail.labels.map((label,idx) => (
+                  mail.labels.map((label, idx) => (
                     <Badge key={idx} className="text-xs rounded-full ">
                       {label}
                     </Badge>
@@ -235,20 +235,24 @@ const CurrentMail = ({
               <Separator />
               <div className="flex flex-row gap-2 items-center p-4">
                 {mail.attachments.length &&
-                  mail.attachments.map((attachment, index) => (
-                    <Badge
-                      key={attachment}
-                      className="text-xs "
-                      variant={"secondary"}
-                    >
-                      <Link
-                        href={attachment}
-                        className="flex flex-row w-max items-center gap-2 no-underline"
-                      >
-                        Attachment {index + 1} <Paperclip size={16} />
-                      </Link>
-                    </Badge>
-                  ))}
+                  mail.attachments.map((attachment, index) => {
+                    if (attachment === "") return null;
+                    else
+                      return (
+                        <Badge
+                          key={attachment}
+                          className="text-xs "
+                          variant={"secondary"}
+                        >
+                          <Link
+                            href={attachment}
+                            className="flex flex-row w-max items-center gap-2 no-underline"
+                          >
+                            Attachment {index + 1} <Paperclip size={16} />
+                          </Link>
+                        </Badge>
+                      );
+                  })}
               </div>
             </div>
           ) : (
