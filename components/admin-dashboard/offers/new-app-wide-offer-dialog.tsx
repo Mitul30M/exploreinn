@@ -37,7 +37,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   createAppWideOffer,
-  createListingSpecificOffer,
 } from "@/lib/actions/offers/offers";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -302,8 +301,8 @@ export const NewAppWideOfferDialog = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      Set the 'exploreinn-reward-points' required for the offer
-                      to be redeemed.
+                      Set the &apos;exploreinn-reward-points&apos; required for
+                      the offer to be redeemed.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import CurrentMail from "@/components/user-page/inbox/current-mail";
-import { ListingInboxSidebar } from "@/components/listing-dashoard/inbox/listing-inbox-sidebar";
 import { AdminInboxSidebar } from "./admin-inbox-sidebar";
 
 export const AdminInboxContainer = ({ mails }: { mails: TMails[] }) => {

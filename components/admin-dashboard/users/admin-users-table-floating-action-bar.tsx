@@ -140,7 +140,7 @@ export function AdminDashboardUsersFloatingActionBar<TData>({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                      <p>Update User's Role to Admin</p>
+                      <p>Update User&apos;s Role to Admin</p>
                     </TooltipContent>
                   </Tooltip>
                 ) : (
@@ -196,7 +196,7 @@ export function AdminDashboardUsersFloatingActionBar<TData>({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                      <p>Revoke User's Admin Role</p>
+                      <p>Revoke User&apos;s Admin Role</p>
                     </TooltipContent>
                   </Tooltip>
                 ))}

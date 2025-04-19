@@ -21,7 +21,6 @@ import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
-import ListingMailList from "@/components/listing-dashoard/inbox/listing-inbox-maillist";
 import AdminMailList from "./admin-inbox-maillist";
 import { NewAdminMailDialogForm } from "./new-admin-mail-form";
 

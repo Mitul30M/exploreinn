@@ -417,8 +417,8 @@ export async function getUserRedeemedOffers(
     },
   });
 
-  let userBookings = [...userBookingsWithOffers];
-  let userOffers = [...(userRedeemedOffers?.redeemedOffers ?? [])];
+  const userBookings = [...userBookingsWithOffers];
+  const userOffers = [...(userRedeemedOffers?.redeemedOffers ?? [])];
   const enrichedUserRedeemedOffers: OfferWithExtras[] = [];
 
   for (const booking of userBookings) {
