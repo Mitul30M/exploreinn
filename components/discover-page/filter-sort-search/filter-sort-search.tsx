@@ -6,16 +6,16 @@ import { MapViewToggle } from "./map-view-toggle";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  LucideSquareArrowDownLeft,
-  LucideSquareArrowUpRight,
+  // LucideSquareArrowDownLeft,
+  // LucideSquareArrowUpRight,
   Search,
 } from "lucide-react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+// import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 const FilterSortSearchGroup = () => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
+  // const searchParams = useSearchParams();
+  // const pathname = usePathname();
+  // const { replace } = useRouter();
   return (
     <section className="flex items-center justify-between min-h-14 w-full px-4 border-b-[1px] border-border/90">
       <div className="flex items-center w-max justify-center gap-2 h-full">
@@ -32,7 +32,7 @@ const FilterSortSearchGroup = () => {
         <Button size="icon" className="rounded-full">
           <Search strokeWidth={3} />
         </Button>
-        <Button
+        {/* <Button
           onClick={() => {
             const randomKey = Math.random().toString(36).substring(7);
             const randomValue = Math.random().toString(36).substring(7);
@@ -55,7 +55,7 @@ const FilterSortSearchGroup = () => {
           className="shadow-sm rounded-2xl "
         >
           <LucideSquareArrowUpRight />
-        </Button>
+        </Button> */}
       </div>
     </section>
   );

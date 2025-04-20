@@ -35,6 +35,32 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
+      // in development only use this single webhook
+      // case "account.updated":
+      //   console.log("Processing account.updated");
+      //   const account = event.data.object;
+      //   const userDb = await prisma.user.update({
+      //     where: {
+      //       stripeId: account.id,
+      //     },
+      //     data: {
+      //       isStripeConnectedAccount:
+      //         account.capabilities?.transfers !== "pending" &&
+      //         account.capabilities?.transfers !== "inactive",
+      //     },
+      //     select: {
+      //       clerkId: true,
+      //       stripeId: true,
+      //       id: true,
+      //     },
+      //   });
+      //   if (!userDb) break;
+      //   revalidatePath(`/users/${userDb.id}`);
+      //   console.log(
+      //     `successfully updated user ${userDb.id}'s stripe account linking status`
+      //   );
+      //   break;
+
       case "checkout.session.completed":
         console.log("Processing checkout.session.completed");
         const checkoutSession = event.data.object;
@@ -159,6 +185,7 @@ export async function POST(req: Request) {
         // guest side revalidation
         revalidatePath(`/users/${newBooking.guestId}/bookings`);
         revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
+        revalidatePath("/admin/bookings");
         break;
 
       case "charge.updated":

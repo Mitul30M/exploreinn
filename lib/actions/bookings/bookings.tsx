@@ -18,6 +18,7 @@ import {
 } from "date-fns";
 import { stripe } from "@/lib/stripe";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
+import { isAdmin } from "../user/admin/admin";
 // import ChargeInvoice from "@/components/emails/charge-invoice";
 
 const _bookingFormSchema = z.object({
@@ -164,6 +165,7 @@ export async function createBookNowPayLaterBooking(
   // guest side revalidation
   revalidatePath(`/users/${newBooking.guestId}/bookings`);
   revalidatePath(`/user/${newBooking.guestId}/bookings/${newBooking.id}`);
+  revalidatePath("/admin/bookings");
   await resend.emails.send({
     from: "exploreinn <no-reply@mitul30m.in>",
     to: [user.email],
@@ -310,6 +312,44 @@ export async function getUserBooking(bookingId: string) {
   return booking;
 }
 
+export async function getAllBookings() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+
+  const bookings = await prisma.booking.findMany({
+    include: {
+      transaction: true,
+      offer: true,
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+          id: true,
+        },
+      },
+      listing: {
+        select: {
+          id: true,
+          name: true,
+          coverImage: true,
+          address: true,
+          email: true,
+          phoneNo: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return bookings;
+}
+
 /**
  * Retrieves the bookings for a given listing within the current week.
  * The function returns a promise that resolves to an array of objects
@@ -320,6 +360,53 @@ export async function getUserBooking(bookingId: string) {
 export async function getListingCurrentWeekBookings(listingId: string) {
   const bookings = await getListingBookings(listingId);
 
+  // Get the start and end of the current week
+  const now = new Date();
+  const startDate = startOfWeek(now, { weekStartsOn: 1 }); // Monday as the first day of the week
+  const endDate = endOfWeek(now, { weekStartsOn: 1 }); // Sunday as the last day of the week
+
+  // Initialize an object to store daily bookings
+  const dailyBookings = {
+    Mon: 0,
+    Tue: 0,
+    Wed: 0,
+    Thu: 0,
+    Fri: 0,
+    Sat: 0,
+    Sun: 0,
+  };
+
+  // Filter bookings within the current week and count them by day
+  bookings.forEach((booking) => {
+    const bookingDate = new Date(booking.createdAt);
+
+    // Ensure the booking falls within the current week
+    if (
+      bookingDate >= startDate &&
+      bookingDate <= endDate &&
+      ["upcoming", "completed", "ongoing"].includes(booking.bookingStatus)
+    ) {
+      const dayOfWeek = format(bookingDate, "EEE"); // Get the 3-letter day format
+      // Explicitly cast dayOfWeek to ensure it matches the type of dailyBookings keys
+      const day: keyof typeof dailyBookings =
+        dayOfWeek as keyof typeof dailyBookings;
+      dailyBookings[day] += 1; // Increment the count for that day
+    }
+  });
+
+  // Format the data for the chart or further usage
+  return Object.entries(dailyBookings).map(([day, count]) => ({
+    day,
+    bookings: count,
+  }));
+}
+
+export async function getAllCurrentWeekBookings() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+  const bookings = await getAllBookings();
   // Get the start and end of the current week
   const now = new Date();
   const startDate = startOfWeek(now, { weekStartsOn: 1 }); // Monday as the first day of the week
@@ -431,6 +518,63 @@ export async function getMonthlyListingBookingsComparison(listingId: string) {
   }));
 }
 
+export async function getMonthlyAllBookingsComparison() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+  const bookings = await getAllBookings();
+
+  const currentYear = new Date().getFullYear();
+  const pastYear = currentYear - 1;
+
+  // Get the year ranges
+  const pastYearStartDate = startOfYear(new Date(pastYear, 0, 1));
+  const pastYearEndDate = endOfYear(new Date(pastYear, 0, 1));
+  const currentYearStartDate = startOfYear(new Date(currentYear, 0, 1));
+  const currentYearEndDate = endOfYear(new Date(currentYear, 0, 1));
+
+  // Initialize arrays to store monthly bookings
+  const pastYearBookings = Array(12).fill(0);
+  const currentYearBookings = Array(12).fill(0);
+
+  // Count bookings for each month in both years
+  bookings.forEach((booking) => {
+    const bookingDate = new Date(booking.createdAt);
+    const month = getMonth(bookingDate);
+
+    if (bookingDate >= pastYearStartDate && bookingDate <= pastYearEndDate) {
+      pastYearBookings[month] += 1;
+    } else if (
+      bookingDate >= currentYearStartDate &&
+      bookingDate <= currentYearEndDate
+    ) {
+      currentYearBookings[month] += 1;
+    }
+  });
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  return months.map((month, index) => ({
+    month,
+    pastYear: pastYearBookings[index],
+    currentYear: currentYearBookings[index],
+  }));
+}
+
 /**
  * Retrieves an overview of all bookings for a given listing, grouped by booking status.
  * The function returns a promise that resolves to an object with the following keys:
@@ -450,6 +594,27 @@ export async function getAllBookingsStatusOverview(listingId: string) {
       bookingStatus: true,
     },
   });
+
+  const statusOverview = {
+    upcoming: 0,
+    ongoing: 0,
+    completed: 0,
+    cancelled: 0,
+  };
+
+  bookings.forEach((booking) => {
+    statusOverview[booking.bookingStatus] += 1;
+  });
+
+  return statusOverview;
+}
+
+export async function getAppBookingsStatusOverview() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+  const bookings = await getAllBookings();
 
   const statusOverview = {
     upcoming: 0,
