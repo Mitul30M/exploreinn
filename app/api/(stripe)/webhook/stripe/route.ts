@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();
   const signature = headersList.get("stripe-signature") as string;
-
+  console.log("Webhook signature: "+signature)
   console.log("Webhook signature:", signature ? "Present" : "Missing");
 
   let event: Stripe.Event;
