@@ -14,7 +14,6 @@ export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();
   const signature = headersList.get("stripe-signature") as string;
-  console.log("Webhook signature: "+signature)
   console.log("Webhook signature:", signature ? "Present" : "Missing");
 
   let event: Stripe.Event;
@@ -36,31 +35,6 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      case "account.updated":
-        console.log("Processing account.updated");
-        const account = event.data.object;
-        const userDb = await prisma.user.update({
-          where: {
-            stripeId: account.id,
-          },
-          data: {
-            isStripeConnectedAccount:
-              account.capabilities?.transfers !== "pending" &&
-              account.capabilities?.transfers !== "inactive",
-          },
-          select: {
-            clerkId: true,
-            stripeId: true,
-            id: true,
-          },
-        });
-        if (!userDb) break;
-        revalidatePath(`/users/${userDb.id}`);
-        console.log(
-          `successfully updated user ${userDb.id}'s stripe account linking status`
-        );
-        break;
-
       case "checkout.session.completed":
         console.log("Processing checkout.session.completed");
         const checkoutSession = event.data.object;
