@@ -30,6 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // ClerkProvider should wrap the entire app to provide authentication context.
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
