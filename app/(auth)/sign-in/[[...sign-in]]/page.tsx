@@ -1,4 +1,5 @@
-import SignInForm from "@/components/auth/sign-in-form";
+// import SignInForm from "@/components/auth/sign-in-form";
+import { SignIn } from "@clerk/nextjs";
 // export const metadata: Metadata = {
 //   title: "exploreinn : Sign In Page",
 //   description: "Exploreinn Authentication",
@@ -7,8 +8,11 @@ import SignInForm from "@/components/auth/sign-in-form";
 export default function SignInPage() {
   return (
     <>
-      <SignInForm />
-      {/* <SignIn /> */}
+      {" "}
+      {/* for development only */}
+      {/* <SignInForm /> */}
+      {/* for production */}
+      <SignIn />
     </>
   );
 }
