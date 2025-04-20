@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import MainLayoutProviders from "@/components/providers/main-layout-providers";
 import { ClerkProvider } from "@clerk/nextjs";
+import MainLayoutProviders from "@/components/providers/main-layout-providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     // ClerkProvider should wrap the entire app to provide authentication context.
-    <ClerkProvider dynamic>
+    <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
           <link rel="icon" href="/favicon.ico" sizes="any" />
