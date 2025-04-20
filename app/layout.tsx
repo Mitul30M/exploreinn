@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     // ClerkProvider should wrap the entire app to provide authentication context.
-    <ClerkProvider>
+    <ClerkProvider dynamic>
       <html lang="en" suppressHydrationWarning>
         <head>
           <link rel="icon" href="/favicon.ico" sizes="any" />
