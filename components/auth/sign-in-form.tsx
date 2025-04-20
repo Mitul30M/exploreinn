@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Loader } from "lucide-react";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
-import { OAuthStrategy } from "@clerk/types";
+// import { OAuthStrategy } from "@clerk/types";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
 
 export default function SignInForm() {
@@ -25,7 +25,9 @@ export default function SignInForm() {
 
   if (!signIn || !signUp) return null;
 
-  const signInWith = (strategy: OAuthStrategy) => {
+  const signInWith = (
+    strategy: "oauth_google" | "oauth_github" | "oauth_apple"
+  ) => {
     return signIn.authenticateWithRedirect({
       strategy,
       redirectUrl: "/sign-up/sso-callback",
@@ -33,7 +35,9 @@ export default function SignInForm() {
     });
   };
 
-  async function handleSignIn(strategy: OAuthStrategy) {
+  async function handleSignIn(
+    strategy: "oauth_google" | "oauth_github" | "oauth_apple"
+  ) {
     if (!signIn || !signUp) return null;
 
     // If the user has an account in your application, but does not yet
