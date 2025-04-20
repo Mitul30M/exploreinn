@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma-client";
 import { Transaction } from "@prisma/client";
 import { startOfYear, endOfYear, getMonth } from "date-fns";
+import { isAdmin } from "../user/admin/admin";
 
 /**
  * Retrieves all transactions for a given listing.
@@ -31,6 +32,45 @@ export async function getListingTransactions(listingId: string) {
   return transactions;
 }
 
+export async function getAllTransactions() {
+  const isAuthorized = await isAdmin();
+  if (!isAuthorized) {
+    return [];
+  }
+  const transactions = await prisma.transaction.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      guest: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNo: true,
+          profileImg: true,
+          stripeId: true,
+          id: true,
+        },
+      },
+      listing: {
+        include: {
+          owner: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              phoneNo: true,
+              stripeId: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  return transactions;
+}
+
 /**
  * Calculates the revenue from a given transaction.
  * The revenue calculation is based on the payment method and payment status of the transaction.
@@ -53,6 +93,30 @@ export function getRevenueFromTransaction(transaction: Transaction) {
     if (transaction.paymentStatus === "charged") {
       // For late cancellations, charge 5% fee with 5% platform fee
       return transaction.totalCost * 0.95;
+    } else if (
+      transaction.paymentStatus === "cancelled" ||
+      transaction.paymentStatus === "pending"
+    ) {
+      // For normal cancellations or pending payments, no revenue
+      return 0;
+    }
+    // For normal offline payments
+    return transaction.totalCost;
+  }
+}
+
+export function getAppRevenueFromTransaction(transaction: Transaction) {
+  if (transaction.paymentMethod === "ONLINE_PAYMENT") {
+    if (transaction.paymentStatus === "refunded") {
+      return 0;
+    }
+    // Normal online payment, 5% platform fee
+    return transaction.totalCost * 0.05;
+  } else {
+    // For pay later bookings
+    if (transaction.paymentStatus === "charged") {
+      // For late cancellations, charge 5% fee with 5% platform fee
+      return transaction.totalCost * 0.05;
     } else if (
       transaction.paymentStatus === "cancelled" ||
       transaction.paymentStatus === "pending"
@@ -115,6 +179,50 @@ export async function getMonthlyRevenue(listingId: string) {
   }));
 }
 
+export async function getMonthlyAppRevenue() {
+  const transactions = await getAllTransactions();
+
+  // Get the current year range
+  const startDate = startOfYear(new Date());
+  const endDate = endOfYear(new Date());
+
+  // Initialize an array to store monthly revenue
+  const monthlyRevenue = Array(12).fill(0);
+
+  // Filter transactions within the current year and calculate net revenue
+  transactions.forEach(async (transaction) => {
+    const transactionDate = new Date(transaction.createdAt);
+
+    // Ensure the transaction falls within the current year
+    if (transactionDate >= startDate && transactionDate <= endDate) {
+      const month = getMonth(transactionDate); // 0 = January, 11 = December
+      const netRevenue = getRevenueFromTransaction(transaction); // Deduct 5% application fee if payment method is online
+      monthlyRevenue[month] += netRevenue;
+    }
+  });
+
+  // Format the data for the chart
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  return monthlyRevenue.map((revenue, index) => ({
+    month: months[index],
+    revenue: parseFloat(revenue.toFixed(2)), // Round to 2 decimal places
+  }));
+}
+
 /**
  * Compares the monthly revenue for a given listing between the current year and the past year.
  * The function returns a promise that resolves to an array of objects containing the month,
@@ -124,6 +232,62 @@ export async function getMonthlyRevenue(listingId: string) {
  */
 export async function getMonthlyRevenueComparison(listingId: string) {
   const transactions = await getListingTransactions(listingId);
+
+  const currentYear = new Date().getFullYear();
+  const pastYear = currentYear - 1;
+
+  // Get the year ranges
+  const pastYearStartDate = startOfYear(new Date(pastYear, 0, 1));
+  const pastYearEndDate = endOfYear(new Date(pastYear, 0, 1));
+  const currentYearStartDate = startOfYear(new Date(currentYear, 0, 1));
+  const currentYearEndDate = endOfYear(new Date(currentYear, 0, 1));
+
+  // Initialize arrays to store monthly revenue
+  const pastYearRevenue = Array(12).fill(0);
+  const currentYearRevenue = Array(12).fill(0);
+
+  // Calculate revenue for each month in both years
+  transactions.forEach(async (transaction) => {
+    const transactionDate = new Date(transaction.createdAt);
+    const month = getMonth(transactionDate);
+    const netRevenue = getRevenueFromTransaction(transaction);
+    if (
+      transactionDate >= pastYearStartDate &&
+      transactionDate <= pastYearEndDate
+    ) {
+      pastYearRevenue[month] += netRevenue;
+    } else if (
+      transactionDate >= currentYearStartDate &&
+      transactionDate <= currentYearEndDate
+    ) {
+      currentYearRevenue[month] += netRevenue;
+    }
+  });
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  return months.map((month, index) => ({
+    month,
+    pastYear: parseFloat(pastYearRevenue[index].toFixed(2)),
+    currentYear: parseFloat(currentYearRevenue[index].toFixed(2)),
+  }));
+}
+
+export async function getAppMonthlyRevenueComparison() {
+  const transactions = await getAllTransactions();
 
   const currentYear = new Date().getFullYear();
   const pastYear = currentYear - 1;
@@ -265,6 +429,50 @@ export async function getRevenueByTimePeriod(listingId: string) {
   };
 }
 
+export async function getAppRevenueByTimePeriod() {
+  const transactions = await getAllTransactions();
+
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  let today = 0,
+    week = 0,
+    month = 0,
+    year = 0,
+    overall = 0;
+
+  transactions.forEach(async (transaction) => {
+    const revenue = getRevenueFromTransaction(transaction);
+
+    const transactionDate = new Date(transaction.createdAt);
+
+    if (transactionDate >= startOfDay) {
+      today += revenue;
+    }
+    if (transactionDate >= startOfWeek) {
+      week += revenue;
+    }
+    if (transactionDate >= startOfMonth) {
+      month += revenue;
+    }
+    if (transactionDate >= startOfYear) {
+      year += revenue;
+    }
+    overall += revenue; // Calculate overall revenue
+  });
+
+  return {
+    today: parseFloat(today.toFixed(2)),
+    week: parseFloat(week.toFixed(2)),
+    month: parseFloat(month.toFixed(2)),
+    year: parseFloat(year.toFixed(2)),
+    overall: parseFloat(overall.toFixed(2)), // Added overall revenue field
+  };
+}
+
 /**
  * Retrieves an overview of payment statuses for transactions of a given listing.
  * The function returns a promise that resolves to an object with the following keys:
@@ -286,6 +494,24 @@ export async function getPaymentStatusOverview(listingId: string) {
     },
   });
 
+  const statusOverview = {
+    pending: 0,
+    completed: 0,
+    cancelled: 0,
+    requested_refund: 0,
+    refunded: 0,
+    charged: 0,
+  };
+
+  transactions.forEach((transaction) => {
+    statusOverview[transaction.paymentStatus] += 1;
+  });
+
+  return statusOverview;
+}
+
+export async function getAppPaymentStatusOverview() {
+  const transactions = await getAllTransactions();
   const statusOverview = {
     pending: 0,
     completed: 0,

@@ -293,7 +293,7 @@ const AdminBookingsPage = async ({}: {
             </ScrollArea>
           )}
         </div>
-
+        <Separator className="border-border/90" />
         {/* bookings table */}
         <AdminBookingsDataTable
           columns={adminDashboardBookingsColumns}

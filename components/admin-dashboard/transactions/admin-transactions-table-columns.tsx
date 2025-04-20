@@ -1,5 +1,4 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Download, Hotel } from "lucide-react";
@@ -15,34 +14,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { paymentStatus } from "@/lib/utils/types/status/payement-status";
 import { PaymentStatusConfig } from "@/lib/utils/types/status/payement-status";
-import { Transaction } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
 import {
   Calendar1,
   ClipboardList,
-  Mail,
-  Phone,
   SquareUserRound,
   Tag,
   Hourglass,
   MoreHorizontal,
   Clipboard,
 } from "lucide-react";
+import {
+  getAllTransactions,
+  getAppRevenueFromTransaction,
+} from "@/lib/actions/transactions/transactions";
+import { Transaction } from "@prisma/client";
 import Link from "next/link";
-import { getRevenueFromTransaction } from "@/lib/actions/transactions/transactions";
+import { format } from "date-fns";
 
-export type TDashboardTransactionsColumns = Transaction & {
-  guest: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNo: string;
-    profileImg: string;
-  };
-};
+export type TAdminTransactionsColumns = NonNullable<
+  Awaited<ReturnType<typeof getAllTransactions>>
+>[number];
 
-export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactionsColumns>[] =
+export const adminDashboardTransactionsColumns: ColumnDef<TAdminTransactionsColumns>[] =
   [
     // select column
     {
@@ -67,73 +61,127 @@ export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactions
       enableSorting: false,
       enableHiding: false,
     },
-    // guest info
-    {
-      accessorKey: "guest",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="Booking By"
-          icon={SquareUserRound}
-          className="flex items-center gap-2 ms-4"
-        />
-      ),
-      cell: ({ row }) => {
-        const guestName =
-          row.original.guest.firstName + " " + row.original.guest.lastName;
-        const guestProfileImg = row.original.guest.profileImg;
-        const guestEmail = row.original.guest.email;
-        const guestPhoneNo = row.original.guest.phoneNo;
-        return (
-          <div className="flex ms-2 items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="h-8 w-8 rounded-lg border-2">
-              <AvatarImage src={guestProfileImg} alt={guestName} />
-              <AvatarFallback className="rounded-lg">
-                {guestName.split(" ")[0].charAt(0).toUpperCase() +
-                  guestName.split(" ")[1].charAt(0).toUpperCase()}
-              </AvatarFallback>{" "}
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className=" font-medium">{guestName}</span>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Phone size={12} /> {guestPhoneNo} <Mail size={12} />{" "}
-                {guestEmail}
-              </p>
-            </div>
-          </div>
-        );
-      },
-    },
     // transaction id
     {
-      accessorKey: "id",
+      accessorKey: "transactionId",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="transactionID"
+          title="TransactionID"
           icon={ClipboardList}
           className="flex items-center gap-2 ms-4"
         />
       ),
       cell: ({ row }) => {
         const transactionId = row.original.id;
-        return (
-          <Link
-            className="hover:text-primary hover:underline hover:underline-offset-2"
-            href={`/listings/${row.original.listingId}/transactions/${transactionId}`}
-          >
-            {transactionId}
-          </Link>
-        );
+        return transactionId;
       },
     },
-    //   transaction date
+    // guest info
+    {
+      accessorKey: "guest",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Transacted By"
+          icon={SquareUserRound}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) =>
+        row.original.guest.firstName + " " + row.original.guest.lastName,
+    },
+    {
+      accessorKey: "guestID",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Guest ID"
+          icon={SquareUserRound}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => row.original.guest.id,
+    },
+
+    // guest stripe ID
+    {
+      accessorKey: "guestStripeID",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="By Stripe ID"
+          icon={SquareUserRound}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => row.original.guest.stripeId,
+    },
+
+    // listing name
+    {
+      accessorKey: "listingName",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Listing Name"
+          icon={Hotel}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => row.original.listing.name,
+    },
+    // listing id
+    {
+      accessorKey: "listingID",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Listing ID"
+          icon={Hotel}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => row.original.listing.id,
+    },
+
+    // owner stripe ID
+    {
+      accessorKey: "ownerStripeID",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="To Stripe ID"
+          icon={SquareUserRound}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => row.original.listing.owner.stripeId,
+    },
+
+    // booking id
+    {
+      accessorKey: "id",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="BookingID"
+          icon={ClipboardList}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => {
+        const bookingId = row.original.id;
+        return bookingId;
+      },
+    },
+    // date
     {
       accessorKey: "createdAt",
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="Transaction Date"
+          title="Booking Date"
           icon={Calendar1}
           className="flex items-center gap-2 ms-4"
         />
@@ -142,40 +190,6 @@ export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactions
         const date = new Date(row.original.createdAt);
         const formatted = format(date, "dd MMM yyyy");
         return formatted;
-      },
-    },
-    // payment status
-    {
-      accessorKey: "paymentStatus",
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="Payment Status"
-          icon={Hourglass}
-          className="flex items-center gap-2 ms-4"
-        />
-      ),
-      cell: ({ row }) => {
-        const status: PaymentStatusConfig =
-          paymentStatus[
-            row.getValue("paymentStatus") as keyof typeof paymentStatus
-          ];
-        if (status) {
-          return (
-            <div className="w-full flex items-center justify-center">
-              <Badge variant="outline" className={status.className}>
-                {status.icon && <status.icon size={16} />} {status.label}
-              </Badge>
-            </div>
-          );
-        }
-      },
-      filterFn: (row, columnId, filterValue) => {
-        // If no filter value is set, show all rows
-        if (!filterValue || filterValue.length === 0) return true;
-
-        // Check if the row's paymentStatus matches any of the selected filters
-        return filterValue.includes(row.getValue(columnId));
       },
     },
     // total amount paid
@@ -215,12 +229,46 @@ export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactions
         const formatted = new Intl.NumberFormat("en-IN", {
           style: "currency",
           currency: "INR",
-        }).format(getRevenueFromTransaction(row.original));
+        }).format(getAppRevenueFromTransaction(row.original as Transaction));
 
         return <p className="">{formatted}</p>;
       },
     },
 
+    // payment status
+    {
+      accessorKey: "paymentStatus",
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Payment Status"
+          icon={Hourglass}
+          className="flex items-center gap-2 ms-4"
+        />
+      ),
+      cell: ({ row }) => {
+        const status: PaymentStatusConfig =
+          paymentStatus[
+            row.getValue("paymentStatus") as keyof typeof paymentStatus
+          ];
+        if (status) {
+          return (
+            <div className="w-full flex items-center justify-center">
+              <Badge variant="outline" className={status.className}>
+                {status.icon && <status.icon size={16} />} {status.label}
+              </Badge>
+            </div>
+          );
+        }
+      },
+      filterFn: (row, columnId, filterValue) => {
+        // If no filter value is set, show all rows
+        if (!filterValue || filterValue.length === 0) return true;
+
+        // Check if the row's bookingStatus matches any of the selected filters
+        return filterValue.includes(row.getValue(columnId));
+      },
+    },
     // actions
     {
       id: "Actions",
@@ -253,15 +301,6 @@ export const dashboardTransactionsTableColumns: ColumnDef<TDashboardTransactions
                 <DropdownMenuItem className="flex items-center gap-2">
                   <Download />
                   Download Invoice
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <Link
-                href={`/listings/${transaction.listingId}/transactions/${transaction.id}`}
-              >
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Hotel />
-                  Transaction Details
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
