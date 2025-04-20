@@ -6,7 +6,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { Booking, Transaction } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { dynamicallySetRoomPrice } from "../rooms/rooms";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import { isAdmin } from "../user/admin/admin";
 
 /**
